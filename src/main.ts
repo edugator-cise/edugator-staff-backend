@@ -4,7 +4,7 @@
 export enum Delays {
   Short = 500,
   Medium = 2000,
-  Long = 5000,
+  Long = 5000
 }
 
 /**
@@ -16,10 +16,10 @@ export enum Delays {
  */
 function delayedHello(
   name: string,
-  delay: number = Delays.Medium,
+  delay: number = Delays.Medium
 ): Promise<string> {
   return new Promise((resolve: (value?: string) => void) =>
-    setTimeout(() => resolve(`Hello, ${name}`), delay),
+    setTimeout(() => resolve(`Hello, ${name}`), delay)
   );
 }
 
