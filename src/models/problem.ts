@@ -1,4 +1,3 @@
-// const mongoose = require('mongoose');
 import mongoose, { Schema } from "mongoose";
 
 const problemModel = new Schema({
@@ -37,8 +36,9 @@ const problemModel = new Schema({
         },
     },
     fileExtension: {
-        type: Enumerator,
+        type: String,
         required: true,
+        enum: [".java", ".cpp", ".h"] //I don't know what else could go in here? Maybe ".cxx"?
     },
     testCases: [
         {
@@ -58,8 +58,7 @@ const problemModel = new Schema({
             visibility: {
                 type: Number,
                 required: true,
-                min: 0,
-                max: 2,
+                enum: [0,1,2],
             }
             /*templatePackage: {
                 type: TBDDDDDD

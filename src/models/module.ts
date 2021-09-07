@@ -1,4 +1,3 @@
-// const mongoose = require('mongoose');
 import mongoose, { Schema } from "mongoose";
 
 const moduleModel = new Schema({
@@ -10,15 +9,7 @@ const moduleModel = new Schema({
         type: Number,
         required: true,
     },
-    Problem: [
-        {
-            //[ObjectID1, ObjectID2...]
-            objectID: {
-                type: String,
-                required: true,
-            }
-        },
-    ],
+    problem: [mongoose.Schema.Types.ObjectId],
 });
 
 export default mongoose.model('moduleModel', moduleModel);
