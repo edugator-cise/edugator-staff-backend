@@ -34,6 +34,7 @@
   "author": "Marc Diaz marcgabe15@gmail.com",
   "dependencies": {
     "express": "^4.17.1",
+    "mongoose": "^6.0.4",
     "tslib": "~2.3.0"
   }
 }
