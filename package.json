@@ -31,7 +31,8 @@
     "lint": "eslint . --ext .ts,.tsx",
     "lint-fix": "eslint . --ext .ts,.tsx --fix",
     "test": "jest --coverage",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "checklist": "npm run lint-fix && npm run test && npm run build"
   },
   "author": "Marc Diaz marcgabe15@gmail.com",
   "dependencies": {
