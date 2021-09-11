@@ -8,8 +8,7 @@ const moduleModel = new Schema({
   number: {
     type: Number,
     required: true
-  },
-  problem: [mongoose.Schema.Types.ObjectId]
+  }
 });
 
 export default mongoose.model('moduleModel', moduleModel);

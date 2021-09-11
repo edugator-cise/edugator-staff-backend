@@ -59,11 +59,11 @@ const problemModel = new Schema({
         type: Number,
         required: true,
         enum: [0, 1, 2]
+      },
+      templatePackage: {
+        type: String,
+        required: true
       }
-      /*templatePackage: {
-                type: TBDDDDDD
-                required: true?
-            }*/
     }
   ],
   timeLimit: {
