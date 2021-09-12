@@ -22,5 +22,8 @@ jobs:
         run: npm run lint
       - name: Unit tests
         run: npm run test
+        env:
+          CI: true
+          ISOLATE: true
       - name: build
         run: npm run build
