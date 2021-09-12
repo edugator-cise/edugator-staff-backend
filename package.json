@@ -31,7 +31,7 @@
     "build:watch": "tsc -w -p tsconfig.release.json",
     "lint": "eslint . --ext .ts,.tsx",
     "lint-fix": "eslint . --ext .ts,.tsx --fix",
-    "test": "jest --coverage",
+    "test": "jest --coverage --detectOpenHandles",
     "test:watch": "jest --watch",
     "checklist": "npm run lint-fix && npm run test && npm run build"
   },

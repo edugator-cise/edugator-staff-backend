@@ -1,4 +1,4 @@
-import app from '../src/index';
+import app from '../src/config/express';
 import * as request from 'supertest';
 
 describe('GET /v1/health', () => {
