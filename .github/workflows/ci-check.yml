@@ -1,0 +1,28 @@
+name: Continuous Integration
+
+# This action works with pull requests and pushes
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - release
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install packages
+        run: npm install
+      - name: Lint check
+        run: npm run lint
+      - name: Unit tests
+        run: npm run test
+        env:
+          CI: true
+          ISOLATE: true
+      - name: build
+        run: npm run build
