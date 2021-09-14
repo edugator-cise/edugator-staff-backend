@@ -1,8 +1,8 @@
 name: Deploy
 
 env:
-  APP_NAME: edugator-api
-  S3_BUCKET: edugator-backend-bucket
+  APP_NAME: edugator-service-api
+  S3_BUCKET: edugator-service-api-bucket
   AWS_REGION: us-east-1
   AWS_PLATFORM: Docker
   PIPELINE_ID: ${GITHUB_RUN_ID}-${GITHUB_RUN_NUMBER}
@@ -10,7 +10,7 @@ env:
 on:
   push:
     branches:
-      - marcgabe15/test-deployment
+      - release
 
 jobs:
   create_eb_version:
