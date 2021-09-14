@@ -1,7 +1,7 @@
 name: Deploy
 
 env:
-  APP_NAME: edugator-backend
+  APP_NAME: edugator-backend-dev
   S3_BUCKET: edugator-backend-bucket
   AWS_REGION: us-east-1
   AWS_PLATFORM: Docker
