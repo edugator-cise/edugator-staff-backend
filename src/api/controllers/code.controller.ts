@@ -10,10 +10,9 @@ import { judgeEngine } from '../services/judge0';
 import { AxiosError, AxiosResponse } from 'axios';
 const runCode = async (req: Request, response: Response): Promise<Response> => {
   // TODO: Add logger
-  console.log(judgeEngine)
+
   const validationResponse: ValidationResult = runValidation(req.body);
   if (validationResponse.error) {
-
     return response.sendStatus(httpStatus.BAD_REQUEST);
   }
 

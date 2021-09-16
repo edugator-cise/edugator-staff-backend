@@ -43,4 +43,4 @@ class JudgeServer {
 
 const judgeEngine = new JudgeServer(judgeURI);
 
-export {judgeEngine} ;
+export { judgeEngine };
