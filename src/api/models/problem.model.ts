@@ -94,12 +94,10 @@ const problemSchema = new Schema<Problem>(
       }
     ],
     timeLimit: {
-      // Still figuring thhis one out: thinking msec
       type: Number,
       required: true
     },
     memoryLimit: {
-      // data in MB?
       type: Number,
       required: true
     },

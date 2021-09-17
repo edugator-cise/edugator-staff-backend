@@ -5,7 +5,7 @@ const studentProblemRouter = express.Router();
 
 // Student routes
 studentProblemRouter.route('/?').get(getStudentProblems);
-studentProblemRouter.route('/:problemId').get();
+studentProblemRouter.route('/:problemId').get(getStudentProblems);
 studentProblemRouter.route('/student/problem/findByModule/:moduleId').get();
 
 // Admin routes
