@@ -1,4 +1,4 @@
-import Joi from 'joi';
+import * as Joi from 'joi';
 import JoiObjectId from 'joi-objectid';
 const objectIdValidator = JoiObjectId(Joi);
 

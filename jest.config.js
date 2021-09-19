@@ -16,8 +16,9 @@ module.exports = {
   collectCoverageFrom: [
     'src/**/*.{ts,tsx,js,jsx}',
     '!src/**/*.d.ts',
-    '!src/models/*.{ts,tsx,js,jsx}',
-    '!src/validation/*.{ts,tsx,js,jsx}',
+    '!src/api/models/*.{ts,tsx,js,jsx}',
+    '!src/api/validation/*.{ts,tsx,js,jsx}',
+    '!src/api/routes/problem.*.{ts,tsx,js,jsx}',
     '!src/index.ts',
     '!src/config/*.ts'
   ],
