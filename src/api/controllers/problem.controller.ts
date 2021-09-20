@@ -1,15 +1,14 @@
 import { Request, Response } from 'express';
 import Module from '../models/module.model';
-import Problem from '../models/problem.model';
+import { Problem, ProblemDocument } from '../models/problem.model';
 import problemValidation from '../validation/problem.validation';
 
-const getStudentProblems = async (
+const readStudentProblems = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   let studentProblems: any;
   if (req.params.problemId) {
-    //Find exact problem
     studentProblems = await Problem.findOne({
       hidden: false,
       _id: req.params.problemId
@@ -29,7 +28,10 @@ const getStudentProblems = async (
   res.status(200).send(studentProblems);
 };
 
-const getAdminProblems = async (req: Request, res: Response): Promise<void> => {
+const readAdminProblems = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   let adminProblems: any;
   if (req.params.problemId) {
     //Find exact problem
@@ -48,7 +50,7 @@ const getAdminProblems = async (req: Request, res: Response): Promise<void> => {
   res.status(200).send(adminProblems);
 };
 
-const postProblem = async (req: Request, res: Response): Promise<void> => {
+const createProblem = async (req: Request, res: Response): Promise<void> => {
   const { error } = problemValidation(req.body);
   if (error) {
     res.status(400).send(error.details[0].message);
@@ -75,4 +77,50 @@ const postProblem = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export { getStudentProblems, getAdminProblems, postProblem };
+const updateProblem = async (req: Request, res: Response): Promise<void> => {
+  const { error } = problemValidation(req.body);
+  if (error) {
+    res.status(400).send(error.details[0].message);
+  }
+
+  const problem: ProblemDocument = Problem.findById(
+    req.params.problemId
+  ) as unknown as ProblemDocument;
+  problem.problemType = req.params.problemType;
+  problem.title = req.params.title;
+  problem.hidden = req.params.hidden as unknown as boolean;
+  problem.language = req.params.language;
+  problem.dueDate = new Date(req.params.dueDate);
+  problem.code = JSON.parse(req.params.code);
+  problem.fileExtension = req.params.fileExtension;
+  problem.testCases = JSON.parse(req.params.testCases);
+  problem.timeLimit = req.params.timeLimit as unknown as number;
+  problem.memoryLimit = req.params.memoryLimit as unknown as number;
+  problem.buildCommand = req.params.buildCommand;
+
+  try {
+    const savedProblem = await problem.save();
+    res.send({ id: savedProblem._id });
+  } catch (error) {
+    res.status(400).send(error);
+  }
+};
+
+const deleteProblem = async (req: Request, res: Response): Promise<void> => {
+  try {
+    await Problem.deleteOne({
+      id: req.params.problemId
+    });
+    res.status(200);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+};
+
+export {
+  readStudentProblems,
+  readAdminProblems,
+  createProblem,
+  updateProblem,
+  deleteProblem
+};

@@ -1,4 +1,4 @@
-import { model, Schema } from 'mongoose';
+import { model, Document, Schema } from 'mongoose';
 
 interface ProblemInterface {
   problemType: string;
@@ -25,6 +25,8 @@ interface ProblemInterface {
   memoryLimit: number;
   buildCommand: string;
 }
+
+interface ProblemDocument extends ProblemInterface, Document {}
 
 const problemSchema = new Schema<ProblemInterface>(
   {
@@ -111,4 +113,4 @@ const problemSchema = new Schema<ProblemInterface>(
 
 const Problem = model('problemModel', problemSchema);
 
-export default Problem;
+export { Problem, ProblemDocument };
