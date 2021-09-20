@@ -28,4 +28,4 @@ const problemValidation = (data) => {
   return schema.validate(data);
 };
 
-module.exports.problemValidation = problemValidation;
+export default problemValidation;
