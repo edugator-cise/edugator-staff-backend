@@ -1,6 +1,6 @@
 import { model, Schema } from 'mongoose';
 
-interface Problem {
+interface ProblemInterface {
   problemType: string;
   title: string;
   hidden: boolean;
@@ -26,7 +26,7 @@ interface Problem {
   buildCommand: string;
 }
 
-const problemSchema = new Schema<Problem>(
+const problemSchema = new Schema<ProblemInterface>(
   {
     problemType: {
       type: String,
@@ -109,6 +109,6 @@ const problemSchema = new Schema<Problem>(
   { collection: '_problem' }
 );
 
-const ProblemModel = model('problemModel', problemSchema);
+const Problem = model('problemModel', problemSchema);
 
-export default ProblemModel;
+export default Problem;
