@@ -1,9 +1,9 @@
-import mongoose, { Schema } from 'mongoose';
+import { model, Schema, Types } from 'mongoose';
 
-interface Module {
+interface ModuleInterface {
   name: string;
   number: number;
-  problems: [mongoose.Types.ObjectId];
+  problems: [Types.ObjectId];
 }
 
 const moduleSchema = new Schema({
@@ -16,11 +16,12 @@ const moduleSchema = new Schema({
     required: true
   },
   problems: {
-    type: [mongoose.SchemaTypes.ObjectId],
+    type: [Schema.Types.ObjectId],
+    ref: 'Problem',
     required: true
   }
 });
 
-const ModuleModel = mongoose.model<Module>('moduleModel', moduleSchema);
+const Module = model<ModuleInterface>('moduleModel', moduleSchema);
 
-export default ModuleModel;
+export default Module;
