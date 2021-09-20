@@ -1,0 +1,4 @@
+
+const BUCKET_NAME = process.env.UPLOAD_SUBMISSIONS_BUCKET;
+
+export {BUCKET_NAME};

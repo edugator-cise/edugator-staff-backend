@@ -8,7 +8,6 @@ mongoose.connect(process.env.DB_URI);
 const app = express();
 
 app.use(express.json());
-
 // mount api v1 routes
 app.use('/v1', routes);
 
