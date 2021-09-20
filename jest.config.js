@@ -19,6 +19,7 @@ module.exports = {
     '!src/api/models/*.{ts,tsx,js,jsx}',
     '!src/api/validation/*.{ts,tsx,js,jsx}',
     '!src/api/routes/problem.*.{ts,tsx,js,jsx}',
+    '!src/api/routes/module.*.{ts,tsx,js,jsx}',
     '!src/index.ts',
     '!src/config/*.ts'
   ],
