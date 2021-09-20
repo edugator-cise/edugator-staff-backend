@@ -1,16 +1,28 @@
 import * as express from 'express';
-import getStudentProblems from '../../controllers/problem.controller';
+import {
+  readStudentProblems,
+  readAdminProblems,
+  createProblem,
+  updateProblem,
+  deleteProblem
+} from '../../controllers/problem.controller';
 const adminProblemRouter = express.Router();
 const studentProblemRouter = express.Router();
 
 // Student routes
-studentProblemRouter.route('/?').get(getStudentProblems);
-studentProblemRouter.route('/:problemId').get(getStudentProblems);
-studentProblemRouter.route('/student/problem/findByModule/:moduleId').get();
+studentProblemRouter.route('/?').get(readStudentProblems);
+studentProblemRouter.route('/:problemId').get(readStudentProblems);
+studentProblemRouter
+  .route('/student/problem/findByModule/:moduleId')
+  .get(readStudentProblems);
 
 // Admin routes
-adminProblemRouter.route('/?').get().post();
-adminProblemRouter.route('/:problemId').get().put().delete();
-adminProblemRouter.route('/findByModule/:moduleId').get();
+adminProblemRouter.route('/?').get(readAdminProblems).post(createProblem);
+adminProblemRouter
+  .route('/:problemId')
+  .get(readAdminProblems)
+  .put(updateProblem)
+  .delete(deleteProblem);
+adminProblemRouter.route('/findByModule/:moduleId').get(readAdminProblems);
 
 export { adminProblemRouter, studentProblemRouter };
