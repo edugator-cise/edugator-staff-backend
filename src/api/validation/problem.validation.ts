@@ -1,6 +1,7 @@
-import Joi from 'joi';
+import * as Joi from 'joi';
 
-const problemValidation = (data) => {
+//eslint-disable-next-line
+const problemValidation = (data: any): Joi.ValidationResult => {
   const schema = Joi.object({
     problemType: Joi.string().required(),
     title: Joi.string().min(1).required(),
