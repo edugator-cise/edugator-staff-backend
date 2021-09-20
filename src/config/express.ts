@@ -1,6 +1,9 @@
 import * as express from 'express';
+import * as mongoose from 'mongoose';
 import { Request, Response } from 'express';
 import routes from '../api/routes/v1';
+
+mongoose.connect(process.env.DB_URI);
 
 const app = express();
 
