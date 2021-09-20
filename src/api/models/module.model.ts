@@ -16,7 +16,7 @@ const moduleSchema = new Schema({
     required: true
   },
   problems: {
-    type: [mongoose.SchemaTypes.ObjectId],
+    type: [mongoose.Schema.Types.ObjectId],
     required: true
   }
 });
