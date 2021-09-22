@@ -1,13 +1,10 @@
 import * as express from 'express';
-import * as mongoose from 'mongoose';
 import { Request, Response } from 'express';
 import routes from '../api/routes/v1';
 import * as cors from 'cors';
 import * as passport from 'passport';
 import { jwtStrategy } from './passport';
 import { notFound, converter, handler } from '../api/middlewares/error';
-
-mongoose.connect(process.env.DB_URI);
 
 const app = express();
 
