@@ -1,4 +1,4 @@
-const jwtExpirationInterval = 86400000;
+const jwtExpirationInterval = 86400; // 1 day in seconds
 const jwtSecret = process.env.JWT_SECRET;
 const env = process.env.NODE_ENV;
 const port = process.env.PORT;

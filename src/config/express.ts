@@ -3,7 +3,9 @@ import * as mongoose from 'mongoose';
 import { Request, Response } from 'express';
 import routes from '../api/routes/v1';
 import * as cors from 'cors';
-import { notFound, converter, handler} from '../api/middlewares/error';
+import * as passport from 'passport';
+import { jwtStrategy } from './passport';
+import { notFound, converter, handler } from '../api/middlewares/error';
 
 mongoose.connect(process.env.DB_URI);
 
@@ -11,6 +13,9 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
+
+app.use(passport.initialize());
+passport.use('jwt', jwtStrategy);
 
 // mount api v1 routes
 app.use('/v1', routes);

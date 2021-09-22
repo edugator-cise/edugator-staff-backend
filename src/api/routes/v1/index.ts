@@ -12,6 +12,6 @@ router.use('/module', moduleRouter);
 router.use('/code/run', codeRouter);
 router.use('/student/problem', studentProblemRouter);
 router.use('/admin/problem', adminProblemRouter);
-router.use('/auth', authRouter)
+router.use('/user', authRouter);
 
 export default router;

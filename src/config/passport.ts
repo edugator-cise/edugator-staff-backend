@@ -1,23 +1,36 @@
-import passport from 'passport';
-import passportJWT from 'passport-jwt';
-import UserModel from '../api/models/user.model';
-import { jwtSecret } from './vars'
-const JWTStrategy = passportJWT.Strategy
-const ExtractJWT = passportJWT.ExtractJwt
+// import * as  passport from 'passport';
+import * as passportJWT from 'passport-jwt';
+// import { UserModel }  from '../api/models/user.model';
+import { jwtSecret } from './vars';
+const JWTStrategy = passportJWT.Strategy;
+const ExtractJWT = passportJWT.ExtractJwt;
 
-passport.use(new JWTStrategy(
+interface IJWTTOKEN {
+  userName: string;
+  iat: number;
+  exp: number;
+}
+
+const verifyJWT = async (
+  jwtToken: IJWTTOKEN,
+  done: passportJWT.VerifiedCallback
+) => {
+  //TODO LOGGER
+  try {
+    //TODO LOGGER
+    return done(null, jwtToken);
+  } catch (error) {
+    //TODO LOGGER
+    return done(error, false);
+  }
+};
+
+const jwtStrategy = new JWTStrategy(
   {
     jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
     secretOrKey: jwtSecret
-  }, (jwtToken, done) => {
-      UserModel.findOne({ username: jwtToken.username }, (err, user) => {
-        if (err) {return done(err, false);}
-        if (user) {
-          return done(undefined, user, jwtToken);
-        } else {
-          return done(undefined, false);
-        }
-      })
-  }
-  
-))
+  },
+  verifyJWT
+);
+
+export { jwtStrategy };
