@@ -50,30 +50,30 @@ const readAdminProblems = async (
   res.status(200).send(adminProblems);
 };
 
-const createProblem = async (req: Request, res: Response): Promise<void> => {
+const createProblem = async (req: Request, res: Response): Promise<Response<any, Record<string, any>>> => {
   const { error } = problemValidation(req.body);
   if (error) {
-    res.status(400).send(error.details[0].message);
+    return res.status(400).send(error.details[0].message);
   }
   const problem = new Problem({
-    problemType: req.params.problemType,
-    title: req.params.title,
-    hidden: req.params.hidden,
-    language: req.params.language,
-    dueDate: req.params.dueDate,
-    code: req.params.code,
-    fileExtension: req.params.fileExtension,
-    testCases: req.params.testCases,
-    timeLimit: req.params.timeLimit,
-    memoryLimit: req.params.memoryLimit,
-    buildCommand: req.params.buildCommand
+    problemType: req.body.problemType,
+    title: req.body.title,
+    hidden: req.body.hidden,
+    language: req.body.language,
+    dueDate: req.body.dueDate,
+    code: req.body.code,
+    fileExtension: req.body.fileExtension,
+    testCases: req.body.testCases,
+    timeLimit: req.body.timeLimit,
+    memoryLimit: req.body.memoryLimit,
+    buildCommand: req.body.buildCommand
   });
 
   try {
     const savedProblem = await problem.save();
-    res.send({ id: savedProblem._id });
+    return res.send({ id: savedProblem._id });
   } catch (error) {
-    res.status(400).send(error);
+    return res.status(400).send(error);
   }
 };
 
