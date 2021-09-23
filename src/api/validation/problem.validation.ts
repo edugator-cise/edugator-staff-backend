@@ -13,7 +13,7 @@ const problemValidation = (data: any): Joi.ValidationResult => {
       body: Joi.string().min(1).required(),
       footer: Joi.string().min(1).required()
     },
-    fileExtention: Joi.string().valid('.java', '.cpp', '.h').min(1).required(),
+    fileExtension: Joi.string().valid('.java', '.cpp', '.h').min(1).required(),
     testCases: Joi.array().items({
       input: Joi.string().min(1).required(),
       expectedOutput: Joi.string().min(1).required(),
