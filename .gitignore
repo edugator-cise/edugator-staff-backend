@@ -5,6 +5,8 @@
 /.pnp
 .pnp.js
 app.zip
+.env
+
 # testing
 /coverage
 .cache
