@@ -17,11 +17,13 @@ const moduleSchema = new Schema({
   },
   problems: {
     type: [Schema.Types.ObjectId],
-    ref: 'Problem',
+    ref: '_problem',
     required: true
   }
-});
+},
+{collection: 'modules'}
+);
 
-const Module = model<ModuleInterface>('module', moduleSchema);
+const Module = model<ModuleInterface>('This module parameter does NOT matter', moduleSchema);
 
 export default Module;

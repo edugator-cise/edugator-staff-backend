@@ -37,8 +37,8 @@ export const getModulesWithProblems = async (
         .type('json')
         .send('This route should not be called with a moduleId');
     } else {
-      //Find All modules 
-      modules = await Module.find(); // .populate('problems')
+      //Find All modules
+      modules = await Module.find().populate('problems');
     }
     res.status(200).send(modules);
   } catch (err) {

@@ -6,6 +6,7 @@ import {
   updateProblem,
   deleteProblem
 } from '../../controllers/problem.controller';
+import { authenticateJWT } from '../../middlewares/auth';
 const adminProblemRouter = express.Router();
 const studentProblemRouter = express.Router();
 
@@ -17,12 +18,17 @@ studentProblemRouter
   .get(readStudentProblems);
 
 // Admin routes
-adminProblemRouter.route('/?').get(readAdminProblems).post(createProblem);
+adminProblemRouter
+  .route('/?')
+  .get(authenticateJWT, readAdminProblems)
+  .post(createProblem);
 adminProblemRouter
   .route('/:problemId')
-  .get(readAdminProblems)
-  .put(updateProblem)
-  .delete(deleteProblem);
-adminProblemRouter.route('/findByModule/:moduleId').get(readAdminProblems);
+  .get(authenticateJWT, readAdminProblems)
+  .put(authenticateJWT, updateProblem)
+  .delete(authenticateJWT, deleteProblem);
+adminProblemRouter
+  .route('/findByModule/:moduleId')
+  .get(authenticateJWT, readAdminProblems);
 
 export { adminProblemRouter, studentProblemRouter };

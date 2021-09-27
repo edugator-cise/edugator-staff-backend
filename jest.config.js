@@ -3,6 +3,7 @@ module.exports = {
   transform: {
     "^.+\\.tsx?$": "ts-jest"
   },
+  setupFilesAfterEnv: ["<rootDir>/mocks/db.ts"],
   moduleFileExtensions: [
     "ts",
     "tsx",

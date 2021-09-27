@@ -108,9 +108,11 @@ const problemSchema = new Schema<ProblemInterface>(
       required: true
     }
   },
+  //This is the name of the collection
   { collection: '_problem' }
 );
 
-const Problem = model('problemModel', problemSchema);
+// the first argument does not name the collection
+const Problem = model<ProblemInterface>('This problem parameter does NOT matter', problemSchema);
 
 export { Problem, ProblemDocument };
