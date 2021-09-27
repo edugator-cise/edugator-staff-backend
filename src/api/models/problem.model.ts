@@ -1,6 +1,34 @@
-import mongoose, { Schema } from 'mongoose';
+import { model, Document, Schema } from 'mongoose';
 
-const problemModel = new Schema(
+interface ProblemInterface {
+  problemType: string;
+  title: string;
+  hidden: boolean;
+  language: string;
+  dueDate: Date;
+  code: {
+    header: string;
+    body: string;
+    footer: string;
+  };
+  fileExtension: string; //Interface doesn't enforce enum
+  testCases: [
+    {
+      input: string;
+      expectedOutput: string;
+      hint: string;
+      visibility: number; // doesn't enforce visibility: 0, 1, or 2
+      templatePackage: string;
+    }
+  ];
+  timeLimit: number;
+  memoryLimit: number;
+  buildCommand: string;
+}
+
+interface ProblemDocument extends ProblemInterface, Document {}
+
+const problemSchema = new Schema<ProblemInterface>(
   {
     problemType: {
       type: String,
@@ -68,12 +96,10 @@ const problemModel = new Schema(
       }
     ],
     timeLimit: {
-      // Still figuring thhis one out: thinking msec
       type: Number,
       required: true
     },
     memoryLimit: {
-      // data in MB?
       type: Number,
       required: true
     },
@@ -85,4 +111,6 @@ const problemModel = new Schema(
   { collection: '_problem' }
 );
 
-export default mongoose.model('problemModel', problemModel);
+const Problem = model('problemModel', problemSchema);
+
+export { Problem, ProblemDocument };

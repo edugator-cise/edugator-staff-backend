@@ -1,6 +1,7 @@
-import Joi from 'joi';
+import * as Joi from 'joi';
 
-const problemValidation = (data) => {
+//eslint-disable-next-line
+const problemValidation = (data: any): Joi.ValidationResult => {
   const schema = Joi.object({
     problemType: Joi.string().required(),
     title: Joi.string().min(1).required(),
@@ -12,7 +13,7 @@ const problemValidation = (data) => {
       body: Joi.string().min(1).required(),
       footer: Joi.string().min(1).required()
     },
-    fileExtention: Joi.string().valid('.java', '.cpp', '.h').min(1).required(),
+    fileExtension: Joi.string().valid('.java', '.cpp', '.h').min(1).required(),
     testCases: Joi.array().items({
       input: Joi.string().min(1).required(),
       expectedOutput: Joi.string().min(1).required(),
@@ -28,4 +29,4 @@ const problemValidation = (data) => {
   return schema.validate(data);
 };
 
-module.exports.problemValidation = problemValidation;
+export default problemValidation;

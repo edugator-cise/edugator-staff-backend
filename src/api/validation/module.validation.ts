@@ -1,8 +1,9 @@
-import Joi from 'joi';
+import * as Joi from 'joi';
 import JoiObjectId from 'joi-objectid';
 const objectIdValidator = JoiObjectId(Joi);
 
-const moduleValidation = (data) => {
+//eslint-disable-next-line
+const moduleValidation = (data: any): Joi.ValidationResult => {
   const schema = Joi.object({
     name: Joi.string().min(1).required(),
     number: Joi.number().min(1).required(),
@@ -12,4 +13,4 @@ const moduleValidation = (data) => {
   return schema.validate(data);
 };
 
-module.exports.moduleValidation = moduleValidation;
+export default moduleValidation;

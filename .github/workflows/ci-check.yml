@@ -1,9 +1,14 @@
 name: Continuous Integration
 
+env:
+  DB_URI: ${{secrets.DB_URI}}
+  BETA_JUDGE_URI: ${{secrets.BETA_JUDGE_URI}}
+  PROD_JUDGE_URI: ${{secrets.PROD_JUDGE_URI}}
+  JWT_SECRET: ${{secrets.JWT_SECRET}}
+
 # This action works with pull requests and pushes
 on:
   pull_request:
-  push:
     branches:
       - main
       - release
