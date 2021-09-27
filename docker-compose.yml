@@ -1,0 +1,9 @@
+version: '2'
+services:
+  boilerplate-api:
+    build: .
+    volumes:
+      - .:/app
+    ports:
+      - '80:8080'
+    env_file: .env
