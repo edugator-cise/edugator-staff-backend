@@ -8,6 +8,7 @@ moduleRouter
   .route('/?')
   .get(modules.getModules)
   .post(authenticateJWT, modules.postModules);
+moduleRouter.route('/WithProblems').get(modules.getModulesWithProblems);
 moduleRouter
   .route('/:moduleId')
   .get(modules.getModules)
