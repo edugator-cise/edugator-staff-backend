@@ -50,7 +50,10 @@ const readAdminProblems = async (
   res.status(200).send(adminProblems);
 };
 
-const createProblem = async (req: Request, res: Response): Promise<Response<any, Record<string, any>>> => {
+const createProblem = async (
+  req: Request,
+  res: Response
+): Promise<Response<any, Record<string, any>>> => {
   const { error } = problemValidation(req.body);
   if (error) {
     return res.status(400).send(error.details[0].message);
