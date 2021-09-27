@@ -22,6 +22,6 @@ const moduleSchema = new Schema({
   }
 });
 
-const Module = model<ModuleInterface>('moduleModel', moduleSchema);
+const Module = model<ModuleInterface>('module', moduleSchema);
 
 export default Module;
