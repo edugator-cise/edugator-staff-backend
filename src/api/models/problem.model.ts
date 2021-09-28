@@ -1,6 +1,6 @@
-import { model, Schema } from 'mongoose';
+import { model, Document, Schema } from 'mongoose';
 
-interface Problem {
+interface ProblemInterface {
   problemType: string;
   title: string;
   hidden: boolean;
@@ -26,7 +26,9 @@ interface Problem {
   buildCommand: string;
 }
 
-const problemSchema = new Schema<Problem>(
+interface ProblemDocument extends ProblemInterface, Document {}
+
+const problemSchema = new Schema<ProblemInterface>(
   {
     problemType: {
       type: String,
@@ -106,9 +108,14 @@ const problemSchema = new Schema<Problem>(
       required: true
     }
   },
+  //This is the name of the collection
   { collection: '_problem' }
 );
 
-const ProblemModel = model('problemModel', problemSchema);
+// the first argument does not name the collection
+const Problem = model<ProblemInterface>(
+  'This problem parameter does NOT matter',
+  problemSchema
+);
 
-export default ProblemModel;
+export { Problem, ProblemDocument };

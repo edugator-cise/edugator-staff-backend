@@ -1,26 +1,33 @@
-import mongoose, { Schema } from 'mongoose';
+import { model, Schema, Types } from 'mongoose';
 
-interface Module {
+interface ModuleInterface {
   name: string;
   number: number;
-  problems: [mongoose.Types.ObjectId];
+  problems: [Types.ObjectId];
 }
 
-const moduleSchema = new Schema({
-  name: {
-    type: String,
-    required: true
+const moduleSchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: true
+    },
+    number: {
+      type: Number,
+      required: true
+    },
+    problems: {
+      type: [Schema.Types.ObjectId],
+      ref: '_problem',
+      required: true
+    }
   },
-  number: {
-    type: Number,
-    required: true
-  },
-  problems: {
-    type: [mongoose.SchemaTypes.ObjectId],
-    required: true
-  }
-});
+  { collection: 'modules' }
+);
 
-const ModuleModel = mongoose.model<Module>('moduleModel', moduleSchema);
+const Module = model<ModuleInterface>(
+  'This module parameter does NOT matter',
+  moduleSchema
+);
 
-export default ModuleModel;
+export default Module;

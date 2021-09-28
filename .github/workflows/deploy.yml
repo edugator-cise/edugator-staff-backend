@@ -6,6 +6,10 @@ env:
   AWS_REGION: us-east-1
   AWS_PLATFORM: Docker
   PIPELINE_ID: ${GITHUB_RUN_ID}-${GITHUB_RUN_NUMBER}
+  DB_URI: ${{secrets.DB_URI}}
+  BETA_JUDGE_URI: ${{secrets.BETA_JUDGE_URI}}
+  PROD_JUDGE_URI: ${{secrets.PROD_JUDGE_URI}}
+  JWT_SECRET: ${{secrets.JWT_SECRET}}
 
 on:
   push:
@@ -23,11 +27,21 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
+      - name: Create .env file
+        run: |
+          cat << EOF >> .env
+          BETA_JUDGE_URI=${{secrets.BETA_JUDGE_URI}}
+          PROD_JUDGE_URI=${{secrets.PROD_JUDGE_URI}}
+          NODE_ENV=production
+          DB_URI=${{secrets.DB_URI}}
+          JWT_SECRET=${{secrets.JWT_SECRET}}
+          EOF
+
       - run: |
           AWS_VERSION_LABEL=${{env.APP_NAME}}-${{env.PIPELINE_ID}}
 
           echo "Creating Source bundle"
-          zip -r ${{env.APP_NAME}}.zip src/ Dockerfile .dockerignore package.json .eslintrc .eslintignore .prettierrc tsconfig.json tsconfig.release.json jest.config.js
+          zip -r ${{env.APP_NAME}}.zip src/ Dockerfile docker-compose.yml .env .dockerignore package.json .eslintrc .eslintignore .prettierrc tsconfig.json tsconfig.release.json jest.config.js
           S3_KEY="$AWS_VERSION_LABEL.zip"
 
           echo "Uploading Source bundle to s3"
