@@ -4,7 +4,7 @@ import routes from '../api/routes/v1';
 import * as cors from 'cors';
 import * as passport from 'passport';
 import { jwtStrategy } from './passport';
-import { notFound, converter, handler } from '../api/middlewares/error';
+import { notFound, converter, handler } from '../api/errors/error';
 
 const app = express();
 
