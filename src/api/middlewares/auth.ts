@@ -13,7 +13,7 @@ const authenticateJWT = (
   req: Request,
   res: Response,
   next: NextFunction
-): any => {
+): void => {
   passport.authenticate('jwt', (err: Error, jwtToken: IJWTTOKEN) => {
     if (err) {
       return res.sendStatus(httpStatus.UNAUTHORIZED);
