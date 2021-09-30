@@ -114,7 +114,7 @@ const problemSchema = new Schema<ProblemInterface>(
 
 // the first argument does not name the collection
 const Problem = model<ProblemInterface>(
-  'This problem parameter does NOT matter',
+  '_problem',
   problemSchema
 );
 

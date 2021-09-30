@@ -26,7 +26,7 @@ const moduleSchema = new Schema(
 );
 
 const Module = model<ModuleInterface>(
-  'This module parameter does NOT matter',
+  'modules',
   moduleSchema
 );
 
