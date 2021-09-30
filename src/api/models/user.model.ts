@@ -1,16 +1,16 @@
 import { model, Schema, Document } from 'mongoose';
 interface User {
-  userName: string;
-  passWord: string;
+  username: string;
+  password: string;
 }
 
 const userSchema = new Schema<User>(
   {
-    userName: {
+    username: {
       type: String,
       required: true
     },
-    passWord: {
+    password: {
       type: String,
       required: true
     }
