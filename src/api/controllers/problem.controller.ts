@@ -8,15 +8,15 @@ const readStudentProblems = async (
   res: Response
 ): Promise<void> => {
   let studentProblems: any;
-  if (req.params.problemId) {
+  if (req.body.problemId) {
     studentProblems = await Problem.findOne({
       hidden: false,
-      _id: req.params.problemId
+      _id: req.body.problemId
     });
-  } else if (req.params.moduleId) {
+  } else if (req.body.moduleId) {
     const module = await Module.findOne({
       hidden: false,
-      _id: req.params.moduleId
+      _id: req.body.moduleId
     }).populate('problems');
     studentProblems = module.problems;
   } else {
@@ -33,14 +33,14 @@ const readAdminProblems = async (
   res: Response
 ): Promise<void> => {
   let adminProblems: any;
-  if (req.params.problemId) {
+  if (req.body.problemId) {
     //Find exact problem
     adminProblems = await Problem.findOne({
-      _id: req.params.problemId
+      _id: req.body.problemId
     });
-  } else if (req.params.moduleId) {
+  } else if (req.body.moduleId) {
     const module = await Module.findOne({
-      _id: req.params.moduleId
+      _id: req.body.moduleId
     }).populate('problems');
     adminProblems = module.problems;
   } else {
@@ -62,6 +62,7 @@ const createProblem = async (
     problemType: req.body.problemType,
     title: req.body.title,
     hidden: req.body.hidden,
+    templatePackage: req.body.templatePackage,
     language: req.body.language,
     dueDate: req.body.dueDate,
     code: req.body.code,
@@ -87,19 +88,20 @@ const updateProblem = async (req: Request, res: Response): Promise<void> => {
   }
 
   const problem: ProblemDocument = Problem.findById(
-    req.params.problemId
+    req.body.problemId
   ) as unknown as ProblemDocument;
-  problem.problemType = req.params.problemType;
-  problem.title = req.params.title;
-  problem.hidden = req.params.hidden as unknown as boolean;
-  problem.language = req.params.language;
-  problem.dueDate = new Date(req.params.dueDate);
-  problem.code = JSON.parse(req.params.code);
-  problem.fileExtension = req.params.fileExtension;
-  problem.testCases = JSON.parse(req.params.testCases);
-  problem.timeLimit = req.params.timeLimit as unknown as number;
-  problem.memoryLimit = req.params.memoryLimit as unknown as number;
-  problem.buildCommand = req.params.buildCommand;
+  problem.problemType = req.body.problemType;
+  problem.title = req.body.title;
+  problem.hidden = req.body.hidden as unknown as boolean;
+  (problem.templatePackage = req.body.templatePackage),
+    (problem.language = req.body.language);
+  problem.dueDate = new Date(req.body.dueDate);
+  problem.code = JSON.parse(req.body.code);
+  problem.fileExtension = req.body.fileExtension;
+  problem.testCases = JSON.parse(req.body.testCases);
+  problem.timeLimit = req.body.timeLimit as unknown as number;
+  problem.memoryLimit = req.body.memoryLimit as unknown as number;
+  problem.buildCommand = req.body.buildCommand;
 
   try {
     const savedProblem = await problem.save();
@@ -112,7 +114,7 @@ const updateProblem = async (req: Request, res: Response): Promise<void> => {
 const deleteProblem = async (req: Request, res: Response): Promise<void> => {
   try {
     await Problem.deleteOne({
-      id: req.params.problemId
+      id: req.body.problemId
     });
     res.status(200);
   } catch (error) {

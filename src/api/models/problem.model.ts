@@ -4,6 +4,7 @@ interface ProblemInterface {
   problemType: string;
   title: string;
   hidden: boolean;
+  templatePackage: string;
   language: string;
   dueDate: Date;
   code: {
@@ -18,7 +19,6 @@ interface ProblemInterface {
       expectedOutput: string;
       hint: string;
       visibility: number; // doesn't enforce visibility: 0, 1, or 2
-      templatePackage: string;
     }
   ];
   timeLimit: number;
@@ -40,6 +40,10 @@ const problemSchema = new Schema<ProblemInterface>(
     },
     hidden: {
       type: Boolean,
+      required: true
+    },
+    templatePackage: {
+      type: String,
       required: true
     },
     language: {
@@ -88,10 +92,6 @@ const problemSchema = new Schema<ProblemInterface>(
           type: Number,
           required: true,
           enum: [0, 1, 2]
-        },
-        templatePackage: {
-          type: String,
-          required: true
         }
       }
     ],
