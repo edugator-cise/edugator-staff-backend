@@ -14,6 +14,7 @@ const problemValidation = (data: any): ValidationResult => {
     problemType: string().required(),
     title: string().min(1).required(),
     hidden: boolean().required(),
+    templatePackage: string().min(1).required(),
     language: string().min(1).required(),
     dueDate: date().iso().required(),
     code: {
@@ -26,12 +27,12 @@ const problemValidation = (data: any): ValidationResult => {
       input: string().min(1).required(),
       expectedOutput: string().min(1).required(),
       hint: string().min(1).required(),
-      visibility: number().valid(0, 1, 2).required(),
-      templatePackage: string().min(1).required()
+      visibility: number().valid(0, 1, 2).required()
     }),
     timeLimit: number().required(),
     memoryLimit: number().required(),
-    buildCommand: string().min(1).required()
+    buildCommand: string().min(1).required(),
+    moduleName: string().min(1).required()
   });
 
   return schema.validate(data);
