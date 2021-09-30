@@ -35,7 +35,6 @@ export const getModulesWithProblems = async (
     modules = await Module.find().populate('problems');
     res.status(200).send(modules);
   } catch (err) {
-    console.log(err);
     res.status(400).type('json').send(err);
   }
 };
