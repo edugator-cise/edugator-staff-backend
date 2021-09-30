@@ -18,9 +18,9 @@ interface ProblemInterface {
       expectedOutput: string;
       hint: string;
       visibility: number; // doesn't enforce visibility: 0, 1, or 2
-      templatePackage: string;
     }
   ];
+  templatePackage: string;
   timeLimit: number;
   memoryLimit: number;
   buildCommand: string;
@@ -88,13 +88,13 @@ const problemSchema = new Schema<ProblemInterface>(
           type: Number,
           required: true,
           enum: [0, 1, 2]
-        },
-        templatePackage: {
-          type: String,
-          required: true
         }
       }
     ],
+    templatePackage: {
+      type: String,
+      required: true
+    },
     timeLimit: {
       type: Number,
       required: true

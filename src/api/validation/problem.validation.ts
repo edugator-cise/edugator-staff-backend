@@ -21,6 +21,7 @@ const problemValidation = (data: any): Joi.ValidationResult => {
       visibility: Joi.number().valid(0, 1, 2).required(),
       templatePackage: Joi.string().min(1).required()
     }),
+    templatePackage: Joi.string().min(1).required(),
     timeLimit: Joi.number().required(),
     memoryLimit: Joi.number().required(),
     buildCommand: Joi.string().min(1).required()
