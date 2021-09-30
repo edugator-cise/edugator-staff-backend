@@ -1,4 +1,4 @@
-import app from '../src/config/express';
+import { expressApp } from '../src/config/express';
 import * as request from 'supertest';
 
 describe('GET /', () => {
@@ -10,7 +10,7 @@ describe('GET /', () => {
     done();
   });
   it('checks / route gives 200 response', async () => {
-    const result: request.Response = await request(app).get('/');
+    const result: request.Response = await request(expressApp).get('/');
     expect(result.statusCode).toEqual(200);
   });
 });
