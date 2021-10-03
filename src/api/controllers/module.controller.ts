@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import Module from '../models/module.model';
+import { Module } from '../models/module.model';
 
 // const httpStatus = require('http-status');
 

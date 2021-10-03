@@ -1,10 +1,12 @@
-import { model, Schema, Types } from 'mongoose';
+import { model, Document, Schema, Types } from 'mongoose';
 
 interface ModuleInterface {
   name: string;
   number: number;
   problems: [Types.ObjectId];
 }
+
+interface ModuleDocument extends ModuleInterface, Document {}
 
 const moduleSchema = new Schema(
   {
@@ -30,4 +32,4 @@ const Module = model<ModuleInterface>(
   moduleSchema
 );
 
-export default Module;
+export { Module, ModuleDocument };

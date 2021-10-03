@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import Module from '../models/module.model';
+import { Module, ModuleDocument } from '../models/module.model';
 import { Problem, ProblemDocument } from '../models/problem.model';
 import problemValidation from '../validation/problem.validation';
 
@@ -58,7 +58,7 @@ const createProblem = async (
   if (error) {
     return res.status(400).send(error.details[0].message);
   }
-  const problem = new Problem({
+  const problem: ProblemDocument = new Problem({
     problemType: req.body.problemType,
     title: req.body.title,
     hidden: req.body.hidden,
@@ -71,11 +71,16 @@ const createProblem = async (
     timeLimit: req.body.timeLimit,
     memoryLimit: req.body.memoryLimit,
     buildCommand: req.body.buildCommand
-  });
+  }) as unknown as ProblemDocument;
 
   try {
     const savedProblem = await problem.save();
-    return res.send({ id: savedProblem._id });
+    const module: ModuleDocument = Module.findOne({
+      name: req.body.moduleName
+    }) as unknown as ModuleDocument;
+    module.problems.push(savedProblem._id);
+    const updatedModule = await module.save();
+    return res.send({ id: updatedModule._id });
   } catch (error) {
     return res.status(400).send(error);
   }

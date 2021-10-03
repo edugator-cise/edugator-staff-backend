@@ -18,9 +18,9 @@ const problemValidation = (data: any): ValidationResult => {
     language: string().min(1).required(),
     dueDate: date().iso().required(),
     code: {
-      header: string().min(1).required(),
-      body: string().min(1).required(),
-      footer: string().min(1).required()
+      header: string().required(),
+      body: string().required(),
+      footer: string().required()
     },
     fileExtension: string().valid('.java', '.cpp', '.h').min(1).required(),
     testCases: array().items({
