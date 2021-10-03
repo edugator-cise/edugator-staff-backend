@@ -6,22 +6,28 @@ interface ModuleInterface {
   problems: [Types.ObjectId];
 }
 
-const moduleSchema = new Schema({
-  name: {
-    type: String,
-    required: true
+const moduleSchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: true
+    },
+    number: {
+      type: Number,
+      required: true
+    },
+    problems: {
+      type: [Schema.Types.ObjectId],
+      ref: '_problem',
+      required: true
+    }
   },
-  number: {
-    type: Number,
-    required: true
-  },
-  problems: {
-    type: [Schema.Types.ObjectId],
-    ref: 'Problem',
-    required: true
-  }
-});
+  { collection: 'modules' }
+);
 
-const Module = model<ModuleInterface>('moduleModel', moduleSchema);
+const Module = model<ModuleInterface>(
+  'This module parameter does NOT matter',
+  moduleSchema
+);
 
 export default Module;
