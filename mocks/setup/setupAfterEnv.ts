@@ -1,5 +1,6 @@
 import * as databaseHelper from '../../src/config/database';
-process.env.NODE_ENV = 'test';
+
+process.env.NODE_ENV = "test";
 //eslint-disable-next-line
 beforeAll(() => {
   return databaseHelper.connect();
