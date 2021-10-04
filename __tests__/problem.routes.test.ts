@@ -1,6 +1,6 @@
 import { expressApp } from '../src/config/express';
 import * as request from 'supertest';
-import { createSampleProblem } from '../mocks/problems';
+//import { createSampleProblem } from '../mocks/problems';
 describe('GET /', () => {
   beforeEach((done: jest.DoneCallback) => {
     done();
