@@ -75,9 +75,12 @@ const createProblem = async (
 
   try {
     const savedProblem = await problem.save();
-    const module: ModuleDocument = Module.findOne({
+    const module: ModuleDocument = await Module.findOne({
       name: req.body.moduleName
-    }) as unknown as ModuleDocument;
+    });
+    if (!module) {
+      return res.status(400).send('Module not found!');
+    }
     module.problems.push(savedProblem._id);
     const updatedModule = await module.save();
     return res.send({ id: updatedModule._id });
@@ -98,8 +101,8 @@ const updateProblem = async (req: Request, res: Response): Promise<void> => {
   problem.problemType = req.body.problemType;
   problem.title = req.body.title;
   problem.hidden = req.body.hidden as unknown as boolean;
-  (problem.templatePackage = req.body.templatePackage),
-    (problem.language = req.body.language);
+  problem.templatePackage = req.body.templatePackage;
+  problem.language = req.body.language;
   problem.dueDate = new Date(req.body.dueDate);
   problem.code = JSON.parse(req.body.code);
   problem.fileExtension = req.body.fileExtension;
