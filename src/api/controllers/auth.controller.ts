@@ -7,15 +7,15 @@ import { jwtSecret, jwtExpirationInterval } from '../../config/vars';
 const authenticateUser = async (req: Request, res: Response): Promise<void> => {
   try {
     //TODO use hashing like bycrpt
-    const { username, password } = req.query;
+
     const payload = {
-      username: username as string,
-      passnord: password as string
+      username: req.body.username,
+      password: req.body.password
     };
     const user: IUser = await UserModel.findOne(payload);
 
     //TODO don't user exact password
-    if (user.password !== password) {
+    if (user.password !== req.body.password) {
       throw new Error('Unauthorized');
     }
 
