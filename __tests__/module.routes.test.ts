@@ -2,13 +2,12 @@ import { expressApp } from '../src/config/express';
 import * as request from 'supertest';
 import { UserModel } from '../src/api/models/user.model';
 
-
 import { createSampleModule } from '../mocks/module';
 describe('GET /', () => {
-  beforeEach( async () => {
+  beforeEach(async () => {
     await UserModel.create({
-        username: "dhruv2000patel@gmail.com",
-        password: "password"
+      username: 'dhruv2000patel@gmail.com',
+      password: 'password'
     });
   });
 
@@ -16,46 +15,57 @@ describe('GET /', () => {
     done();
   });
 
-  //name it token
-    var auth: string = "";
-    beforeEach(grabToken());
+  // Auth token for the routes
+  let token = '';
+  // This grabs the authentication token for each test
+  beforeEach(grabToken());
 
+  function grabToken() {
+    return function (done) {
+      request(expressApp)
+        .get(
+          '/v1/user/login?username=dhruv2000patel@gmail.com&password=password'
+        )
+        .send()
+        .expect(200)
+        .end(onResponse);
 
-//   it('checks /module route gives 400 response on empty body', async () => {
-//     const result: request.Response = await request(expressApp).post(
-//       '/v1/module'
-//     );
-//     expect(result.statusCode).toEqual(400);
-//   });
-  it('creates a module', async () => {
-
-          const sampleModule = createSampleModule();
-          const result = await request(expressApp)
-          .post('/v1/module')
-          .set('Authorization', 'bearer ' + auth)
-          .send(sampleModule);
-          //   console.log(result);
-          expect(result.statusCode).toEqual(200);
-        });
-        
-        function grabToken() {
-            return function(done) {
-                request(expressApp)
-                    .get('/v1/user/login?username=dhruv2000patel@gmail.com&password=password')
-                    .send()
-                    .expect((res) => {
-                        // console.log(res.body)
-                        auth = res.body.token
-                    })
-                    .expect(200)
-                    .end(onResponse);
-
-        function onResponse(_err, res) {
-            auth = res.body.token;
-            return done();
-        }
-
+      function onResponse(_err, res) {
+        token = res.body.token;
+        return done();
+      }
     };
-}
+  }
 
+  // POST Routes for Module
+  it('creates a module', async () => {
+    const sampleModule = createSampleModule();
+    const result = await request(expressApp)
+      .post('/v1/module')
+      //Sets the token that has been called to get assigned before the test
+      .set('Authorization', 'bearer ' + token)
+      .send(sampleModule);
+    //   console.log(result);
+    expect(result.statusCode).toEqual(200);
+  });
+
+  it('checks /module route gives 400 response on empty body', async () => {
+    const result: request.Response = await request(expressApp)
+      .post('/v1/module')
+      //Sets the token that has been called to get assigned before the test
+      .set('Authorization', 'bearer ' + token)
+      .send();
+    //   console.log(result);
+    expect(result.statusCode).toEqual(400);
+  });
+
+  it('checks /module route gives 401 response on no authorization token', async () => {
+    const sampleModule = createSampleModule();
+    const result: request.Response = await request(expressApp)
+      .post('/v1/module')
+      //Sets the token that has been called to get assigned before the test
+      .send(sampleModule);
+    //   console.log(result);
+    expect(result.statusCode).toEqual(401);
+  });
 });
