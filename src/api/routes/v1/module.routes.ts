@@ -4,7 +4,9 @@ import { authenticateJWT } from '../../middlewares/auth';
 const moduleRouter = express.Router();
 
 // Student routes
-moduleRouter.route('/WithProblems').get(modules.getModulesWithProblems);
+moduleRouter
+  .route('/WithProblems')
+  .get(authenticateJWT, modules.getModulesWithProblems);
 moduleRouter
   .route('/?')
   .get(modules.getModules)
