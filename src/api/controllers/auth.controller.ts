@@ -12,11 +12,8 @@ const authenticateUser = async (req: Request, res: Response): Promise<void> => {
       username: req.body.username,
       password: req.body.password
     };
-    // const user1 = await UserModel.find();
-    // console.log(user1);
 
     const user: IUser = await UserModel.findOne(payload);
-    // console.log(user);
     //TODO don't user exact password
     if (user.password !== req.body.password) {
       throw new Error('Unauthorized');

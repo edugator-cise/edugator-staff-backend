@@ -6,7 +6,7 @@ const objectIdValidator = JoiObjectId(Joi);
 const moduleValidation = (data: any): Joi.ValidationResult => {
   const schema = Joi.object({
     name: Joi.string().min(1).required(),
-    number: Joi.number().min(1).required(),
+    number: Joi.number().integer().min(1).required(),
     problem: Joi.array().items(objectIdValidator()).required()
   });
 

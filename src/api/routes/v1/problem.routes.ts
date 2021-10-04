@@ -21,7 +21,7 @@ studentProblemRouter
 adminProblemRouter
   .route('/?')
   .get(authenticateJWT, readAdminProblems)
-  .post(createProblem);
+  .post(authenticateJWT, createProblem);
 adminProblemRouter
   .route('/:problemId')
   .get(authenticateJWT, readAdminProblems)

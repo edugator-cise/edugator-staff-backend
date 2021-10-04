@@ -23,10 +23,11 @@ describe('GET /', () => {
   function grabToken() {
     return function (done) {
       request(expressApp)
-        .get(
-          '/v1/user/login?username=dhruv2000patel@gmail.com&password=password'
-        )
-        .send()
+        .post('/v1/user/login')
+        .send({
+          username: 'dhruv2000patel@gmail.com',
+          password: 'password'
+        })
         .expect(200)
         .end(onResponse);
 
