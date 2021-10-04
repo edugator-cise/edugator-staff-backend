@@ -7,7 +7,7 @@ import { jwtSecret, jwtExpirationInterval } from '../../config/vars';
 const authenticateUser = async (req: Request, res: Response): Promise<void> => {
   try {
     //TODO use hashing like bycrpt
-    // const { username, password } = req.query;
+
     const payload = {
       username: req.body.username,
       password: req.body.password
