@@ -1,9 +1,10 @@
-import { model, Schema, Types } from 'mongoose';
+import { model, Schema, Types, PopulatedDoc } from 'mongoose';
+import { ProblemInterface } from './problem.model';
 
 interface ModuleInterface {
   name: string;
   number: number;
-  problems: [Types.ObjectId];
+  problems: PopulatedDoc<Types.ObjectId & ProblemInterface>[];
 }
 
 const moduleSchema = new Schema(
@@ -28,3 +29,4 @@ const moduleSchema = new Schema(
 const Module = model<ModuleInterface>('modules', moduleSchema);
 
 export default Module;
+export { ModuleInterface };

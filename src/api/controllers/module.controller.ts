@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import Module from '../models/module.model';
-
-// const httpStatus = require('http-status');
+// import {ModuleInterface} from "../models/module.model"
 
 export const getModules = async (
   req: Request,
@@ -22,6 +21,39 @@ export const getModules = async (
     res.status(200).send(modules);
   } catch (err) {
     res.status(400).type('json').send(err);
+  }
+};
+
+export const getModulesWithNonHiddenProblemsAndTestCases = async (
+  _req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const modules = await Module.find().populate({
+      path: 'problems',
+      match: { hidden: false }
+    });
+    const modulesWithNonHiddenTestCases = modules.map((val) => {
+      const currentModule = {
+        _id: val._id,
+        name: val.name,
+        number: val.number
+      };
+      const problemsWithoutHiddenTestCases = val.problems.filter((problem) => {
+        const nonHiddenTestCases = problem.testCases.filter(
+          (test_case) => test_case.visibility !== 0
+        );
+        return {
+          ...problem,
+          testCases: nonHiddenTestCases
+        };
+      });
+      currentModule['problems'] = problemsWithoutHiddenTestCases;
+      return currentModule;
+    });
+    res.status(200).send(modulesWithNonHiddenTestCases);
+  } catch (err) {
+    res.status(400).send(err);
   }
 };
 

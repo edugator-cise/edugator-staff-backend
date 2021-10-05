@@ -115,4 +115,4 @@ const problemSchema = new Schema<ProblemInterface>(
 // the first argument does not name the collection
 const Problem = model<ProblemInterface>('_problem', problemSchema);
 
-export { Problem, ProblemDocument };
+export { Problem, ProblemDocument, ProblemInterface };

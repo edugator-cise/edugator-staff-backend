@@ -12,7 +12,9 @@ on:
     branches:
       - main
       - release
-
+  push:
+    tags:
+      - 'v*'
 jobs:
   test:
     runs-on: ubuntu-latest
