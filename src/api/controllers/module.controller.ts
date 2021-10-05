@@ -39,16 +39,12 @@ export const getModulesWithNonHiddenProblemsAndTestCases = async (
         name: val.name,
         number: val.number
       };
-      const problemsWithoutHiddenTestCases = val.problems.filter((problem) => {
-        const nonHiddenTestCases = problem.testCases.filter(
-          (test_case) => test_case.visibility !== 0
-        );
-        return {
-          ...problem,
-          testCases: nonHiddenTestCases
-        };
-      });
-      currentModule['problems'] = problemsWithoutHiddenTestCases;
+      const problemsWithoutTestCases = val.problems.map((problem) => {
+        const problemToReturn = problem
+        problemToReturn["testCases"] = undefined
+        return problemToReturn
+      })
+      currentModule['problems'] = problemsWithoutTestCases;
       return currentModule;
     });
     res.status(200).send(modulesWithNonHiddenTestCases);
