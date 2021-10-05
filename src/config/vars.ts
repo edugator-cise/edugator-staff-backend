@@ -9,6 +9,8 @@ const judgeURI =
   process.env.NODE_ENV === 'production'
     ? process.env.PROD_JUDGE_URI
     : process.env.BETA_JUDGE_URI;
+const EDUGATOR_API_USER = process.env.EDUGATOR_API_USER
+const EDUGATOR_API_PASS = process.env.EDUGATOR_API_PASS
 export {
   env,
   port,
@@ -17,5 +19,7 @@ export {
   jwtSecret,
   BUCKET_NAME,
   access_key_id,
-  secret_access_key
+  secret_access_key,
+  EDUGATOR_API_USER,
+  EDUGATOR_API_PASS
 };
