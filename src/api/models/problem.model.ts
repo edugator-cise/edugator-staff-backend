@@ -11,6 +11,7 @@ interface ProblemInterface {
     body: string;
     footer: string;
   };
+  statement: string;
   fileExtension: string; //Interface doesn't enforce enum
   testCases: [
     {
@@ -18,9 +19,9 @@ interface ProblemInterface {
       expectedOutput: string;
       hint: string;
       visibility: number; // doesn't enforce visibility: 0, 1, or 2
-      templatePackage: string;
     }
   ];
+  templatePackage: string;
   timeLimit: number;
   memoryLimit: number;
   buildCommand: string;
@@ -35,6 +36,10 @@ const problemSchema = new Schema<ProblemInterface>(
       required: true
     },
     title: {
+      type: String,
+      required: true
+    },
+    statement: {
       type: String,
       required: true
     },
@@ -69,6 +74,10 @@ const problemSchema = new Schema<ProblemInterface>(
       required: true,
       enum: ['.java', '.cpp', '.h'] //I don't know what else could go in here? Maybe ".cxx"?
     },
+    templatePackage: {
+      type: String,
+      required: true
+    },
     testCases: [
       {
         input: {
@@ -88,24 +97,17 @@ const problemSchema = new Schema<ProblemInterface>(
           type: Number,
           required: true,
           enum: [0, 1, 2]
-        },
-        templatePackage: {
-          type: String,
-          required: true
         }
       }
     ],
     timeLimit: {
-      type: Number,
-      required: true
+      type: Number
     },
     memoryLimit: {
-      type: Number,
-      required: true
+      type: Number
     },
     buildCommand: {
-      type: String,
-      required: true
+      type: String
     }
   },
   //This is the name of the collection
