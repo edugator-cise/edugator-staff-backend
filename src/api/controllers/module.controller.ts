@@ -1,25 +1,38 @@
 import { Request, Response } from 'express';
-import Module from '../models/module.model';
-
-// const httpStatus = require('http-status');
+import { Module, ModuleDocument } from '../models/module.model';
+import { Problem } from '../models/problem.model';
 
 export const getModules = async (
-  req: Request,
+  _req: Request,
   res: Response
 ): Promise<void> => {
   let modules: any;
   try {
+    //Find All modules
+    modules = await Module.find().select('-problems');
+    res.status(200).send(modules);
+  } catch (err) {
+    res.status(400).type('json').send(err);
+  }
+};
+
+export const getModuleByID = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  let modules: ModuleDocument;
+  try {
     //Find exact problem if the moduleId is given in the params
     //The .select command excludes the problems field from the response
     if (req.params.moduleId) {
+      // Find One Module
       modules = await Module.findOne({
         _id: req.params.moduleId
       }).select('-problems');
+      res.status(200).send(modules);
     } else {
-      //Find All modules
-      modules = await Module.find().select('-problems');
+      res.status(400).send('This route requires a query param of an moduleId');
     }
-    res.status(200).send(modules);
   } catch (err) {
     res.status(400).type('json').send(err);
   }
@@ -85,17 +98,30 @@ export const deleteModule = async (
   try {
     if (req.params.moduleId) {
       const module = await Module.findOne({
-        hidden: false,
         _id: req.params.moduleId
       });
+
+      //Deletes the problems in the problems array from the problems collection
+      try {
+        for (let i = 0; i < module.problems.length; i++) {
+          await Problem.findOneAndDelete({
+            _id: module.problems[i]
+          });
+        }
+      } catch (err) {
+        res
+          .status(400)
+          .type('json')
+          .send(err);
+      }
       await module.delete();
-      // res.send(module.toJSON());
+      
       if (module != null) {
         res
           .status(200)
           .type('json')
           .send(
-            'Module with id: ' + req.params.moduleId + ' successfully deleted'
+            { message: 'Module successfully deleted' }
           );
       } else {
         res

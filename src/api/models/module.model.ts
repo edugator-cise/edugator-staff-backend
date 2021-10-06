@@ -1,4 +1,4 @@
-import { model, Schema, Types } from 'mongoose';
+import { model, Schema, Types, Document } from 'mongoose';
 
 interface ModuleInterface {
   name: string;
@@ -25,6 +25,8 @@ const moduleSchema = new Schema(
   { collection: 'modules' }
 );
 
+interface ModuleDocument extends ModuleInterface, Document {}
+
 const Module = model<ModuleInterface>('modules', moduleSchema);
 
-export default Module;
+export { Module, ModuleDocument };
