@@ -1,7 +1,7 @@
 //eslint-disable-next-line
 const createSampleProblem = () => {
   return {
-    problemType: 'hi',
+    statement: 'sample problem statement',
     title: 'new title',
     hidden: false,
     language: 'C++',
@@ -17,14 +17,19 @@ const createSampleProblem = () => {
         input: '123',
         expectedOutput: '12345',
         hint: 'n/a',
-        visibility: 1,
-        templatePackage: 'www.google.com'
+        visibility: 1
       }
     ],
+    templatePackage: 'string package',
     timeLimit: 1000,
     memoryLimit: 10000,
     buildCommand: 'N/A'
   };
 };
-
-export { createSampleProblem };
+const createSamplePayload = () => {
+  return {
+    moduleId: '123456',
+    ...createSampleProblem()
+  };
+};
+export { createSampleProblem, createSamplePayload };
