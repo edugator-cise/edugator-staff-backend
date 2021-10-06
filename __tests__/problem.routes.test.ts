@@ -2,7 +2,7 @@ import { expressApp } from '../src/config/express';
 import * as request from 'supertest';
 import { UserModel } from '../src/api/models/user.model';
 import Module from '../src/api/models/module.model';
-import { createSampleProblem } from '../mocks/problems';
+import { createSamplePayload } from '../mocks/problems';
 
 describe('GET /', () => {
   beforeEach(async () => {
@@ -52,14 +52,14 @@ describe('GET /', () => {
     expect(result.statusCode).toEqual(400);
   });
   it('checks /admin/problem route gives 401 response on unauthorized requests', async () => {
-    const sampleProblem = createSampleProblem();
+    const sampleProblem = createSamplePayload();
     const result: request.Response = await request(expressApp)
       .post('/v1/admin/problem')
       .send(sampleProblem);
     expect(result.statusCode).toEqual(401);
   });
   it('creates a problem and gets a 200 response', async () => {
-    const sampleProblem = createSampleProblem();
+    const sampleProblem = createSamplePayload();
     const result = await request(expressApp)
       .post('/v1/admin/problem')
       .set('Authorization', 'bearer ' + token)

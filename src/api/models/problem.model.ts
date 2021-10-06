@@ -1,7 +1,7 @@
 import { model, Document, Schema } from 'mongoose';
 
 interface ProblemInterface {
-  problemType: string;
+  statement: string;
   title: string;
   hidden: boolean;
   language: string;
@@ -18,9 +18,9 @@ interface ProblemInterface {
       expectedOutput: string;
       hint: string;
       visibility: number; // doesn't enforce visibility: 0, 1, or 2
-      templatePackage: string;
     }
   ];
+  templatePackage: string;
   timeLimit: number;
   memoryLimit: number;
   buildCommand: string;
@@ -30,7 +30,7 @@ interface ProblemDocument extends ProblemInterface, Document {}
 
 const problemSchema = new Schema<ProblemInterface>(
   {
-    problemType: {
+    statement: {
       type: String,
       required: true
     },
@@ -52,16 +52,13 @@ const problemSchema = new Schema<ProblemInterface>(
     },
     code: {
       header: {
-        type: String,
-        required: true
+        type: String
       },
       body: {
-        type: String,
-        required: true
+        type: String
       },
       footer: {
-        type: String,
-        required: true
+        type: String
       }
     },
     fileExtension: {
@@ -88,24 +85,21 @@ const problemSchema = new Schema<ProblemInterface>(
           type: Number,
           required: true,
           enum: [0, 1, 2]
-        },
-        templatePackage: {
-          type: String,
-          required: true
         }
       }
     ],
-    timeLimit: {
-      type: Number,
-      required: true
-    },
-    memoryLimit: {
-      type: Number,
-      required: true
-    },
-    buildCommand: {
+    templatePackage: {
       type: String,
       required: true
+    },
+    timeLimit: {
+      type: Number
+    },
+    memoryLimit: {
+      type: Number
+    },
+    buildCommand: {
+      type: String
     }
   },
   //This is the name of the collection

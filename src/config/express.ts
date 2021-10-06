@@ -4,7 +4,6 @@ import routes from '../api/routes/v1';
 import * as cors from 'cors';
 import * as passport from 'passport';
 import { jwtStrategy } from './passport';
-import { notFound, converter, handler } from '../api/errors/error';
 import * as database from './database';
 class Server {
   public app: express.Application;
@@ -14,7 +13,6 @@ class Server {
     this.connectDatabase();
     this.config();
     this.routes();
-    this.errorMiddleWares();
   }
   public routes(): void {
     this.app.use('/v1', routes);
@@ -30,11 +28,6 @@ class Server {
     passport.use('jwt', jwtStrategy);
   }
 
-  public errorMiddleWares(): void {
-    this.app.use(converter);
-    this.app.use(notFound);
-    this.app.use(handler);
-  }
   private connectDatabase(): void {
     database.connect();
   }
