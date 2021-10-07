@@ -58,16 +58,16 @@ const createProblem = async (
   if (error) {
     return res.status(400).send(error.details[0].message);
   }
-  const problem: ProblemDocument = new Problem({
-    problemType: req.body.problemType,
+  const problem = new Problem({
+    statement: req.body.statement,
     title: req.body.title,
     hidden: req.body.hidden,
-    templatePackage: req.body.templatePackage,
     language: req.body.language,
     dueDate: req.body.dueDate,
     code: req.body.code,
     fileExtension: req.body.fileExtension,
     testCases: req.body.testCases,
+    templatePackage: req.body.templatePackage,
     timeLimit: req.body.timeLimit,
     memoryLimit: req.body.memoryLimit,
     buildCommand: req.body.buildCommand
@@ -76,14 +76,14 @@ const createProblem = async (
   try {
     const savedProblem = await problem.save();
     const module: ModuleDocument = await Module.findOne({
-      name: req.body.moduleName
+      _id: req.body.moduleId
     });
     if (!module) {
       return res.status(400).send('Module not found!');
     }
     module.problems.push(savedProblem._id);
     const updatedModule = await module.save();
-    return res.send({ id: updatedModule._id });
+    return res.send({ _id: updatedModule._id });
   } catch (error) {
     return res.status(400).send(error);
   }
@@ -98,22 +98,22 @@ const updateProblem = async (req: Request, res: Response): Promise<void> => {
   const problem: ProblemDocument = Problem.findById(
     req.body.problemId
   ) as unknown as ProblemDocument;
-  problem.problemType = req.body.problemType;
-  problem.title = req.body.title;
-  problem.hidden = req.body.hidden as unknown as boolean;
+  problem.statement = req.params.statement;
+  problem.title = req.params.title;
+  problem.hidden = req.params.hidden as unknown as boolean;
+  problem.language = req.params.language;
+  problem.dueDate = new Date(req.params.dueDate);
+  problem.code = JSON.parse(req.params.code);
+  problem.fileExtension = req.params.fileExtension;
+  problem.testCases = JSON.parse(req.params.testCases);
   problem.templatePackage = req.body.templatePackage;
-  problem.language = req.body.language;
-  problem.dueDate = new Date(req.body.dueDate);
-  problem.code = JSON.parse(req.body.code);
-  problem.fileExtension = req.body.fileExtension;
-  problem.testCases = JSON.parse(req.body.testCases);
-  problem.timeLimit = req.body.timeLimit as unknown as number;
-  problem.memoryLimit = req.body.memoryLimit as unknown as number;
-  problem.buildCommand = req.body.buildCommand;
+  problem.timeLimit = req.params.timeLimit as unknown as number;
+  problem.memoryLimit = req.params.memoryLimit as unknown as number;
+  problem.buildCommand = req.params.buildCommand;
 
   try {
     const savedProblem = await problem.save();
-    res.send({ id: savedProblem._id });
+    res.send({ _id: savedProblem._id });
   } catch (error) {
     res.status(400).send(error);
   }
@@ -121,10 +121,11 @@ const updateProblem = async (req: Request, res: Response): Promise<void> => {
 
 const deleteProblem = async (req: Request, res: Response): Promise<void> => {
   try {
-    await Problem.deleteOne({
-      id: req.body.problemId
+    const problem = await Problem.findOne({
+      _id: req.params.problemId
     });
-    res.status(200);
+    await problem.delete();
+    res.sendStatus(200);
   } catch (error) {
     res.status(400).send(error);
   }

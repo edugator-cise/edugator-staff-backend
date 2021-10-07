@@ -11,16 +11,16 @@ import {
 //eslint-disable-next-line
 const problemValidation = (data: any): ValidationResult => {
   const schema = object({
-    problemType: string().required(),
+    moduleId: string().required(),
+    statement: string().required(),
     title: string().min(1).required(),
     hidden: boolean().required(),
-    templatePackage: string().min(1).required(),
     language: string().min(1).required(),
     dueDate: date().iso().required(),
     code: {
-      header: string().required(),
-      body: string().required(),
-      footer: string().required()
+      header: string().allow('').required(),
+      body: string().allow('').required(),
+      footer: string().allow('').required()
     },
     fileExtension: string().valid('.java', '.cpp', '.h').min(1).required(),
     testCases: array().items({
@@ -29,10 +29,10 @@ const problemValidation = (data: any): ValidationResult => {
       hint: string().min(1).required(),
       visibility: number().valid(0, 1, 2).required()
     }),
-    timeLimit: number().required(),
-    memoryLimit: number().required(),
-    buildCommand: string().min(1).required(),
-    moduleName: string().min(1).required()
+    templatePackage: string().uri().min(1).required(),
+    timeLimit: number(),
+    memoryLimit: number(),
+    buildCommand: string()
   });
 
   return schema.validate(data);

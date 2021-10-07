@@ -1,10 +1,9 @@
 //eslint-disable-next-line
 const createSampleProblem = () => {
   return {
-    problemType: 'hi',
+    statement: 'sample problem statement',
     title: 'new title',
     hidden: false,
-    templatePackage: 'www.google.com',
     language: 'C++',
     dueDate: '2011-10-05',
     code: {
@@ -21,11 +20,16 @@ const createSampleProblem = () => {
         visibility: 1
       }
     ],
+    templatePackage: 'https://www.google.com',
     timeLimit: 1000,
     memoryLimit: 10000,
-    buildCommand: 'N/A',
-    moduleName: 'Stacks/Lists/Queues'
+    buildCommand: 'N/A'
   };
 };
-
-export { createSampleProblem };
+const createSamplePayload = (_moduleId = '53b1c579bdf3de74f76bdac9') => {
+  return {
+    moduleId: _moduleId,
+    ...createSampleProblem()
+  };
+};
+export { createSampleProblem, createSamplePayload };

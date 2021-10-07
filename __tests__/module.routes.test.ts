@@ -1,23 +1,14 @@
 import { expressApp } from '../src/config/express';
 import * as request from 'supertest';
 import { UserModel } from '../src/api/models/user.model';
-import { Module } from '../src/api/models/module.model';
-import { createSamplePayload } from '../mocks/problems';
 
+import { createSampleModule } from '../mocks/module';
 describe('GET /', () => {
   beforeEach(async () => {
     await UserModel.create({
       username: 'dhruv2000patel@gmail.com',
       password: 'password'
     });
-
-    const module = await Module.create({
-      name: 'Stacks/Lists/Queues',
-      number: 1,
-      problems: []
-    });
-
-    moduleId = module._id;
   });
 
   afterEach((done: jest.DoneCallback) => {
@@ -26,13 +17,11 @@ describe('GET /', () => {
 
   // Auth token for the routes
   let token = '';
-  // Saved id for the module
-  let moduleId = '';
   // This grabs the authentication token for each test
   beforeEach(grabToken());
 
   function grabToken() {
-    return function (done: () => any) {
+    return function (done) {
       request(expressApp)
         .post('/v1/user/login')
         .send({
@@ -49,25 +38,35 @@ describe('GET /', () => {
     };
   }
 
-  it('checks /admin/problem route gives 400 response on empty body', async () => {
+  // POST Routes for Module
+  it('creates a module', async () => {
+    const sampleModule = createSampleModule();
+    const result = await request(expressApp)
+      .post('/v1/module')
+      //Sets the token that has been called to get assigned before the test
+      .set('Authorization', 'bearer ' + token)
+      .send(sampleModule);
+    //   console.log(result);
+    expect(result.statusCode).toEqual(200);
+  });
+
+  it('checks /module route gives 400 response on empty body', async () => {
     const result: request.Response = await request(expressApp)
-      .post('/v1/admin/problem')
-      .set('Authorization', 'bearer ' + token);
+      .post('/v1/module')
+      //Sets the token that has been called to get assigned before the test
+      .set('Authorization', 'bearer ' + token)
+      .send();
+    //   console.log(result);
     expect(result.statusCode).toEqual(400);
   });
-  it('checks /admin/problem route gives 401 response on unauthorized requests', async () => {
-    const sampleProblem = createSamplePayload(moduleId);
+
+  it('checks /module route gives 401 response on no authorization token', async () => {
+    const sampleModule = createSampleModule();
     const result: request.Response = await request(expressApp)
-      .post('/v1/admin/problem')
-      .send(sampleProblem);
+      .post('/v1/module')
+      //Sets the token that has been called to get assigned before the test
+      .send(sampleModule);
+    //   console.log(result);
     expect(result.statusCode).toEqual(401);
-  });
-  it('creates a problem and gets a 200 response', async () => {
-    const sampleProblem = createSamplePayload(moduleId);
-    const result = await request(expressApp)
-      .post('/v1/admin/problem')
-      .set('Authorization', 'bearer ' + token)
-      .send(sampleProblem);
-    expect(result.statusCode).toEqual(200);
   });
 });

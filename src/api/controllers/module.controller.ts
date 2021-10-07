@@ -26,20 +26,13 @@ export const getModules = async (
 };
 
 export const getModulesWithProblems = async (
-  req: Request,
+  _req: Request,
   res: Response
 ): Promise<void> => {
   let modules: any;
   try {
-    if (req.params.moduleId) {
-      res
-        .status(400)
-        .type('json')
-        .send('This route should not be called with a moduleId');
-    } else {
-      //Find All modules
-      modules = await Module.find().populate('problems');
-    }
+    //Find All modules
+    modules = await Module.find().populate('problems');
     res.status(200).send(modules);
   } catch (err) {
     res.status(400).type('json').send(err);

@@ -27,9 +27,6 @@ const moduleSchema = new Schema(
   { collection: 'modules' }
 );
 
-const Module = model<ModuleInterface>(
-  'This module parameter does NOT matter',
-  moduleSchema
-);
+const Module = model<ModuleInterface>('modules', moduleSchema);
 
 export { Module, ModuleDocument };
