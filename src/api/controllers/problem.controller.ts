@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import Module from '../models/module.model';
-import { Problem, ProblemDocument } from '../models/problem.model';
+import { Problem } from '../models/problem.model';
+import { ProblemDocument } from '../models/problem.model';
 import problemValidation from '../validation/problem.validation';
 
 const readStudentProblems = async (
@@ -59,7 +60,7 @@ const createProblem = async (
     return res.status(400).send(error.details[0].message);
   }
   const problem = new Problem({
-    problemType: req.body.problemType,
+    statement: req.body.statement,
     title: req.body.title,
     hidden: req.body.hidden,
     language: req.body.language,
@@ -67,6 +68,7 @@ const createProblem = async (
     code: req.body.code,
     fileExtension: req.body.fileExtension,
     testCases: req.body.testCases,
+    templatePackage: req.body.templatePackage,
     timeLimit: req.body.timeLimit,
     memoryLimit: req.body.memoryLimit,
     buildCommand: req.body.buildCommand
@@ -89,7 +91,7 @@ const updateProblem = async (req: Request, res: Response): Promise<void> => {
   const problem: ProblemDocument = Problem.findById(
     req.params.problemId
   ) as unknown as ProblemDocument;
-  problem.problemType = req.params.problemType;
+  problem.statement = req.params.statement;
   problem.title = req.params.title;
   problem.hidden = req.params.hidden as unknown as boolean;
   problem.language = req.params.language;
@@ -97,6 +99,7 @@ const updateProblem = async (req: Request, res: Response): Promise<void> => {
   problem.code = JSON.parse(req.params.code);
   problem.fileExtension = req.params.fileExtension;
   problem.testCases = JSON.parse(req.params.testCases);
+  problem.templatePackage = req.body.templatePackage;
   problem.timeLimit = req.params.timeLimit as unknown as number;
   problem.memoryLimit = req.params.memoryLimit as unknown as number;
   problem.buildCommand = req.params.buildCommand;
@@ -111,10 +114,11 @@ const updateProblem = async (req: Request, res: Response): Promise<void> => {
 
 const deleteProblem = async (req: Request, res: Response): Promise<void> => {
   try {
-    await Problem.deleteOne({
-      id: req.params.problemId
+    const problem = await Problem.findOne({
+      _id: req.params.problemId
     });
-    res.status(200);
+    await problem.delete();
+    res.sendStatus(200);
   } catch (error) {
     res.status(400).send(error);
   }

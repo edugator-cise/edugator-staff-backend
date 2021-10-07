@@ -1,7 +1,7 @@
 import { model, Document, Schema } from 'mongoose';
 
 interface ProblemInterface {
-  problemType: string;
+  statement: string;
   title: string;
   hidden: boolean;
   language: string;
@@ -11,7 +11,6 @@ interface ProblemInterface {
     body: string;
     footer: string;
   };
-  statement: string;
   fileExtension: string; //Interface doesn't enforce enum
   testCases: [
     {
@@ -31,15 +30,11 @@ interface ProblemDocument extends ProblemInterface, Document {}
 
 const problemSchema = new Schema<ProblemInterface>(
   {
-    problemType: {
+    statement: {
       type: String,
       required: true
     },
     title: {
-      type: String,
-      required: true
-    },
-    statement: {
       type: String,
       required: true
     },
@@ -57,16 +52,13 @@ const problemSchema = new Schema<ProblemInterface>(
     },
     code: {
       header: {
-        type: String,
-        required: true
+        type: String
       },
       body: {
-        type: String,
-        required: true
+        type: String
       },
       footer: {
-        type: String,
-        required: true
+        type: String
       }
     },
     fileExtension: {
