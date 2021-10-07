@@ -3,7 +3,7 @@ import * as request from 'supertest';
 import { UserModel } from '../src/api/models/user.model';
 
 import { Module } from '../src/api/models/module.model';
-import { createSampleProblem } from '../mocks/problems';
+import { createSamplePayload } from '../mocks/problems';
 
 describe('GET /', () => {
   beforeEach(async () => {
