@@ -70,4 +70,56 @@ describe('GET /', () => {
       .send(sampleProblem);
     expect(result.statusCode).toEqual(200);
   });
+  it('creates two problems, GETs /admin/problem and /student/problem', async () => {
+    const sampleProblem = createSamplePayload(moduleId);
+    const sampleHiddenProblem = createSamplePayload(moduleId);
+    sampleHiddenProblem.hidden = true;
+
+    // Add problems to the database
+    const postResult = await request(expressApp)
+      .post('/v1/admin/problem')
+      .set('Authorization', 'bearer ' + token)
+      .send(sampleProblem);
+    expect(postResult.statusCode).toEqual(200);
+
+    const postHiddenResult = await request(expressApp)
+      .post('/v1/admin/problem')
+      .set('Authorization', 'bearer ' + token)
+      .send(sampleHiddenProblem);
+    expect(postHiddenResult.statusCode).toEqual(200);
+
+    // Get all problems from db
+    const getStudentResult = await request(expressApp)
+      .get('/v1/student/problem')
+      .set('Authorization', 'bearer ' + token);
+    expect(getStudentResult.statusCode).toEqual(200);
+    expect(getStudentResult.body).toHaveLength(1);
+
+    const getAdminResult = await request(expressApp)
+      .get('/v1/admin/problem')
+      .set('Authorization', 'bearer ' + token);
+    expect(getAdminResult.statusCode).toEqual(200);
+    expect(getAdminResult.body).toHaveLength(2);
+
+    // Get problems by id
+    const getNonexistentStudentProblemById = await request(expressApp).get(
+      '/v1/student/problem/010101010101010121212121'
+    );
+    expect(getNonexistentStudentProblemById.statusCode).toEqual(404);
+
+    const getMalformedStudentProblemById = await request(expressApp).get(
+      '/v1/student/problem/01010101010beef'
+    );
+    expect(getMalformedStudentProblemById.statusCode).toEqual(400);
+
+    const getHiddenStudentProblemById = await request(expressApp).get(
+      `/v1/student/problem/${postHiddenResult.body._id}`
+    );
+    expect(getHiddenStudentProblemById.statusCode).toEqual(404);
+
+    const getStudentProblemById = await request(expressApp).get(
+      `/v1/student/problem/${postResult.body._id}`
+    );
+    expect(getStudentProblemById.statusCode).toEqual(200);
+  });
 });

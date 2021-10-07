@@ -11,7 +11,7 @@ import {
 //eslint-disable-next-line
 const problemValidation = (data: any): ValidationResult => {
   const schema = object({
-    moduleId: string().required(),
+    moduleId: string().min(24).max(24).required(),
     statement: string().required(),
     title: string().min(1).required(),
     hidden: boolean().required(),

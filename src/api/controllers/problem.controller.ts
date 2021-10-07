@@ -6,18 +6,36 @@ import problemValidation from '../validation/problem.validation';
 const readStudentProblems = async (
   req: Request,
   res: Response
-): Promise<void> => {
+): Promise<Response<any, Record<string, any>>> => {
   let studentProblems: any;
-  if (req.body.problemId) {
-    studentProblems = await Problem.findOne({
-      hidden: false,
-      _id: req.body.problemId
-    });
-  } else if (req.body.moduleId) {
+  if (req.params.problemId) {
+    const objectIdRegEx = /[0-9a-f]{24}/g;
+    if (
+      req.params.problemId.length != 24 ||
+      !objectIdRegEx.test(req.params.problemId)
+    ) {
+      return res.status(400).send('problemId not a valid mongoDB ObjectId');
+    }
+    try {
+      const problem = await Problem.findOne({
+        hidden: false,
+        _id: req.params.problemId
+      });
+      if (!problem) {
+        return res.status(404).send();
+      }
+      studentProblems = problem;
+    } catch (error) {
+      return res.status(400).send(error);
+    }
+  } else if (req.params.moduleId) {
     const module = await Module.findOne({
       hidden: false,
-      _id: req.body.moduleId
+      _id: req.params.moduleId
     }).populate('problems');
+    if (!module) {
+      return res.status(404).send();
+    }
     studentProblems = module.problems;
   } else {
     studentProblems = await Problem.find({
@@ -25,7 +43,7 @@ const readStudentProblems = async (
     });
   }
 
-  res.status(200).send(studentProblems);
+  return res.status(200).send(studentProblems);
 };
 
 const readAdminProblems = async (
@@ -82,8 +100,10 @@ const createProblem = async (
       return res.status(400).send('Module not found!');
     }
     module.problems.push(savedProblem._id);
-    const updatedModule = await module.save();
-    return res.send({ _id: updatedModule._id });
+    await module.save();
+    return res.send({
+      _id: savedProblem._id
+    });
   } catch (error) {
     return res.status(400).send(error);
   }

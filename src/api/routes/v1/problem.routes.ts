@@ -3,7 +3,7 @@ import {
   readStudentProblems,
   readAdminProblems,
   createProblem,
-  // updateProblem,
+  updateProblem,
   deleteProblem
 } from '../../controllers/problem.controller';
 import { authenticateJWT } from '../../middlewares/auth';
@@ -13,9 +13,7 @@ const studentProblemRouter = express.Router();
 // Student routes
 studentProblemRouter.route('/').get(readStudentProblems);
 studentProblemRouter.route('/:problemId').get(readStudentProblems);
-studentProblemRouter
-  .route('/student/problem/findByModule/:moduleId')
-  .get(readStudentProblems);
+studentProblemRouter.route('/findByModule/:moduleId').get(readStudentProblems);
 
 // Admin routes
 adminProblemRouter
@@ -24,11 +22,11 @@ adminProblemRouter
   .post(authenticateJWT, createProblem);
 adminProblemRouter
   .route('/:problemId')
-  // .get(authenticateJWT, readAdminProblems)
-  // .put(authenticateJWT, updateProblem)
+  .get(authenticateJWT, readAdminProblems)
+  .put(authenticateJWT, updateProblem)
   .delete(authenticateJWT, deleteProblem);
-// adminProblemRouter
-//   .route('/findByModule/:moduleId')
-//   .get(authenticateJWT, readAdminProblems);
+adminProblemRouter
+  .route('/findByModule/:moduleId')
+  .get(authenticateJWT, readAdminProblems);
 
 export { adminProblemRouter, studentProblemRouter };
