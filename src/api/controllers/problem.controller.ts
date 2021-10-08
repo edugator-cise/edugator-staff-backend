@@ -29,14 +29,22 @@ const readStudentProblems = async (
       return res.status(400).send(error);
     }
   } else if (req.params.moduleId) {
+    const objectIdRegEx = /[0-9a-f]{24}/g;
+    if (
+      req.params.moduleId.length != 24 ||
+      !objectIdRegEx.test(req.params.moduleId)
+    ) {
+      return res.status(400).send('moduleId not a valid mongoDB ObjectId');
+    }
     const module = await Module.findOne({
-      hidden: false,
       _id: req.params.moduleId
     }).populate('problems');
     if (!module) {
       return res.status(404).send();
     }
-    studentProblems = module.problems;
+    studentProblems = module.problems.filter((item) => {
+      return !(item as unknown as ProblemDocument).hidden;
+    });
   } else {
     studentProblems = await Problem.find({
       hidden: false
@@ -49,7 +57,7 @@ const readStudentProblems = async (
 const readAdminProblems = async (
   req: Request,
   res: Response
-): Promise<void> => {
+): Promise<Response<any, Record<string, any>>> => {
   let adminProblems: any;
   if (req.params.problemId) {
     //Find exact problem
@@ -57,15 +65,25 @@ const readAdminProblems = async (
       _id: req.params.problemId
     });
   } else if (req.params.moduleId) {
+    const objectIdRegEx = /[0-9a-f]{24}/g;
+    if (
+      req.params.moduleId.length != 24 ||
+      !objectIdRegEx.test(req.params.moduleId)
+    ) {
+      return res.status(400).send('moduleId not a valid mongoDB ObjectId');
+    }
     const module = await Module.findOne({
       _id: req.params.moduleId
     }).populate('problems');
+    if (!module) {
+      return res.status(404).send();
+    }
     adminProblems = module.problems;
   } else {
     adminProblems = await Problem.find({});
   }
 
-  res.status(200).send(adminProblems);
+  return res.status(200).send(adminProblems);
 };
 
 const createProblem = async (
