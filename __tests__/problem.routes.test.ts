@@ -106,26 +106,70 @@ describe('GET /', () => {
       .set('Authorization', 'bearer ' + token);
     expect(getAdminResult.statusCode).toEqual(200);
     expect(getAdminResult.body).toHaveLength(2);
+  });
+  it('GETs /admin/problem/{problemId} and /student/problem/{problemId}', async () => {
+    const sampleProblem = createSamplePayload(moduleId);
+    const sampleHiddenProblem = createSamplePayload(moduleId);
+    sampleHiddenProblem.hidden = true;
+
+    // Add problems to the database
+    const postResult = await request(expressApp)
+      .post('/v1/admin/problem')
+      .set('Authorization', 'bearer ' + token)
+      .send(sampleProblem);
+    expect(postResult.statusCode).toEqual(200);
+
+    const postHiddenResult = await request(expressApp)
+      .post('/v1/admin/problem')
+      .set('Authorization', 'bearer ' + token)
+      .send(sampleHiddenProblem);
+    expect(postHiddenResult.statusCode).toEqual(200);
 
     // Get problems by id from /v1/student/problem
-    const getNonexistentStudentProblemById = await request(expressApp).get(
+    let getNonexistentStudentProblemById = await request(expressApp).get(
       '/v1/student/problem/010101010101010121212121'
     );
     expect(getNonexistentStudentProblemById.statusCode).toEqual(404);
 
-    const getMalformedStudentProblemById = await request(expressApp).get(
+    let getMalformedStudentProblemById = await request(expressApp).get(
       '/v1/student/problem/01010101010beef'
     );
     expect(getMalformedStudentProblemById.statusCode).toEqual(400);
 
-    const getHiddenStudentProblemById = await request(expressApp).get(
+    let getHiddenStudentProblemById = await request(expressApp).get(
       `/v1/student/problem/${postHiddenResult.body._id}`
     );
     expect(getHiddenStudentProblemById.statusCode).toEqual(404);
 
-    const getStudentProblemById = await request(expressApp).get(
+    let getStudentProblemById = await request(expressApp).get(
       `/v1/student/problem/${postResult.body._id}`
     );
+    expect(getStudentProblemById.statusCode).toEqual(200);
+
+    // Get problems by id from /v1/admin/problem
+    const getStudentProblemByIdWithoutAuth = await request(expressApp).get(
+      `/v1/admin/problem/${postResult.body._id}`
+    );
+    expect(getStudentProblemByIdWithoutAuth.statusCode).toEqual(401);
+
+    getNonexistentStudentProblemById = await request(expressApp)
+      .get('/v1/admin/problem/010101010101010121212121')
+      .set('Authorization', 'bearer ' + token);
+    expect(getNonexistentStudentProblemById.statusCode).toEqual(404);
+
+    getMalformedStudentProblemById = await request(expressApp)
+      .get('/v1/admin/problem/01010101010beef')
+      .set('Authorization', 'bearer ' + token);
+    expect(getMalformedStudentProblemById.statusCode).toEqual(400);
+
+    getHiddenStudentProblemById = await request(expressApp)
+      .get(`/v1/admin/problem/${postHiddenResult.body._id}`)
+      .set('Authorization', 'bearer ' + token);
+    expect(getHiddenStudentProblemById.statusCode).toEqual(200);
+
+    getStudentProblemById = await request(expressApp)
+      .get(`/v1/admin/problem/${postResult.body._id}`)
+      .set('Authorization', 'bearer ' + token);
     expect(getStudentProblemById.statusCode).toEqual(200);
   });
   it('checks GET /student/problem/findByModule/moduleId', async () => {

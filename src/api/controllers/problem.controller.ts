@@ -61,9 +61,23 @@ const readAdminProblems = async (
   let adminProblems: any;
   if (req.params.problemId) {
     //Find exact problem
-    adminProblems = await Problem.findOne({
-      _id: req.params.problemId
-    });
+    const objectIdRegEx = /[0-9a-f]{24}/g;
+    if (
+      req.params.problemId.length != 24 ||
+      !objectIdRegEx.test(req.params.problemId)
+    ) {
+      return res.status(400).send('problemId not a valid mongoDB ObjectId');
+    }
+    try {
+      adminProblems = await Problem.findOne({
+        _id: req.params.problemId
+      });
+      if (!adminProblems) {
+        return res.status(404).send();
+      }
+    } catch (err) {
+      return res.status(400).send(err);
+    }
   } else if (req.params.moduleId) {
     const objectIdRegEx = /[0-9a-f]{24}/g;
     if (
