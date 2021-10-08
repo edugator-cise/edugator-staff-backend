@@ -51,14 +51,14 @@ const readAdminProblems = async (
   res: Response
 ): Promise<void> => {
   let adminProblems: any;
-  if (req.body.problemId) {
+  if (req.params.problemId) {
     //Find exact problem
     adminProblems = await Problem.findOne({
-      _id: req.body.problemId
+      _id: req.params.problemId
     });
-  } else if (req.body.moduleId) {
+  } else if (req.params.moduleId) {
     const module = await Module.findOne({
-      _id: req.body.moduleId
+      _id: req.params.moduleId
     }).populate('problems');
     adminProblems = module.problems;
   } else {
@@ -116,20 +116,20 @@ const updateProblem = async (req: Request, res: Response): Promise<void> => {
   }
 
   const problem: ProblemDocument = Problem.findById(
-    req.body.problemId
+    req.params.problemId
   ) as unknown as ProblemDocument;
-  problem.statement = req.params.statement;
-  problem.title = req.params.title;
-  problem.hidden = req.params.hidden as unknown as boolean;
-  problem.language = req.params.language;
-  problem.dueDate = new Date(req.params.dueDate);
-  problem.code = JSON.parse(req.params.code);
-  problem.fileExtension = req.params.fileExtension;
-  problem.testCases = JSON.parse(req.params.testCases);
+  problem.statement = req.body.statement;
+  problem.title = req.body.title;
+  problem.hidden = req.body.hidden as unknown as boolean;
+  problem.language = req.body.language;
+  problem.dueDate = new Date(req.body.dueDate);
+  problem.code = JSON.parse(req.body.code);
+  problem.fileExtension = req.body.fileExtension;
+  problem.testCases = JSON.parse(req.body.testCases);
   problem.templatePackage = req.body.templatePackage;
-  problem.timeLimit = req.params.timeLimit as unknown as number;
-  problem.memoryLimit = req.params.memoryLimit as unknown as number;
-  problem.buildCommand = req.params.buildCommand;
+  problem.timeLimit = req.body.timeLimit as unknown as number;
+  problem.memoryLimit = req.body.memoryLimit as unknown as number;
+  problem.buildCommand = req.body.buildCommand;
 
   try {
     const savedProblem = await problem.save();

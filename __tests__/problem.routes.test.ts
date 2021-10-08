@@ -101,7 +101,7 @@ describe('GET /', () => {
     expect(getAdminResult.statusCode).toEqual(200);
     expect(getAdminResult.body).toHaveLength(2);
 
-    // Get problems by id
+    // Get problems by id from /v1/student/problem
     const getNonexistentStudentProblemById = await request(expressApp).get(
       '/v1/student/problem/010101010101010121212121'
     );
