@@ -141,10 +141,13 @@ const createProblem = async (
   }
 };
 
-const updateProblem = async (req: Request, res: Response): Promise<void> => {
+const updateProblem = async (
+  req: Request,
+  res: Response
+): Promise<Response<any, Record<string, any>>> => {
   const { error } = problemValidation(req.body);
   if (error) {
-    res.status(400).send(error.details[0].message);
+    return res.status(400).send(error.details[0].message);
   }
 
   const problem: ProblemDocument = Problem.findById(
@@ -165,21 +168,34 @@ const updateProblem = async (req: Request, res: Response): Promise<void> => {
 
   try {
     const savedProblem = await problem.save();
-    res.send({ _id: savedProblem._id });
+    return res.send({ _id: savedProblem._id });
   } catch (error) {
-    res.status(400).send(error);
+    return res.status(400).send(error);
   }
 };
 
-const deleteProblem = async (req: Request, res: Response): Promise<void> => {
+const deleteProblem = async (
+  req: Request,
+  res: Response
+): Promise<Response<any, Record<string, any>>> => {
+  const objectIdRegEx = /[0-9a-f]{24}/g;
+  if (
+    req.params.problemId.length != 24 ||
+    !objectIdRegEx.test(req.params.problemId)
+  ) {
+    return res.status(400).send('problemId not a valid mongoDB ObjectId');
+  }
   try {
     const problem = await Problem.findOne({
       _id: req.params.problemId
     });
+    if (!problem) {
+      return res.status(404).send();
+    }
     await problem.delete();
-    res.sendStatus(200);
+    return res.sendStatus(200);
   } catch (error) {
-    res.status(400).send(error);
+    return res.status(400).send(error);
   }
 };
 

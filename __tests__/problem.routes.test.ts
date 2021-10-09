@@ -48,6 +48,7 @@ describe('GET /', () => {
       }
     };
   }
+
   it('creates a problem and gets a 200 response', async () => {
     const sampleProblem = createSamplePayload(moduleId);
     const result = await request(expressApp)
@@ -56,12 +57,14 @@ describe('GET /', () => {
       .send(sampleProblem);
     expect(result.statusCode).toEqual(200);
   });
+
   it('checks POST /admin/problem gives 400 response on empty body', async () => {
     const result: request.Response = await request(expressApp)
       .post('/v1/admin/problem')
       .set('Authorization', 'bearer ' + token);
     expect(result.statusCode).toEqual(400);
   });
+
   it('checks POST /admin/problem gives 401 response on unauthorized requests', async () => {
     const sampleProblem = createSamplePayload(moduleId);
     const result: request.Response = await request(expressApp)
@@ -69,6 +72,7 @@ describe('GET /', () => {
       .send(sampleProblem);
     expect(result.statusCode).toEqual(401);
   });
+
   it('checks GET /admin/problem gives 401 response on unauthorized requests', async () => {
     const sampleProblem = createSamplePayload(moduleId);
     const result: request.Response = await request(expressApp)
@@ -76,6 +80,7 @@ describe('GET /', () => {
       .send(sampleProblem);
     expect(result.statusCode).toEqual(401);
   });
+
   it('tests GET /admin/problem and GET /student/problem', async () => {
     const sampleProblem = createSamplePayload(moduleId);
     const sampleHiddenProblem = createSamplePayload(moduleId);
@@ -107,6 +112,7 @@ describe('GET /', () => {
     expect(getAdminResult.statusCode).toEqual(200);
     expect(getAdminResult.body).toHaveLength(2);
   });
+
   it('GETs /admin/problem/{problemId} and /student/problem/{problemId}', async () => {
     const sampleProblem = createSamplePayload(moduleId);
     const sampleHiddenProblem = createSamplePayload(moduleId);
@@ -172,6 +178,7 @@ describe('GET /', () => {
       .set('Authorization', 'bearer ' + token);
     expect(getStudentProblemById.statusCode).toEqual(200);
   });
+
   it('checks GET /student/problem/findByModule/moduleId', async () => {
     // Add two unhidden problems and one hidden problem to DB
     const sampleProblem = createSamplePayload(moduleId);
@@ -217,6 +224,7 @@ describe('GET /', () => {
     );
     expect(result.statusCode).toEqual(400);
   });
+
   it('checks GET /admin/problem/findByModule/moduleId', async () => {
     // Add two unhidden problems and one hidden problem to DB
     const sampleProblem = createSamplePayload(moduleId);
@@ -267,5 +275,45 @@ describe('GET /', () => {
       .get('/v1/admin/problem/findByModule/notAValidObjectId')
       .set('Authorization', 'bearer ' + token);
     expect(result.statusCode).toEqual(400);
+  });
+
+  it('creates a problem then DELETEs the problem', async () => {
+    const sampleProblem = createSamplePayload(moduleId);
+    const postResult = await request(expressApp)
+      .post('/v1/admin/problem')
+      .set('Authorization', 'bearer ' + token)
+      .send(sampleProblem);
+    expect(postResult.statusCode).toEqual(200);
+
+    let result = await request(expressApp)
+      .get('/v1/admin/problem')
+      .set('Authorization', 'bearer ' + token);
+    expect(result.statusCode).toEqual(200);
+    expect(result.body.length).toEqual(1);
+
+    // Well-formed objectId that doesn't map to a module => 404
+    result = await request(expressApp)
+      .delete('/v1/admin/problem/010101010101010101010101')
+      .set('Authorization', 'bearer ' + token);
+    expect(result.statusCode).toEqual(404);
+
+    // Malformed objectId => 400
+    result = await request(expressApp)
+      .delete('/v1/admin/problem/notAValidObjectId')
+      .set('Authorization', 'bearer ' + token);
+    expect(result.statusCode).toEqual(400);
+
+    // Delete successfully
+    result = await request(expressApp)
+      .delete(`/v1/admin/problem/${postResult.body._id}`)
+      .set('Authorization', 'bearer ' + token);
+    expect(result.statusCode).toEqual(200);
+
+    // Check that problem db is now empty
+    result = await request(expressApp)
+      .get('/v1/admin/problem')
+      .set('Authorization', 'bearer ' + token);
+    expect(result.statusCode).toEqual(200);
+    expect(result.body.length).toEqual(0);
   });
 });
