@@ -58,6 +58,24 @@ describe('GET /', () => {
     expect(result.statusCode).toEqual(200);
   });
 
+  it('attempts to create a problem with an invalid moduleId', async () => {
+    const sampleProblem = createSamplePayload('invalidModuleId');
+    const result = await request(expressApp)
+      .post('/v1/admin/problem')
+      .set('Authorization', 'bearer ' + token)
+      .send(sampleProblem);
+    expect(result.statusCode).toEqual(400);
+  });
+
+  it('attempts to create a problem with a nonexistent moduleId', async () => {
+    const sampleProblem = createSamplePayload('010101010101010101010101');
+    const result = await request(expressApp)
+      .post('/v1/admin/problem')
+      .set('Authorization', 'bearer ' + token)
+      .send(sampleProblem);
+    expect(result.statusCode).toEqual(404);
+  });
+
   it('checks POST /admin/problem gives 400 response on empty body', async () => {
     const result: request.Response = await request(expressApp)
       .post('/v1/admin/problem')
@@ -287,7 +305,6 @@ describe('GET /', () => {
 
     const modifiedSampleProblem = createSamplePayload(moduleId);
     modifiedSampleProblem.title = 'Updated title!';
-    console.log(modifiedSampleProblem);
 
     const updateResult = await request(expressApp)
       .put(`/v1/admin/problem/${postResult.body._id}`)
