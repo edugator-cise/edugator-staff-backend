@@ -129,7 +129,7 @@ const createProblem = async (
       _id: req.body.moduleId
     });
     if (!module) {
-      return res.status(400).send('Module not found!');
+      return res.status(404).send('Module not found!');
     }
     module.problems.push(savedProblem._id);
     await module.save();
@@ -149,26 +149,36 @@ const updateProblem = async (
   if (error) {
     return res.status(400).send(error.details[0].message);
   }
-
-  const problem: ProblemDocument = Problem.findById(
-    req.params.problemId
-  ) as unknown as ProblemDocument;
-  problem.statement = req.body.statement;
-  problem.title = req.body.title;
-  problem.hidden = req.body.hidden as unknown as boolean;
-  problem.language = req.body.language;
-  problem.dueDate = new Date(req.body.dueDate);
-  problem.code = JSON.parse(req.body.code);
-  problem.fileExtension = req.body.fileExtension;
-  problem.testCases = JSON.parse(req.body.testCases);
-  problem.templatePackage = req.body.templatePackage;
-  problem.timeLimit = req.body.timeLimit as unknown as number;
-  problem.memoryLimit = req.body.memoryLimit as unknown as number;
-  problem.buildCommand = req.body.buildCommand;
-
+  const objectIdRegEx = /[0-9a-f]{24}/g;
+  if (
+    req.params.problemId.length != 24 ||
+    !objectIdRegEx.test(req.params.problemId)
+  ) {
+    return res.status(400).send('problemId not a valid mongoDB ObjectId');
+  }
   try {
-    const savedProblem = await problem.save();
-    return res.send({ _id: savedProblem._id });
+    const problem = await Problem.findByIdAndUpdate(
+      req.params.problemId,
+      {
+        statement: req.body.statement,
+        title: req.body.title,
+        hidden: req.body.hidden,
+        language: req.body.language,
+        dueDate: req.body.dueDate,
+        code: req.body.code,
+        fileExtension: req.body.fileExtension,
+        testCases: req.body.testCases,
+        templatePackage: req.body.templatePackage,
+        timeLimit: req.body.timeLimit,
+        memoryLimit: req.body.memoryLimit,
+        buildCommand: req.body.buildCommand
+      },
+      { new: true }
+    );
+    if (!problem) {
+      return res.status(404).send();
+    }
+    return res.status(200).send(problem);
   } catch (error) {
     return res.status(400).send(error);
   }

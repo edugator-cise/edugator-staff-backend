@@ -277,6 +277,31 @@ describe('GET /', () => {
     expect(result.statusCode).toEqual(400);
   });
 
+  it('creates a problem then updates the problem', async () => {
+    const sampleProblem = createSamplePayload(moduleId);
+    const postResult = await request(expressApp)
+      .post('/v1/admin/problem')
+      .set('Authorization', 'bearer ' + token)
+      .send(sampleProblem);
+    expect(postResult.statusCode).toEqual(200);
+
+    const modifiedSampleProblem = createSamplePayload(moduleId);
+    modifiedSampleProblem.title = 'Updated title!';
+    console.log(modifiedSampleProblem);
+
+    const updateResult = await request(expressApp)
+      .put(`/v1/admin/problem/${postResult.body._id}`)
+      .set('Authorization', 'bearer ' + token)
+      .send(modifiedSampleProblem);
+    expect(updateResult.statusCode).toEqual(200);
+
+    const getUpdatedResult = await request(expressApp)
+      .get(`/v1/admin/problem/${postResult.body._id}`)
+      .set('Authorization', 'bearer ' + token);
+    expect(getUpdatedResult.statusCode).toEqual(200);
+    expect(getUpdatedResult.body.title).toEqual('Updated title!');
+  });
+
   it('creates a problem then DELETEs the problem', async () => {
     const sampleProblem = createSamplePayload(moduleId);
     const postResult = await request(expressApp)
@@ -290,6 +315,12 @@ describe('GET /', () => {
       .set('Authorization', 'bearer ' + token);
     expect(result.statusCode).toEqual(200);
     expect(result.body.length).toEqual(1);
+
+    // No auth token => 401
+    result = await request(expressApp).delete(
+      '/v1/admin/problem/010101010101010101010101'
+    );
+    expect(result.statusCode).toEqual(401);
 
     // Well-formed objectId that doesn't map to a module => 404
     result = await request(expressApp)
@@ -307,6 +338,7 @@ describe('GET /', () => {
     result = await request(expressApp)
       .delete(`/v1/admin/problem/${postResult.body._id}`)
       .set('Authorization', 'bearer ' + token);
+    //expect(result.body).toEqual('');
     expect(result.statusCode).toEqual(200);
 
     // Check that problem db is now empty
