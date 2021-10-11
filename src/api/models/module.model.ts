@@ -27,6 +27,8 @@ const moduleSchema = new Schema(
   { collection: 'modules' }
 );
 
+interface ModuleDocument extends ModuleInterface, Document {}
+
 const Module = model<ModuleInterface>('modules', moduleSchema);
 
 export { Module, ModuleDocument };

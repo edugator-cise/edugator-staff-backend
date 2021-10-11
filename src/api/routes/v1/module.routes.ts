@@ -13,7 +13,7 @@ moduleRouter
   .post(authenticateJWT, modules.postModules);
 moduleRouter
   .route('/:moduleId')
-  .get(modules.getModules)
+  .get(modules.getModuleByID)
   .put(authenticateJWT, modules.putModule)
   .delete(authenticateJWT, modules.deleteModule);
 
