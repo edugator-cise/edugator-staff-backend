@@ -1,7 +1,8 @@
 import { expressApp } from '../src/config/express';
 import * as request from 'supertest';
 import { UserModel } from '../src/api/models/user.model';
-import Module from '../src/api/models/module.model';
+
+import { Module } from '../src/api/models/module.model';
 import { createSamplePayload } from '../mocks/problems';
 
 describe('GET /', () => {
@@ -24,6 +25,7 @@ describe('GET /', () => {
 
   // Auth token for the routes
   let token = '';
+  // let uniqueModuleID = '';
   // This grabs the authentication token for each test
   beforeEach(grabToken());
 
@@ -45,6 +47,7 @@ describe('GET /', () => {
     };
   }
 
+  // POST route for Modules
   it('checks /admin/problem route gives 400 response on empty body', async () => {
     const result: request.Response = await request(expressApp)
       .post('/v1/admin/problem')
