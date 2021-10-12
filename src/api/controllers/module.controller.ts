@@ -40,10 +40,10 @@ export const getModulesWithNonHiddenProblemsAndTestCases = async (
         number: val.number
       };
       const problemsWithoutTestCases = val.problems.map((problem) => {
-        const problemToReturn = problem
-        problemToReturn["testCases"] = undefined
-        return problemToReturn
-      })
+        const problemToReturn = problem;
+        problemToReturn['testCases'] = undefined;
+        return problemToReturn;
+      });
       currentModule['problems'] = problemsWithoutTestCases;
       return currentModule;
     });

@@ -46,7 +46,6 @@ describe('GET /', () => {
       //Sets the token that has been called to get assigned before the test
       .set('Authorization', 'bearer ' + token)
       .send(sampleModule);
-    //   console.log(result);
     expect(result.statusCode).toEqual(200);
   });
 
@@ -56,7 +55,6 @@ describe('GET /', () => {
       //Sets the token that has been called to get assigned before the test
       .set('Authorization', 'bearer ' + token)
       .send();
-    //   console.log(result);
     expect(result.statusCode).toEqual(400);
   });
 
@@ -66,7 +64,6 @@ describe('GET /', () => {
       .post('/v1/module')
       //Sets the token that has been called to get assigned before the test
       .send(sampleModule);
-    //   console.log(result);
     expect(result.statusCode).toEqual(401);
   });
 });

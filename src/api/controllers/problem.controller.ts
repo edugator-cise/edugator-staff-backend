@@ -29,6 +29,44 @@ const readStudentProblems = async (
   res.status(200).send(studentProblems);
 };
 
+const getAllStudentProblems = async (
+  _req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const studentProblems = await Problem.find({
+      hidden: false
+    });
+    res.status(200).send(studentProblems);
+  } catch (err) {
+    res.sendStatus(500);
+  }
+};
+
+const getStudentProblemsByModuleId = async (req: Request, res: Response) => {
+  try {
+    const module = await Module.findOne({
+      hidden: false,
+      _id: req.params.moduleId
+    }).populate('problems');
+    res.status(200).send(module.problems);
+  } catch (err) {
+    res.sendStatus(400);
+  }
+};
+
+const getStudentProblemsByID = async (req: Request, res: Response) => {
+  try {
+    const studentProblems = await Problem.find({
+      hidden: false,
+      _id: req.params.moduleId
+    });
+    res.status(200).send(studentProblems);
+  } catch (err) {
+    res.sendStatus(400);
+  }
+};
+
 const readAdminProblems = async (
   req: Request,
   res: Response
@@ -125,6 +163,9 @@ const deleteProblem = async (req: Request, res: Response): Promise<void> => {
 };
 
 export {
+  getAllStudentProblems,
+  getStudentProblemsByID,
+  getStudentProblemsByModuleId,
   readStudentProblems,
   readAdminProblems,
   createProblem,

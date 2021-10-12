@@ -33,8 +33,12 @@ class JudgeServer {
       payload
     );
   }
-
   getSubmission(token: string, base64: boolean): Promise<AxiosResponse> {
+    return this.axiosInstance.get(
+      `/submissions/${token}?base64_encoded=${base64}`
+    );
+  }
+  getSubmissionVariant({ token, base64 }): Promise<AxiosResponse> {
     return this.axiosInstance.get(
       `/submissions/${token}?base64_encoded=${base64}`
     );
@@ -43,4 +47,4 @@ class JudgeServer {
 
 const judgeEngine = new JudgeServer(judgeURI);
 
-export { judgeEngine };
+export { judgeEngine, JudgeServer };
