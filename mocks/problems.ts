@@ -5,7 +5,7 @@ const createSampleProblem = () => {
     title: 'new title',
     hidden: false,
     language: 'C++',
-    dueDate: '2011-10-05T14:48:00.000Z',
+    dueDate: '2011-10-05',
     code: {
       header: '#include <iostream>',
       body: 'int main()',
@@ -20,15 +20,15 @@ const createSampleProblem = () => {
         visibility: 1
       }
     ],
-    templatePackage: 'string package',
+    templatePackage: 'https://www.google.com',
     timeLimit: 1000,
     memoryLimit: 10000,
     buildCommand: 'N/A'
   };
 };
-const createSamplePayload = () => {
+const createSamplePayload = (_moduleId = '53b1c579bdf3de74f76bdac9') => {
   return {
-    moduleId: '123456',
+    moduleId: _moduleId,
     ...createSampleProblem()
   };
 };

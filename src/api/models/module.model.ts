@@ -1,11 +1,12 @@
-import { model, Schema, Types, PopulatedDoc } from 'mongoose';
-import { ProblemInterface } from './problem.model';
+import { model, Document, Schema, Types } from 'mongoose';
 
 interface ModuleInterface {
   name: string;
   number: number;
-  problems: PopulatedDoc<Types.ObjectId & ProblemInterface>[];
+  problems: [Types.ObjectId];
 }
+
+interface ModuleDocument extends ModuleInterface, Document {}
 
 const moduleSchema = new Schema(
   {
@@ -26,7 +27,8 @@ const moduleSchema = new Schema(
   { collection: 'modules' }
 );
 
+interface ModuleDocument extends ModuleInterface, Document {}
+
 const Module = model<ModuleInterface>('modules', moduleSchema);
 
-export default Module;
-export { ModuleInterface };
+export { Module, ModuleDocument };
