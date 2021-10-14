@@ -1,9 +1,13 @@
 import * as express from 'express';
-import { runCode, getCode } from '../../controllers/code.controller';
+import {
+  runCode,
+  getCode,
+  submitCode
+} from '../../controllers/code.controller';
 const router = express.Router();
 
 router.route('/').post(runCode);
-
-router.route('/:runId').get(getCode);
+router.route('/submission').post(getCode);
+router.route('/evaluate').post(submitCode);
 
 export default router;

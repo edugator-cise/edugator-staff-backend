@@ -17,6 +17,34 @@ export const getModules = async (
   }
 };
 
+export const getModulesWithNonHiddenProblemsAndTestCases = async (
+  _req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const modules = await Module.find().populate({
+      path: 'problems',
+      match: { hidden: false }
+    });
+    const modulesWithNonHiddenTestCases = modules.map((val) => {
+      const currentModule = {
+        _id: val._id,
+        name: val.name,
+        number: val.number
+      };
+      const problemsWithoutTestCases = val.problems.map((problem) => {
+        const problemToReturn = problem;
+        problemToReturn['testCases'] = undefined;
+        return problemToReturn;
+      });
+      currentModule['problems'] = problemsWithoutTestCases;
+      return currentModule;
+    });
+    res.status(200).send(modulesWithNonHiddenTestCases);
+  } catch (err) {
+    res.status(400).send(err);
+  }
+};
 export const getModuleByID = async (
   req: Request,
   res: Response

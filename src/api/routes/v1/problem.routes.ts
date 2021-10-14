@@ -1,10 +1,10 @@
 import * as express from 'express';
 import {
-  readStudentProblems,
   readAdminProblems,
   createProblem,
   updateProblem,
-  deleteProblem
+  deleteProblem,
+  readStudentProblems
 } from '../../controllers/problem.controller';
 import { authenticateJWT } from '../../middlewares/auth';
 const adminProblemRouter = express.Router();
