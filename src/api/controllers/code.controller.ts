@@ -45,7 +45,7 @@ const outputValidator = (data: IJudge0Response, base64: boolean) => {
   }
 };
 
-// compares expected output to expected input
+// compares expected output to stdout from judge0 submission
 const submissionValidator = (
   data: IJudge0Response,
   expectedOutput: string,
