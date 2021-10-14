@@ -38,6 +38,7 @@ class JudgeServer {
       `/submissions/${token}?base64_encoded=${base64}`
     );
   }
+  // Used for polling function to define payload as one argument instead of a variable amount
   getSubmissionVariant({ token, base64 }): Promise<AxiosResponse> {
     return this.axiosInstance.get(
       `/submissions/${token}?base64_encoded=${base64}`

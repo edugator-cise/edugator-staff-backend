@@ -21,14 +21,18 @@ declare interface IJudge0Response {
   };
 }
 
+// Judge0 Validation https://ce.judge0.com/
+// status id === 3 means code was accepted and run
 const judge0Validator = ({ data }: { data: IJudge0Response }): boolean => {
   return data.status.id >= 3;
 };
 
+// Compilation error or server error
 const judge0Interrupt = (data: IJudge0Response): boolean => {
   return data.status.id > 3;
 };
 
+// gets stdout if available else its a server, compilation error or in queue
 const outputValidator = (data: IJudge0Response, base64: boolean) => {
   if (data.status.id === 3) {
     return base64
@@ -40,6 +44,8 @@ const outputValidator = (data: IJudge0Response, base64: boolean) => {
     return 'Queue submission full please try again';
   }
 };
+
+// compares expected output to expected input
 const submissionValidator = (
   data: IJudge0Response,
   expectedOutput: string,
@@ -53,7 +59,9 @@ const submissionValidator = (
       : data.stdout === expectedOutput;
   }
 };
-const createErrofObject = (
+
+// creates error object if submission didn't run through
+const createErrObject = (
   hidden: number,
   stdin: string,
   expectedOutput: string
@@ -81,6 +89,9 @@ const createPassFailObject = (
   };
 };
 
+// custom polling function
+// polls requests based on max attempts/timeouts
+// with a validator to check if result is viable
 const poll = async (
   requestClass: JudgeServer,
   payload: any,
@@ -210,7 +221,7 @@ const submitCode = async (
 
     // runs the judge0 api calls to get token payload
     const arrayTokenPayload = await Promise.all(getTokens);
-    //create payload and array for polling tokens
+    //create payload and array for polling submissions with tokens
     const arrayStatusPayload = arrayTokenPayload.map((tokenObject) => {
       const load = {
         token: tokenObject.token,
@@ -228,13 +239,14 @@ const submitCode = async (
           );
         })
         .catch(() => {
-          return createErrofObject(
+          return createErrObject(
             tokenObject.hidden,
             tokenObject.stdin,
             tokenObject.expectedOutput
           );
         });
     });
+    // runs all token fetch requests concurrently and awaits for all values
     return await Promise.all(arrayStatusPayload)
       .then((values) => response.status(200).send(values))
       .catch(() => response.sendStatus(500));
