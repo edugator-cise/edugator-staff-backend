@@ -29,20 +29,28 @@ const judge0Interrupt = (data: IJudge0Response): boolean => {
   return data.status.id > 3;
 };
 
-const outputValidator = (data: IJudge0Response) => {
+const outputValidator = (data: IJudge0Response, base64: boolean) => {
   if (data.status.id === 3) {
-    return data.stdout;
+    return base64
+      ? Buffer.from(data.stdout || '', 'base64').toString()
+      : data.stdout;
   } else if (judge0Interrupt(data)) {
     return data.status.description;
   } else {
-    return 'Queue submisison full please try again';
+    return 'Queue submission full please try again';
   }
 };
-const submissionValidator = (data: IJudge0Response, expectedOutput: string) => {
+const submissionValidator = (
+  data: IJudge0Response,
+  expectedOutput: string,
+  base64: boolean
+) => {
   if (data.status.id !== 3) {
     return false;
   } else {
-    return data.stdout === expectedOutput;
+    return base64
+      ? Buffer.from(data.stdout || '', 'base64').toString() === expectedOutput
+      : data.stdout === expectedOutput;
   }
 };
 const createErrofObject = (
@@ -62,13 +70,14 @@ const createPassFailObject = (
   data: IJudge0Response,
   hidden: number,
   stdin: string,
-  expectedOutput: string
+  expectedOutput: string,
+  base64: boolean
 ) => {
   return {
     stdin: hidden === 0 ? 'hidden' : stdin,
-    output: outputValidator(data),
+    output: outputValidator(data, base64),
     expectedOutput: hidden === 0 || hidden == 1 ? 'hidden' : expectedOutput,
-    result: submissionValidator(data, expectedOutput)
+    result: submissionValidator(data, expectedOutput, base64)
   };
 };
 
@@ -214,7 +223,8 @@ const submitCode = async (
             data,
             tokenObject.hidden,
             tokenObject.stdin,
-            tokenObject.expectedOutput
+            tokenObject.expectedOutput,
+            base_64
           );
         })
         .catch(() => {
@@ -225,7 +235,6 @@ const submitCode = async (
           );
         });
     });
-    // return response.status(200).send("hey")
     return await Promise.all(arrayStatusPayload)
       .then((values) => response.status(200).send(values))
       .catch(() => response.sendStatus(500));
