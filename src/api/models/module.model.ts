@@ -1,10 +1,12 @@
-import { model, Schema, Types, Document } from 'mongoose';
+import { model, Document, Schema, Types } from 'mongoose';
 
 interface ModuleInterface {
   name: string;
   number: number;
   problems: [Types.ObjectId];
 }
+
+interface ModuleDocument extends ModuleInterface, Document {}
 
 const moduleSchema = new Schema(
   {

@@ -8,6 +8,9 @@ moduleRouter
   .route('/WithProblems')
   .get(authenticateJWT, modules.getModulesWithProblems);
 moduleRouter
+  .route('/WithNonHiddenProblems')
+  .get(modules.getModulesWithNonHiddenProblemsAndTestCases);
+moduleRouter
   .route('/?')
   .get(modules.getModules)
   .post(authenticateJWT, modules.postModules);
