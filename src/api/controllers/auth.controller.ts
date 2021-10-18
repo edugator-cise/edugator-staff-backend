@@ -3,41 +3,60 @@ import { Request, Response } from 'express';
 import * as jwt from 'jsonwebtoken';
 import { UserModel, IUser } from '../models/user.model';
 import { jwtSecret, jwtExpirationInterval } from '../../config/vars';
-// import bcrypt from 'bcrypt';
 import * as bcrypt from 'bcrypt'
 
-// const hashPasswordAndStore = async (req: Request, res: Response): Promise<void> => {
-//     const saltRounds = 10;
-//     var pass = req.body.password;
+const createUser = async (req: Request, res: Response): Promise<void> => {
 
-//     //Generate Salt, Hash, and add to collection
-//     bcrypt.hash(pass, saltRounds, function(_err, hash) {
-//       // returns hash
-//       //Compares the passed in password to the hashed result
-//       bcrypt.compare(pass, hash, function(_err, result) {
-//         // hashedPassword = hash;
-//         console.log("Hashed Password: " + hash);
-//         if (result) {
-//           console.log("It matches!");
-//           //TODO Add to collection
-//           //TODO: Store into database
-//           res.status(httpStatus.OK).send("Successfully hashed");
-//         }
-//         else {
-//           console.log("Invalid password!");
-//         }
-//       });
-//     });
+    console.log("Role: ", res.locals.role);
 
- // bcrypt.compare("foobar", "$2b$10$rKyNYQMNuvyYCzYyfYidXerhNXsFX9AA7C6iRMNdS53lAgqJK6MbC", function(_err, result){
-    //   if (result) {
-    //     console.log("It matches the stored hash!")
-    //   }
-    //   else {
-    //     console.log("Invalid password!");
-    //   }
-    // });
+    if(res.locals.role !== 'Professor'){
+      res
+        .status(403)
+        .type('json')
+        .send({ message: 'You do not have permission to make this request' });
+        return;
+    }
 
+    const saltRounds = 10;
+    var pass = req.body.password;
+
+    //Generate Salt, Hash, and add to collection
+    bcrypt.hash(pass, saltRounds, function(_err, hash) {
+      //Compares the passed in password to the hashed result
+      bcrypt.compare(pass, hash, async function(_err, result) {
+        //Add into collection, if the password hashed properly
+        if (result) {
+          try{
+              const user = await UserModel.create({
+                username: req.body.username,
+                password: hash,
+                role: req.body.role
+              });
+                res.status(200).send(
+                JSON.stringify({
+                id: user._id
+              })
+            );
+          }catch(err){
+              res.status(400).type('json').send(err);
+          }
+        }
+        else {
+          console.log("Invalid password!");
+        }
+      });
+    });
+}
+
+// const checkHash = (plainText, hashedValue) => {
+//   bcrypt.compare(plainText, hashedValue, function(_err, result){
+//     if (result) {
+//       console.log("Passed in value matches the passed in hash!")
+//     }
+//     else {
+//       console.log("Does NOT match passed in hash!");
+//     }
+//   });
 // }
 
 
@@ -45,8 +64,7 @@ const authenticateUser = async (req: Request, res: Response): Promise<void> => {
   try {
   
     const payload = {
-      username: req.body.username
-      // password: req.body.password
+      username: req.body.username,
     };
     
     const user: IUser = await UserModel.findOne(payload);
@@ -54,27 +72,17 @@ const authenticateUser = async (req: Request, res: Response): Promise<void> => {
     // Compares the passed in password to the hashed password in the collection
     bcrypt.compare(req.body.password, user.password, function(_err, result){
       if (result) {
-        console.log("It matches the stored hash!")
-        const token = jwt.sign({ username: payload['username'] }, jwtSecret, {
+        // console.log("It matches the stored hash!")
+        const token = jwt.sign({ username: payload['username'], role: user.role }, jwtSecret, {
           expiresIn: jwtExpirationInterval
         });
         res.status(httpStatus.OK).send({ token });
       }
       else {
-        console.log("Invalid password!");
+        // console.log("Invalid password!");
         throw new Error('Unauthorized');
       }
     });
-
-    //TODO don't user exact password
-    // if (user.password !== req.body.password) {
-    //   throw new Error('Unauthorized');
-    // }
-
-    // const token = jwt.sign({ username: payload['username'] }, jwtSecret, {
-    //   expiresIn: jwtExpirationInterval
-    // });
-    // res.status(httpStatus.OK).send({ token });
   } catch (err) {
     // logger error
     console.log(err);
@@ -82,4 +90,4 @@ const authenticateUser = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export { authenticateUser };
+export { authenticateUser, createUser };

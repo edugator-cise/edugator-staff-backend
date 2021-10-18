@@ -4,9 +4,10 @@ import * as passport from 'passport';
 
 //Duplicate type need to find a way to declare global types
 interface IJWTTOKEN {
-  userName: string;
+  username: string;
   iat: number;
   exp: number;
+  role: string;
 }
 
 const authenticateJWT = (
@@ -21,6 +22,8 @@ const authenticateJWT = (
     if (!jwtToken) {
       return res.sendStatus(httpStatus.UNAUTHORIZED);
     } else {
+      console.log(jwtToken);
+      res.locals.role = jwtToken.role;
       return next();
     }
   })(req, res, next);

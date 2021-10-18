@@ -91,6 +91,7 @@ export const postModules = async (
 ): Promise<void> => {
   try {
     const module = await Module.create(req.body);
+    // console.log(res);
     res.status(200).send(
       JSON.stringify({
         id: module._id
