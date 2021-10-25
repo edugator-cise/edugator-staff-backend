@@ -23,20 +23,25 @@ describe('GET /user/*', () => {
   beforeEach(async () => {
     const pass = 'password';
 
-    bcrypt.hash(pass, 10, function (_err, hash) {
-      bcrypt.compare(pass, hash, async function (_err, result) {
+    const hashedPassword: string = await new Promise((resolve, _reject) => {
+      bcrypt.hash(pass, 10, function (_err, hash) {
+        resolve(hash)
+      })
+    })
+
+      bcrypt.compare(pass, hashedPassword, async function (_err, result) {
       try{
         //Add into collection, if the password hashed properly
         if (result) {
           user = await UserModel.create({
             username: 'testTA@gmail.com',
-            password: hash,
+            password: hashedPassword,
             role: 'TA'
           });
           
           superUser = await UserModel.create({
             username: 'testProfessor@gmail.com',
-            password: hash,
+            password: hashedPassword,
             role: 'Professor'
           });
           
@@ -50,7 +55,6 @@ describe('GET /user/*', () => {
         return err;
       }
       });
-    });
 
   });
   afterEach((done: jest.DoneCallback) => {
