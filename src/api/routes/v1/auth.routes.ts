@@ -1,5 +1,8 @@
 import * as express from 'express';
-import { authenticateUser, createUser } from '../../controllers/auth.controller';
+import {
+  authenticateUser,
+  createUser
+} from '../../controllers/auth.controller';
 import { authenticateJWT } from '../../middlewares/auth';
 const router = express.Router();
 

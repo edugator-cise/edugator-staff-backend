@@ -17,7 +17,8 @@ describe('GET /', () => {
     //User creation for token
     await UserModel.create({
       username: 'dhruv2000patel@gmail.com',
-      password: 'password'
+      password: 'password',
+      role: 'TA'
     });
 
     // Problem creation for routes
