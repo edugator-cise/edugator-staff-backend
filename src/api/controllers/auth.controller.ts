@@ -33,8 +33,8 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
       //Compares the passed in password to the hashed result
       bcrypt.compare(pass, hash, async function (_err, result) {
         //Add into collection, if the password hashed properly
+        try {
         if (result) {
-          try {
             const user = await UserModel.create({
               username: req.body.username,
               password: hash,
@@ -45,11 +45,11 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
                 id: user._id
               })
             );
-          } catch (err) {
-            res.status(400).type('json').send(err);
+          } else {
+            throw { message: 'Password hashing failed' };
           }
-        } else {
-          throw { message: 'Password hashing failed' };
+        } catch (err) {
+          res.status(400).type('json').send(err);
         }
       });
     });
@@ -75,28 +75,34 @@ const authenticateUser = async (req: Request, res: Response): Promise<void> => {
     const payload = {
       username: req.body.username
     };
+    console.log(req.body.username);
+    console.log(req.body.password);
 
     const user: IUser = await UserModel.findOne(payload);
+    console.log(user);
 
     // Compares the passed in password to the hashed password in the collection
     bcrypt.compare(req.body.password, user.password, function (_err, result) {
-      if (result) {
-        const token = jwt.sign(
-          { username: payload['username'], role: user.role },
-          jwtSecret,
-          {
-            expiresIn: jwtExpirationInterval
-          }
-        );
-        res.status(httpStatus.OK).send({ token });
-      } else {
-        // console.log("Invalid password!");
-        throw new Error('Unauthorized');
+      try{
+        if (result) {
+          const token = jwt.sign(
+            { username: payload['username'], role: user.role },
+            jwtSecret,
+            {
+              expiresIn: jwtExpirationInterval
+            }
+          );
+          res.status(httpStatus.OK).send({ token });
+        } else {
+          throw { message: 'Invalid Password - Unauthorized' };
+        }
+      }catch(err){
+        res.status(400).type('json').send(err);
       }
     });
   } catch (err) {
     // logger error
-    // console.log(err);
+    console.log(err);
     res.sendStatus(httpStatus.UNAUTHORIZED);
   }
 };

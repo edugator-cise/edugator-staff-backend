@@ -1,45 +1,13 @@
 import { expressApp } from '../src/config/express';
 import * as request from 'supertest';
-import { UserModel } from '../src/api/models/user.model';
+import { UserModel, IUser } from '../src/api/models/user.model';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { jwtSecret } from '../src/config/vars';
 
 describe('GET /user/*', () => {
-  beforeEach(async () => {
-    // jest.useFakeTimers();
-    const pass = 'password';
-    // console.log(pass);
-
-    bcrypt.hash(pass, 10, function (_err, hash) {
-      bcrypt.compare(pass, hash, async function (_err, result) {
-        //Add into collection, if the password hashed properly
-        if (result) {
-          const user = await new UserModel({
-            username: 'testTA@gmail.com',
-            password: pass,
-            role: 'TA'
-          });
-
-          const superUser = await new UserModel({
-            username: 'testProfessor@gmail.com',
-            password: pass,
-            role: 'Professor'
-          });
-
-          await user.save();
-          await superUser.save();
-        } else {
-          throw new Error('Hash method not working properly');
-        }
-      });
-    });
-
-    // grabSuperUserToken();
-  });
-  afterEach((done: jest.DoneCallback) => {
-    done();
-  });
+  let user: IUser;
+  let superUser: IUser;
 
   // Auth token for the routes
   const professorToken = jwt.sign(
@@ -51,6 +19,45 @@ describe('GET /user/*', () => {
     { username: 'testTA@gmail.com', role: 'TA' },
     jwtSecret
   );
+
+  beforeEach(async () => {
+    const pass = 'password';
+
+    bcrypt.hash(pass, 10, function (_err, hash) {
+      bcrypt.compare(pass, hash, async function (_err, result) {
+      try{
+        //Add into collection, if the password hashed properly
+        if (result) {
+          user = await UserModel.create({
+            username: 'testTA@gmail.com',
+            password: hash,
+            role: 'TA'
+          });
+          
+          superUser = await UserModel.create({
+            username: 'testProfessor@gmail.com',
+            password: hash,
+            role: 'Professor'
+          });
+          
+          await user.save();
+          await superUser.save();
+
+        } else {
+          throw { message: 'Hash method not working properly'};
+        }
+      } catch (err) {
+        return err;
+      }
+      });
+    });
+
+  });
+  afterEach((done: jest.DoneCallback) => {
+    done();
+  });
+
+  
 
   // CREATE USER TESTS
   it('checks /user/create POST route and creates a user correctly', async () => {
@@ -134,31 +141,66 @@ describe('GET /user/*', () => {
         password: 'password',
       });
       expect(result2.statusCode).toEqual(400);
-    expect(result2.text).toEqual(
-      JSON.stringify({
-        message: 'This route requires a username, password, and role field to be passed in the body'
-      })
-    );
+      expect(result2.text).toEqual(
+        JSON.stringify({
+          message: 'This route requires a username, password, and role field to be passed in the body'
+        })
+      );
   });
 
   //LOGIN TESTS
-  // it('checks /user/login route gives 401 response on empty username and pass', async () => {
-  // const result: request.Response = await request(expressApp).post(
-  //   '/v1/user/login'
-  // );
-  // expect(result.statusCode).toEqual(401);
-  // });
-  // it('checks /user/login route and gives 401 on wrong username or pass', async () => {
-  //   const result: request.Response = await request(expressApp)
-  //     .post('/v1/user/login')
-  //     .send({ username: 'test@gm.com', password: 'password', });
-  //   expect(result.statusCode).toEqual(401);
-  // });
-  // it('logs in /userlogin route and gives 200 resposne ', async () => {
-  //   const result: request.Response = await request(expressApp)
-  //     .post('/v1/user/login')
-  //     .send({ username: 'test@gmail.com', password: 'password' });
-  //   expect(result.statusCode).toEqual(200);
-  //   expect(result.body).toHaveProperty('token');
-  // });
+  it('checks /user/login route gives 401 response on empty username and pass', async () => {
+  const result: request.Response = await request(expressApp).post(
+    '/v1/user/login'
+  );
+  expect(result.statusCode).toEqual(401);
+  });
+
+  it('checks /user/login route and gives 401 on wrong username or pass', async () => {
+    const result: request.Response = await request(expressApp)
+      .post('/v1/user/login')
+      .send({ username: 'test@gm.com', password: 'password' });
+    expect(result.statusCode).toEqual(401);
+  });
+  
+  it('logs in /user/login route and gives 200 resposne ', async () => {
+    const result: request.Response = await request(expressApp)
+      .post('/v1/user/login')
+      .send({ username: 'testTA@gmail.com', password: 'password' });
+    expect(result.statusCode).toEqual(200);
+    expect(result.body).toHaveProperty('token');
+  });
+
+  
 });
+
+
+// describe('POST /user/login success', () => {
+//   beforeEach(async () => {
+//     const pass = 'password';
+
+//     bcrypt.hash(pass, 10, function (_err, hash) {
+//       bcrypt.compare(pass, hash, async function (_err, result) {
+//       try{
+//         //Add into collection, if the password hashed properly
+//         if (result) {
+//           const user = await UserModel.create({
+//             username: 'testTA@gmail.com',
+//             password: hash,
+//             role: 'TA'
+//           });    
+//           await user.save();
+
+//         } else {
+//           throw { message: 'Hash method not working properly'};
+//         }
+//       } catch (err) {
+//         return err;
+//       }
+//       });
+//     });
+
+//   });
+
+ 
+// });
