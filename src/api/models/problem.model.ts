@@ -24,6 +24,7 @@ interface ProblemInterface {
   timeLimit: number;
   memoryLimit: number;
   buildCommand: string;
+  moduleId?: string;
 }
 
 interface ProblemDocument extends ProblemInterface, Document {}

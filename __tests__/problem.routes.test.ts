@@ -13,31 +13,30 @@ describe('GET /', () => {
     jwtSecret
   );
   beforeEach(async () => {
-
     const pass = 'password';
 
-    const hashedPassword: string = await new Promise((resolve, _reject) => {
+    const hashedPassword: string = await new Promise((resolve) => {
       bcrypt.hash(pass, 10, function (_err, hash) {
         resolve(hash);
-      })
-    })
+      });
+    });
 
     bcrypt.compare(pass, hashedPassword, async function (_err, result) {
-    try{
-      if(result){
-        //User creation for token
-        await UserModel.create({
-          username: 'dhruv2000patel@gmail.com',
-          password: hashedPassword,
-          role: 'TA'
-        });
-      } else {
-          throw { message: 'Hash method not working properly'};
+      try {
+        if (result) {
+          //User creation for token
+          await UserModel.create({
+            username: 'dhruv2000patel@gmail.com',
+            password: hashedPassword,
+            role: 'TA'
+          });
+        } else {
+          throw { message: 'Hash method not working properly' };
         }
-    } catch (err) {
-      return err;
-    }
-  });
+      } catch (err) {
+        return err;
+      }
+    });
 
     const module = await Module.create({
       name: 'Stacks/Lists/Queues',

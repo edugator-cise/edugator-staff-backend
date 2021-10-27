@@ -24,28 +24,28 @@ describe('GET /', () => {
   beforeEach(async () => {
     const pass = 'password';
 
-    const hashedPassword: string = await new Promise((resolve, _reject) => {
+    const hashedPassword: string = await new Promise((resolve) => {
       bcrypt.hash(pass, 10, function (_err, hash) {
         resolve(hash);
-      })
-    })
+      });
+    });
 
     bcrypt.compare(pass, hashedPassword, async function (_err, result) {
-    try{
-      if(result){
-        //User creation for token
-        await UserModel.create({
-          username: 'dhruv2000patel@gmail.com',
-          password: hashedPassword,
-          role: 'TA'
-        });
-      } else {
-          throw { message: 'Hash method not working properly'};
+      try {
+        if (result) {
+          //User creation for token
+          await UserModel.create({
+            username: 'dhruv2000patel@gmail.com',
+            password: hashedPassword,
+            role: 'TA'
+          });
+        } else {
+          throw { message: 'Hash method not working properly' };
         }
-    } catch (err) {
-      return err;
-    }
-  });
+      } catch (err) {
+        return err;
+      }
+    });
     // Problem creation for routes
     problem1 = await Problem.create(createSampleProblem());
     problem2 = await Problem.create(createSampleProblem());
@@ -64,7 +64,7 @@ describe('GET /', () => {
 
     module3 = await Module.create({
       name: 'Heaps',
-      number: 2.1
+      number: 7.1
     });
     //Put in the incorrect wrong id into the problems array
     module3.problems.push(module3.id);

@@ -11,10 +11,13 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
     // console.log("Role: ", res.locals.role);
     if (Object.keys(req.body).length === 0) {
       throw { message: 'This route requires a body to be passed in' };
-    };
+    }
 
-    if(!req.body.username || !req.body.password || !req.body.role){
-      throw { message: 'This route requires a username, password, and role field to be passed in the body' };
+    if (!req.body.username || !req.body.password || !req.body.role) {
+      throw {
+        message:
+          'This route requires a username, password, and role field to be passed in the body'
+      };
     }
 
     if (res.locals.role !== 'Professor') {
@@ -34,7 +37,7 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
       bcrypt.compare(pass, hash, async function (_err, result) {
         //Add into collection, if the password hashed properly
         try {
-        if (result) {
+          if (result) {
             const user = await UserModel.create({
               username: req.body.username,
               password: hash,
@@ -80,7 +83,7 @@ const authenticateUser = async (req: Request, res: Response): Promise<void> => {
 
     // Compares the passed in password to the hashed password in the collection
     bcrypt.compare(req.body.password, user.password, function (_err, result) {
-      try{
+      try {
         if (result) {
           const token = jwt.sign(
             { username: payload['username'], role: user.role },
@@ -93,7 +96,7 @@ const authenticateUser = async (req: Request, res: Response): Promise<void> => {
         } else {
           throw { message: 'Invalid Password - Unauthorized' };
         }
-      }catch(err){
+      } catch (err) {
         res.status(400).type('json').send(err);
       }
     });
