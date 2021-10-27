@@ -25,7 +25,7 @@ describe('GET /user/*', () => {
 
     const hashedPassword: string = await new Promise((resolve, _reject) => {
       bcrypt.hash(pass, 10, function (_err, hash) {
-        resolve(hash)
+        resolve(hash);
       })
     })
 
@@ -63,7 +63,8 @@ describe('GET /user/*', () => {
 
   
 
-  // CREATE USER TESTS
+  // CREATE USER TESTS ----------------------------------------------------------
+  // 200 SUCCESS TEST
   it('checks /user/create POST route and creates a user correctly', async () => {
     //Creates user in the DB with professor token
     const result: request.Response = await request(expressApp)
@@ -77,7 +78,7 @@ describe('GET /user/*', () => {
     expect(result.statusCode).toEqual(200);
   });
 
-  //FAIL TEST
+  // 403 FAIL TEST
   it('checks /user/create POST route FAILS with TA Token', async () => {
     //Creates user in the DB with TA token
     const result: request.Response = await request(expressApp)
@@ -96,6 +97,7 @@ describe('GET /user/*', () => {
     );
   });
 
+  // 400 FAIL TEST
   it('checks /user/create POST route FAILS on empty body', async () => {
     //Creates user in the DB with professor token
     const result: request.Response = await request(expressApp)
@@ -110,6 +112,7 @@ describe('GET /user/*', () => {
     );
   });
 
+  // 400 FAIL TEST
   it('checks /user/create POST route FAILS on invalid body (NO username or password or role in body)', async () => {
     //Creates user in the DB with professor token
     const result: request.Response = await request(expressApp)
@@ -152,22 +155,27 @@ describe('GET /user/*', () => {
       );
   });
 
-  //LOGIN TESTS
+  // LOGIN TESTS ---------------------------------------------------------------------------
+  // 401 FAIL TEST
   it('checks /user/login route gives 401 response on empty username and pass', async () => {
   const result: request.Response = await request(expressApp).post(
     '/v1/user/login'
   );
   expect(result.statusCode).toEqual(401);
+  expect(result.text).toEqual('Unauthorized');
   });
 
+  // 401 FAIL TEST
   it('checks /user/login route and gives 401 on wrong username or pass', async () => {
     const result: request.Response = await request(expressApp)
       .post('/v1/user/login')
       .send({ username: 'test@gm.com', password: 'password' });
     expect(result.statusCode).toEqual(401);
+    expect(result.text).toEqual('Unauthorized');
   });
   
-  it('logs in /user/login route and gives 200 resposne ', async () => {
+  // 200 SUCCESS TEST
+  it('logs in /user/login route and gives 200 response ', async () => {
     const result: request.Response = await request(expressApp)
       .post('/v1/user/login')
       .send({ username: 'testTA@gmail.com', password: 'password' });
@@ -177,34 +185,3 @@ describe('GET /user/*', () => {
 
   
 });
-
-
-// describe('POST /user/login success', () => {
-//   beforeEach(async () => {
-//     const pass = 'password';
-
-//     bcrypt.hash(pass, 10, function (_err, hash) {
-//       bcrypt.compare(pass, hash, async function (_err, result) {
-//       try{
-//         //Add into collection, if the password hashed properly
-//         if (result) {
-//           const user = await UserModel.create({
-//             username: 'testTA@gmail.com',
-//             password: hash,
-//             role: 'TA'
-//           });    
-//           await user.save();
-
-//         } else {
-//           throw { message: 'Hash method not working properly'};
-//         }
-//       } catch (err) {
-//         return err;
-//       }
-//       });
-//     });
-
-//   });
-
- 
-// });

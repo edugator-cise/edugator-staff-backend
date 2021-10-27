@@ -10,7 +10,7 @@ export const getModules = async (
   let modules: any;
   try {
     //Find All modules
-    modules = await Module.find().select('-problems');
+    modules = await Module.find().select('-problems').sort( { 'number': 1 } );
     res.status(200).send(modules);
   } catch (err) {
     res.status(400).type('json').send(err);
@@ -78,7 +78,7 @@ export const getModulesWithProblems = async (
   let modules: any;
   try {
     //Find All modules
-    modules = await Module.find().populate('problems');
+    modules = await Module.find().populate('problems').sort( { 'number': 1 } );
     res.status(200).send(modules);
   } catch (err) {
     res.status(400).type('json').send(err);

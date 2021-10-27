@@ -5,6 +5,9 @@ import { Module, ModuleDocument } from '../src/api/models/module.model';
 import { Problem, ProblemDocument } from '../src/api/models/problem.model';
 import { createSampleModule } from '../mocks/module';
 import { createSampleProblem } from '../mocks/problems';
+import * as bcrypt from 'bcrypt';
+import * as jwt from 'jsonwebtoken';
+import { jwtSecret } from '../src/config/vars';
 
 describe('GET /', () => {
   let module1: ModuleDocument;
@@ -13,14 +16,36 @@ describe('GET /', () => {
   let problem1: ProblemDocument;
   let problem2: ProblemDocument;
 
-  beforeEach(async () => {
-    //User creation for token
-    await UserModel.create({
-      username: 'dhruv2000patel@gmail.com',
-      password: 'password',
-      role: 'TA'
-    });
+  const token = jwt.sign(
+    { username: 'dhruv2000patel@gmail.com', role: 'TA' },
+    jwtSecret
+  );
 
+  beforeEach(async () => {
+    const pass = 'password';
+
+    const hashedPassword: string = await new Promise((resolve, _reject) => {
+      bcrypt.hash(pass, 10, function (_err, hash) {
+        resolve(hash);
+      })
+    })
+
+    bcrypt.compare(pass, hashedPassword, async function (_err, result) {
+    try{
+      if(result){
+        //User creation for token
+        await UserModel.create({
+          username: 'dhruv2000patel@gmail.com',
+          password: hashedPassword,
+          role: 'TA'
+        });
+      } else {
+          throw { message: 'Hash method not working properly'};
+        }
+    } catch (err) {
+      return err;
+    }
+  });
     // Problem creation for routes
     problem1 = await Problem.create(createSampleProblem());
     problem2 = await Problem.create(createSampleProblem());
@@ -51,28 +76,6 @@ describe('GET /', () => {
   });
 
   // Auth token for the routes
-  let token = '';
-
-  // This grabs the authentication token for each test
-  beforeEach(grabToken());
-
-  function grabToken() {
-    return function (done) {
-      request(expressApp)
-        .post('/v1/user/login')
-        .send({
-          username: 'dhruv2000patel@gmail.com',
-          password: 'password'
-        })
-        .expect(200)
-        .end(onResponse);
-
-      function onResponse(_err, res) {
-        token = res.body.token;
-        return done();
-      }
-    };
-  }
 
   // POST Routes for Module ------------------------------------------------
   // 200 SUCCESS Test

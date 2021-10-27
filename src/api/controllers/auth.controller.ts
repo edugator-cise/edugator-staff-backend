@@ -75,11 +75,8 @@ const authenticateUser = async (req: Request, res: Response): Promise<void> => {
     const payload = {
       username: req.body.username
     };
-    console.log(req.body.username);
-    console.log(req.body.password);
 
     const user: IUser = await UserModel.findOne(payload);
-    console.log(user);
 
     // Compares the passed in password to the hashed password in the collection
     bcrypt.compare(req.body.password, user.password, function (_err, result) {
@@ -102,7 +99,6 @@ const authenticateUser = async (req: Request, res: Response): Promise<void> => {
     });
   } catch (err) {
     // logger error
-    console.log(err);
     res.sendStatus(httpStatus.UNAUTHORIZED);
   }
 };
