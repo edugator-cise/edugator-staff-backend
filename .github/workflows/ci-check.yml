@@ -12,7 +12,11 @@ on:
     branches:
       - main
       - release
-
+  workflow_dispatch:
+    branches:
+      - main
+      - release
+      - marcgabe15/add-test-workflow
 jobs:
   test:
     runs-on: ubuntu-latest
