@@ -1,6 +1,7 @@
 import { expressApp } from '../src/config/express';
 import * as request from 'supertest';
 import { UserModel } from '../src/api/models/user.model';
+
 describe('GET /user/login', () => {
   beforeEach(async () => {
     const user = new UserModel({
