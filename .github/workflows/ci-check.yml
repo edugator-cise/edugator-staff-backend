@@ -12,7 +12,10 @@ on:
     branches:
       - main
       - release
-
+  workflow_dispatch:
+    branches:
+      - main
+      - release
 jobs:
   test:
     runs-on: ubuntu-latest
