@@ -2,8 +2,9 @@ import { Request, Response } from 'express';
 import { s3Client, batchClient } from '../services/aws';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { SubmitJobCommand } from '@aws-sdk/client-batch';
+import {createJobCommand} from "../../config/batchenv";
 import { v4 as uuidv4 } from 'uuid';
-import { BUCKET_NAME, judgeURI, EDUGATOR_API_PASS, EDUGATOR_API_USER, access_key_id, secret_access_key } from '../../config/vars';
+import { BUCKET_NAME } from '../../config/vars';
 const processAndTestSubmissions = async (
   req: Request,
   res: Response
@@ -21,59 +22,7 @@ const processAndTestSubmissions = async (
     Body: req.file.buffer
   });
 
-  const submitJobCommand = new SubmitJobCommand({
-    jobDefinition: "batch_test_grader:3",
-    jobName: "grade_submissions", 
-    jobQueue: "batch-queue",
-    containerOverrides: {
-      environment: [
-        {
-          name:"INPUT_BUCKET",
-          value: BUCKET_NAME
-        },
-        {
-          name: "FOLDER_NAME",
-          value: uuidString
-        },
-        {
-          name: "FILE_SUBMISSION_NAME",
-          value: "file-submission.zip",
-        },
-        {
-          name: "REGION_AWS",
-          value: "us-east-1"
-        },
-        {
-          name: "PROBLEMID",
-          value: problemID
-        },
-        {
-          name: "EDUGATOR_API_USER",
-          value: EDUGATOR_API_USER
-        },
-        {
-          name: "EDUGATOR_API_PASS",
-          value: EDUGATOR_API_PASS
-        },
-        {
-          name: "JUDGE_URL",
-          value: judgeURI
-        },
-        {
-          name: "EMAIL_TO_SEND",
-          value: email
-        },
-        {
-          name: "AWS_ACCESS_KEY_ID",
-          value: access_key_id
-        },
-        {
-          name: "AWS_SECRET_ACCESS_KEY",
-          value: secret_access_key
-        }
-      ]
-    }
-  })
+  const submitJobCommand = new SubmitJobCommand(createJobCommand(uuidString, problemID as string, email as string))
   try {
     await s3Client.send(createDirectoryCommand);
     await s3Client.send(uploadZipFileCommand);

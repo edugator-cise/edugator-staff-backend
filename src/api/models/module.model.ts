@@ -1,10 +1,12 @@
-import { model, Schema, Types } from 'mongoose';
+import { model, Document, Schema, Types } from 'mongoose';
 
 interface ModuleInterface {
   name: string;
   number: number;
   problems: [Types.ObjectId];
 }
+
+interface ModuleDocument extends ModuleInterface, Document {}
 
 const moduleSchema = new Schema(
   {
@@ -25,9 +27,8 @@ const moduleSchema = new Schema(
   { collection: 'modules' }
 );
 
-const Module = model<ModuleInterface>(
-  'This module parameter does NOT matter',
-  moduleSchema
-);
+interface ModuleDocument extends ModuleInterface, Document {}
 
-export default Module;
+const Module = model<ModuleInterface>('modules', moduleSchema);
+
+export { Module, ModuleDocument };

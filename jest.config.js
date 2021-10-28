@@ -1,9 +1,13 @@
 module.exports = {
+  preset: '@shelf/jest-mongodb',
   testEnvironment: 'node',
   transform: {
     "^.+\\.tsx?$": "ts-jest"
   },
-  setupFilesAfterEnv: ["<rootDir>/mocks/db.ts"],
+  globalSetup: '<rootDir>/mocks/setup/setup.ts',
+  globalTeardown: '<rootDir>/mocks/setup/teardown.ts',
+  setupFilesAfterEnv: ['<rootDir>/mocks/setup/setupAfterEnv.ts'],
+  testEnvironment: '<rootDir>/mocks/setup/environment.js',
   moduleFileExtensions: [
     "ts",
     "tsx",

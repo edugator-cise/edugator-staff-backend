@@ -1,27 +1,25 @@
 import * as express from 'express';
 import {
-  readStudentProblems,
   readAdminProblems,
   createProblem,
   updateProblem,
-  deleteProblem
+  deleteProblem,
+  readStudentProblems
 } from '../../controllers/problem.controller';
 import { authenticateJWT } from '../../middlewares/auth';
 const adminProblemRouter = express.Router();
 const studentProblemRouter = express.Router();
 
 // Student routes
-studentProblemRouter.route('/?').get(readStudentProblems);
+studentProblemRouter.route('/').get(readStudentProblems);
 studentProblemRouter.route('/:problemId').get(readStudentProblems);
-studentProblemRouter
-  .route('/student/problem/findByModule/:moduleId')
-  .get(readStudentProblems);
+studentProblemRouter.route('/findByModule/:moduleId').get(readStudentProblems);
 
 // Admin routes
 adminProblemRouter
-  .route('/?')
+  .route('/')
   .get(authenticateJWT, readAdminProblems)
-  .post(createProblem);
+  .post(authenticateJWT, createProblem);
 adminProblemRouter
   .route('/:problemId')
   .get(authenticateJWT, readAdminProblems)
