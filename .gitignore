@@ -43,3 +43,6 @@ public_dev
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+
+# VS Code Settings.json
+.vscode/settings.json
