@@ -22,9 +22,6 @@ env:
 
 # This action works with pull requests and pushes
 on:
-  push:
-    branches:
-      - marcgabe15/upload-zip-file
   pull_request:
     branches:
       - main
@@ -54,4 +51,4 @@ jobs:
         env:
           CI: true
           ISOLATE: true
-          NODE_ENV: ${{secrets.NODE_ENV}}
+          NODE_ENV: production
