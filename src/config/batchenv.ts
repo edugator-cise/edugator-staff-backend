@@ -44,16 +44,16 @@ export const createJobCommand = (
           value: vars.judgeURI
         },
         {
+          name: 'SENDER_EMAIL',
+          value: vars.SENDER_EMAIL
+        },
+        {
           name: 'AWS_ACCESS_KEY_ID',
           value: vars.access_key_id
         },
         {
           name: 'AWS_SECRET_ACCESS_KEY',
           value: vars.secret_access_key
-        },
-        {
-          name: 'SENDER_EMAIL',
-          value: vars.SENDER_EMAIL
         },
         {
           name: 'APP_PASSWORD',

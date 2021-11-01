@@ -1,6 +1,4 @@
-// import * as  passport from 'passport';
 import * as passportJWT from 'passport-jwt';
-// import { UserModel }  from '../api/models/user.model';
 import { jwtSecret } from './vars';
 const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
