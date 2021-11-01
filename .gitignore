@@ -46,3 +46,4 @@ public_dev
 
 # VS Code Settings.json
 .vscode/settings.json
+.vscode
