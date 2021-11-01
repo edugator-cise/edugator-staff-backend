@@ -1,15 +1,18 @@
 name: Continuous Integration
 
-env:
-  DB_URI: ${{secrets.DB_URI}}
-  BETA_JUDGE_URI: ${{secrets.BETA_JUDGE_URI}}
-  PROD_JUDGE_URI: ${{secrets.PROD_JUDGE_URI}}
-  JWT_SECRET: ${{secrets.JWT_SECRET}}
-  ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  SECRET_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+# env:
+#   DB_URI: ${{secrets.DB_URI}}
+#   BETA_JUDGE_URI: ${{secrets.BETA_JUDGE_URI}}
+#   PROD_JUDGE_URI: ${{secrets.PROD_JUDGE_URI}}
+#   JWT_SECRET: ${{secrets.JWT_SECRET}}
+#   ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#   SECRET_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 # This action works with pull requests and pushes
 on:
+  push:
+    branches:
+      - marcgabe15/upload-zip-file
   pull_request:
     branches:
       - main
@@ -18,7 +21,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-
+    environment: production
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -28,8 +31,5 @@ jobs:
         run: npm run lint
       - name: Unit tests
         run: npm run test
-        env:
-          CI: true
-          ISOLATE: true
       - name: build
         run: npm run build
