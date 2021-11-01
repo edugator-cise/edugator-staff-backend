@@ -23,6 +23,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     steps:
+      env:
+        CI: true
+        ISOLATE: true
       - name: Checkout
         uses: actions/checkout@v2
       - name: Install packages
@@ -31,8 +34,5 @@ jobs:
         run: npm run lint
       - name: Unit tests
         run: npm run test
-        env:
-          CI: true
-          ISOLATE: true
       - name: build
         run: npm run build
