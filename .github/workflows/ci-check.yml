@@ -14,7 +14,6 @@ env:
   JOB_QUEUE: ${{secrets.JOB_QUEUE}}
   JUDGE_URL: ${{secrets.JUDGE_URL}}
   JWT_SECRET: ${{secrets.JWT_SECRET}}
-  # NODE_ENV: ${{secrets.NODE_ENV}}
   PROD_JUDGE_URI: ${{secrets.PROD_JUDGE_URI}}
   REGION_AWS: ${{secrets.REGION_AWS}}
   SENDER_EMAIL: ${{secrets.SENDER_EMAIL}}
@@ -52,3 +51,7 @@ jobs:
           ISOLATE: true
       - name: build
         run: npm run build
+        env:
+          CI: true
+          ISOLATE: true
+          NODE_ENV: ${{secrets.NODE_ENV}}
