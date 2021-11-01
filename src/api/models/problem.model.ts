@@ -66,10 +66,6 @@ const problemSchema = new Schema<ProblemInterface>(
       required: true,
       enum: ['.java', '.cpp', '.h'] //I don't know what else could go in here? Maybe ".cxx"?
     },
-    templatePackage: {
-      type: String,
-      required: true
-    },
     testCases: [
       {
         input: {
@@ -92,6 +88,10 @@ const problemSchema = new Schema<ProblemInterface>(
         }
       }
     ],
+    templatePackage: {
+      type: String,
+      required: true
+    },
     timeLimit: {
       type: Number
     },
