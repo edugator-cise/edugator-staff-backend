@@ -82,7 +82,11 @@ export const getModulesWithProblems = async (
   let modules: ModuleInterface[];
   try {
     //Find All modules
-    modules = await Module.find().populate('problems').sort({ number: 1 });
+    modules = await Module.find().populate({
+      path: 'problems',
+      select: 'id title'
+  }).sort({ number: 1 });
+
     res.status(200).send(modules);
   } catch (err) {
     res.status(400).type('json').send(err);

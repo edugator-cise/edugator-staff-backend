@@ -5,10 +5,8 @@ import { UserModel, IUser } from '../models/user.model';
 import { jwtSecret, jwtExpirationInterval } from '../../config/vars';
 import * as bcrypt from 'bcrypt';
 
-//TODO: write tests for this
 const createUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    // console.log("Role: ", res.locals.role);
     if (Object.keys(req.body).length === 0) {
       throw { message: 'This route requires a body to be passed in' };
     }
@@ -60,17 +58,6 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
     res.status(400).type('json').send(err);
   }
 };
-
-// const checkHash = (plainText, hashedValue) => {
-//   bcrypt.compare(plainText, hashedValue, function(_err, result){
-//     if (result) {
-//       console.log("Passed in value matches the passed in hash!")
-//     }
-//     else {
-//       console.log("Does NOT match passed in hash!");
-//     }
-//   });
-// }
 
 //TODO: Write tests for this
 const authenticateUser = async (req: Request, res: Response): Promise<void> => {
