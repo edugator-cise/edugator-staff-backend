@@ -275,4 +275,16 @@ const submitCode = async (
   }
 };
 
-export { runCode, getCode, submitCode, deleteCode, judge0Interrupt, judge0Validator, submissionValidator, outputValidator, createErrObject, createPassFailObject, poll};
+export {
+  runCode,
+  getCode,
+  submitCode,
+  deleteCode,
+  judge0Interrupt,
+  judge0Validator,
+  submissionValidator,
+  outputValidator,
+  createErrObject,
+  createPassFailObject,
+  poll
+};
