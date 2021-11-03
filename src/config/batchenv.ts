@@ -66,6 +66,10 @@ export const createJobCommand = (
         {
           name: 'EDUGATOR_API_URL',
           value: vars.EDUGATOR_API_URL
+        },
+        {
+          name: 'EDUGATOR_AUTH_TOKEN',
+          value: vars.EDUGATOR_AUTH_TOKEN
         }
       ]
     }

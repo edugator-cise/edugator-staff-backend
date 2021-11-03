@@ -24,6 +24,9 @@ const REGION_AWS = process.env.REGION_AWS;
 //Email user and pass
 const SENDER_EMAIL = process.env.SENDER_EMAIL;
 const APP_PASSWORD = process.env.APP_PASSWORD;
+
+//AUTH token for EDUGATOR
+const EDUGATOR_AUTH_TOKEN = process.env.EDUGATOR_AUTH_TOKEN;
 export {
   env,
   port,
@@ -40,5 +43,6 @@ export {
   EDUGATOR_API_URL,
   SENDER_EMAIL,
   APP_PASSWORD,
-  REGION_AWS
+  REGION_AWS,
+  EDUGATOR_AUTH_TOKEN
 };
