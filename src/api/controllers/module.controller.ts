@@ -1,16 +1,20 @@
 import { Request, Response } from 'express';
 import { Types } from 'mongoose';
-import { Module, ModuleDocument } from '../models/module.model';
+import {
+  Module,
+  ModuleDocument,
+  ModuleInterface
+} from '../models/module.model';
 import { Problem } from '../models/problem.model';
 
 export const getModules = async (
   _req: Request,
   res: Response
 ): Promise<void> => {
-  let modules: any;
+  let modules: ModuleInterface[];
   try {
     //Find All modules
-    modules = await Module.find().select('-problems');
+    modules = await Module.find().select('-problems').sort({ number: 1 });
     res.status(200).send(modules);
   } catch (err) {
     res.status(400).type('json').send(err);
@@ -75,10 +79,16 @@ export const getModulesWithProblems = async (
   _req: Request,
   res: Response
 ): Promise<void> => {
-  let modules: any;
+  let modules: ModuleInterface[];
   try {
     //Find All modules
-    modules = await Module.find().populate('problems');
+    modules = await Module.find()
+      .populate({
+        path: 'problems',
+        select: 'id title'
+      })
+      .sort({ number: 1 });
+
     res.status(200).send(modules);
   } catch (err) {
     res.status(400).type('json').send(err);
@@ -91,6 +101,7 @@ export const postModules = async (
 ): Promise<void> => {
   try {
     const module = await Module.create(req.body);
+    // console.log(res);
     res.status(200).send(
       JSON.stringify({
         id: module._id

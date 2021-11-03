@@ -3,12 +3,39 @@ import * as request from 'supertest';
 import { UserModel } from '../src/api/models/user.model';
 import { Module } from '../src/api/models/module.model';
 import { createSamplePayload } from '../mocks/problems';
+import * as bcrypt from 'bcrypt';
+import * as jwt from 'jsonwebtoken';
+import { jwtSecret } from '../src/config/vars';
 
 describe('GET /', () => {
+  const token = jwt.sign(
+    { username: 'dhruv2000patel@gmail.com', role: 'TA' },
+    jwtSecret
+  );
   beforeEach(async () => {
-    await UserModel.create({
-      username: 'dhruv2000patel@gmail.com',
-      password: 'password'
+    const pass = 'password';
+
+    const hashedPassword: string = await new Promise((resolve) => {
+      bcrypt.hash(pass, 10, function (_err, hash) {
+        resolve(hash);
+      });
+    });
+
+    bcrypt.compare(pass, hashedPassword, async function (_err, result) {
+      try {
+        if (result) {
+          //User creation for token
+          await UserModel.create({
+            username: 'dhruv2000patel@gmail.com',
+            password: hashedPassword,
+            role: 'TA'
+          });
+        } else {
+          throw { message: 'Hash method not working properly' };
+        }
+      } catch (err) {
+        return err;
+      }
     });
 
     const module = await Module.create({
@@ -24,30 +51,8 @@ describe('GET /', () => {
     done();
   });
 
-  // Auth token for the routes
-  let token = '';
   // Saved id for the module
   let moduleId = '';
-  // This grabs the authentication token for each test
-  beforeEach(grabToken());
-
-  function grabToken() {
-    return function (done: () => any) {
-      request(expressApp)
-        .post('/v1/user/login')
-        .send({
-          username: 'dhruv2000patel@gmail.com',
-          password: 'password'
-        })
-        .expect(200)
-        .end(onResponse);
-
-      function onResponse(_err, res) {
-        token = res.body.token;
-        return done();
-      }
-    };
-  }
 
   it('creates a problem and gets a 200 response', async () => {
     const sampleProblem = createSamplePayload(moduleId);

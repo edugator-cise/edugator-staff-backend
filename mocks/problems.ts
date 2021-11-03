@@ -1,3 +1,5 @@
+// import { ProblemInterface } from "../src/api/models/problem.model";
+
 //eslint-disable-next-line
 const createSampleProblem = () => {
   return {
@@ -26,10 +28,12 @@ const createSampleProblem = () => {
     buildCommand: 'N/A'
   };
 };
+
 const createSamplePayload = (_moduleId = '53b1c579bdf3de74f76bdac9') => {
-  return {
+  const temp = {
     moduleId: _moduleId,
     ...createSampleProblem()
   };
+  return temp;
 };
 export { createSampleProblem, createSamplePayload };
