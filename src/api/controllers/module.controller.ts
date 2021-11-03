@@ -49,6 +49,7 @@ export const getModulesWithNonHiddenProblemsAndTestCases = async (
     res.status(400).send(err);
   }
 };
+
 export const getModuleByID = async (
   req: Request,
   res: Response
@@ -73,6 +74,24 @@ export const getModuleByID = async (
   } catch (err) {
     res.status(400).send(err);
   }
+};
+
+export const getModuleByProblemId = async (
+  req: Request,
+  res: Response
+): Promise<Response<any, Record<string, any>>> => {
+  if (!Types.ObjectId.isValid(req.params.problemId)) {
+    return res.status(400).send('This route requires a valid problem ID');
+  }
+  // Get all modules
+  let modules: ModuleInterface[] = await Module.find();
+  modules = modules.filter((doc) => {
+    return doc.problems.includes(new Types.ObjectId(req.params.problemId));
+  });
+  if (modules.length !== 1) {
+    return res.status(500).send('Multiple modules have this problemId');
+  }
+  return res.status(200).send(modules[0]);
 };
 
 export const getModulesWithProblems = async (
