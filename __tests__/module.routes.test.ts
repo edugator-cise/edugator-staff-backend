@@ -184,6 +184,47 @@ describe('GET /', () => {
     expect(result.statusCode).toEqual(401);
   });
 
+  //getModulesByProblemId
+  //200 success test
+  it('checks /module/ByProblemId/:problemId GET route returns status 200 for a valid problemId', async () => {
+    const result: request.Response = await request(expressApp)
+      .get(`/v1/module/ByProblemId/${problem1.id}`)
+      .set('Authorization', 'bearer ' + token)
+      .send();
+    expect(result.statusCode).toEqual(200);
+    expect(result.body.name).toEqual(module1.name);
+    expect(result.body.number).toEqual(module1.number);
+  });
+
+  //getModulesByProblemId
+  //400 malformed request test
+  it('checks /module/ByProblemId/:problemId GET route returns status 400 for an ill-formed problemId', async () => {
+    const result: request.Response = await request(expressApp)
+      .get('/v1/module/ByProblemId/010101')
+      .set('Authorization', 'bearer ' + token)
+      .send();
+    expect(result.statusCode).toEqual(400);
+  });
+
+  //getModulesByProblemId
+  //401 unauthorized test
+  it('checks /module/ByProblemId/:problemId GET route returns status 400 for an ill-formed problemId', async () => {
+    const result: request.Response = await request(expressApp)
+      .get(`/v1/module/ByProblemId/${problem1.id}`)
+      .send();
+    expect(result.statusCode).toEqual(401);
+  });
+
+  //getModulesByProblemId
+  //404 not found test
+  it('checks /module/ByProblemId/:problemId GET route returns status 404 for a nonexistent problemId', async () => {
+    const result: request.Response = await request(expressApp)
+      .get('/v1/module/ByProblemId/012345678901234567890123')
+      .set('Authorization', 'bearer ' + token)
+      .send();
+    expect(result.statusCode).toEqual(404);
+  });
+
   // PUT Routes for Modules ------------------------------------------------------------
   // 200 SUCCESS Test
   it('checks /module/moduleId PUT route returns status 200 for updateModule', async () => {

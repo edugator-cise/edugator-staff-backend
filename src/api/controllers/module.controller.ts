@@ -88,7 +88,12 @@ export const getModuleByProblemId = async (
   modules = modules.filter((doc) => {
     return doc.problems.includes(new Types.ObjectId(req.params.problemId));
   });
-  if (modules.length !== 1) {
+  if (modules.length === 0) {
+    return res
+      .status(404)
+      .send('No module associated with this problemId was found');
+  }
+  if (modules.length > 1) {
     return res.status(500).send('Multiple modules have this problemId');
   }
   return res.status(200).send(modules[0]);
