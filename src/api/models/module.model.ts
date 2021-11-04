@@ -16,7 +16,8 @@ const moduleSchema = new Schema(
     },
     number: {
       type: Number,
-      required: true
+      required: true,
+      set: setNumber
     },
     problems: {
       type: [Schema.Types.ObjectId],
@@ -31,4 +32,8 @@ interface ModuleDocument extends ModuleInterface, Document {}
 
 const Module = model<ModuleInterface>('modules', moduleSchema);
 
-export { Module, ModuleDocument };
+function setNumber(num) {
+  return num.toFixed(1);
+}
+
+export { Module, ModuleDocument, ModuleInterface };

@@ -138,6 +138,26 @@ const runCode = async (req: Request, response: Response): Promise<Response> => {
     });
 };
 
+const deleteCode = async (
+  req: Request,
+  response: Response
+): Promise<Response> => {
+  // TODO: Add logger
+  const { token, base64 } = req.query;
+
+  return judgeEngine
+    .deleteSubmission(token as string, base64 === 'true')
+    .then((axiosResponse: AxiosResponse) => {
+      return response.send(axiosResponse.data).status(httpStatus.OK);
+    })
+    .catch((axiosError: AxiosError) => {
+      //eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const errorCode = axiosError.response!.status;
+      const errorMessage = axiosError.message;
+      return response.status(errorCode).send(errorMessage);
+    });
+};
+
 const getCode = async (req: Request, response: Response): Promise<Response> => {
   // TODO: Add logger
 
@@ -255,4 +275,16 @@ const submitCode = async (
   }
 };
 
-export { runCode, getCode, submitCode };
+export {
+  runCode,
+  getCode,
+  submitCode,
+  deleteCode,
+  judge0Interrupt,
+  judge0Validator,
+  submissionValidator,
+  outputValidator,
+  createErrObject,
+  createPassFailObject,
+  poll
+};

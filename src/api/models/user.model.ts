@@ -2,6 +2,7 @@ import { model, Schema, Document } from 'mongoose';
 interface User {
   username: string;
   password: string;
+  role: string;
 }
 
 const userSchema = new Schema<User>(
@@ -13,6 +14,11 @@ const userSchema = new Schema<User>(
     password: {
       type: String,
       required: true
+    },
+    role: {
+      type: String,
+      required: true,
+      enum: ['Professor', 'TA']
     }
   },
   { collection: 'userModel' }

@@ -1,16 +1,20 @@
 import { Request, Response } from 'express';
 import { Types } from 'mongoose';
-import { Module, ModuleDocument } from '../models/module.model';
+import {
+  Module,
+  ModuleDocument,
+  ModuleInterface
+} from '../models/module.model';
 import { Problem } from '../models/problem.model';
 
 export const getModules = async (
   _req: Request,
   res: Response
 ): Promise<void> => {
-  let modules: any;
+  let modules: ModuleInterface[];
   try {
     //Find All modules
-    modules = await Module.find().select('-problems');
+    modules = await Module.find().select('-problems').sort({ number: 1 });
     res.status(200).send(modules);
   } catch (err) {
     res.status(400).type('json').send(err);
@@ -45,6 +49,7 @@ export const getModulesWithNonHiddenProblemsAndTestCases = async (
     res.status(400).send(err);
   }
 };
+
 export const getModuleByID = async (
   req: Request,
   res: Response
@@ -71,14 +76,43 @@ export const getModuleByID = async (
   }
 };
 
+export const getModuleByProblemId = async (
+  req: Request,
+  res: Response
+): Promise<Response<any, Record<string, any>>> => {
+  if (!Types.ObjectId.isValid(req.params.problemId)) {
+    return res.status(400).send('This route requires a valid problem ID');
+  }
+  // Get all modules
+  let modules: ModuleInterface[] = await Module.find();
+  modules = modules.filter((doc) => {
+    return doc.problems.includes(new Types.ObjectId(req.params.problemId));
+  });
+  if (modules.length === 0) {
+    return res
+      .status(404)
+      .send('No module associated with this problemId was found');
+  }
+  if (modules.length > 1) {
+    return res.status(500).send('Multiple modules have this problemId');
+  }
+  return res.status(200).send(modules[0]);
+};
+
 export const getModulesWithProblems = async (
   _req: Request,
   res: Response
 ): Promise<void> => {
-  let modules: any;
+  let modules: ModuleInterface[];
   try {
     //Find All modules
-    modules = await Module.find().populate('problems');
+    modules = await Module.find()
+      .populate({
+        path: 'problems',
+        select: 'id title'
+      })
+      .sort({ number: 1 });
+
     res.status(200).send(modules);
   } catch (err) {
     res.status(400).type('json').send(err);
@@ -91,6 +125,7 @@ export const postModules = async (
 ): Promise<void> => {
   try {
     const module = await Module.create(req.body);
+    // console.log(res);
     res.status(200).send(
       JSON.stringify({
         id: module._id
