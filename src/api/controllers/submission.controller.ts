@@ -8,7 +8,6 @@ const processAndTestSubmissions = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  // const uuidString = uuidv4();
   const isoString = new Date().toISOString();
   const createDirectoryCommand = new PutObjectCommand({
     Bucket: BUCKET_NAME,
