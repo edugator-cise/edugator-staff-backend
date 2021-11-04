@@ -39,4 +39,33 @@ const problemValidation = (data: any): ValidationResult => {
   return schema.validate(data);
 };
 
-export default problemValidation;
+const problemValidationWithoutModuleId = (data: any): ValidationResult => {
+  const schema = object({
+    moduleId: string().min(24).max(24),
+    statement: string().required(),
+    title: string().required(),
+    hidden: boolean().required(),
+    language: string().required(),
+    dueDate: date().iso().required(),
+    code: {
+      header: string().allow('').required(),
+      body: string().allow('').required(),
+      footer: string().allow('').required()
+    },
+    fileExtension: string().valid('.java', '.cpp', '.h').min(1).required(),
+    testCases: array().items({
+      input: string().required(),
+      expectedOutput: string().min(1).required(),
+      hint: string().required(),
+      visibility: number().valid(0, 1, 2).required()
+    }),
+    templatePackage: string().uri().required(),
+    timeLimit: number(),
+    memoryLimit: number(),
+    buildCommand: string()
+  });
+
+  return schema.validate(data);
+};
+
+export { problemValidation, problemValidationWithoutModuleId };
