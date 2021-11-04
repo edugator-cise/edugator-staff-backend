@@ -143,10 +143,10 @@ const deleteCode = async (
   response: Response
 ): Promise<Response> => {
   // TODO: Add logger
-  const { problemID, base64 } = req.query;
+  const { token, base64 } = req.query;
 
   return judgeEngine
-    .deleteSubmission(problemID as string, base64 === 'true')
+    .deleteSubmission(token as string, base64 === 'true')
     .then((axiosResponse: AxiosResponse) => {
       return response.send(axiosResponse.data).status(httpStatus.OK);
     })

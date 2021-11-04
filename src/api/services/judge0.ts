@@ -44,7 +44,7 @@ class JudgeServer {
       }
     };
     return this.axiosInstance.delete(
-      '/submissions/' + submissionId + `?base64_encoded=${base64}`,
+      `/submissions/${submissionId}?base64_encoded=${base64}`,
       config
     );
   }
