@@ -1,7 +1,10 @@
 import { Request, Response } from 'express';
 import { Module, ModuleDocument } from '../models/module.model';
 import { Problem, ProblemDocument } from '../models/problem.model';
-import problemValidation from '../validation/problem.validation';
+import {
+  problemValidation,
+  problemValidationWithoutModuleId
+} from '../validation/problem.validation';
 
 const readStudentProblems = async (
   req: Request,
@@ -145,7 +148,7 @@ const updateProblem = async (
   req: Request,
   res: Response
 ): Promise<Response<any, Record<string, any>>> => {
-  const { error } = problemValidation(req.body);
+  const { error } = problemValidationWithoutModuleId(req.body);
   if (error) {
     return res.status(400).send(error.details[0].message);
   }
