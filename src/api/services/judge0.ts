@@ -33,6 +33,21 @@ class JudgeServer {
       payload
     );
   }
+
+  deleteSubmission(
+    submissionId: string,
+    base64: boolean
+  ): Promise<AxiosResponse> {
+    const config = {
+      headers: {
+        'X-Auth-User': process.env.EDUGATOR_AUTH_TOKEN
+      }
+    };
+    return this.axiosInstance.delete(
+      `/submissions/${submissionId}?base64_encoded=${base64}`,
+      config
+    );
+  }
   getSubmission(token: string, base64: boolean): Promise<AxiosResponse> {
     return this.axiosInstance.get(
       `/submissions/${token}?base64_encoded=${base64}`

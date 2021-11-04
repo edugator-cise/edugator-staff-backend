@@ -1,11 +1,23 @@
 name: Continuous Integration
 
+# this env sets all the needed environment variables for the back end
 env:
-  DB_URI: ${{secrets.DB_URI}}
-  BETA_JUDGE_URI: ${{secrets.BETA_JUDGE_URI}}
-  PROD_JUDGE_URI: ${{secrets.PROD_JUDGE_URI}}
-  JWT_SECRET: ${{secrets.JWT_SECRET}}
+  APP_PASSWORD: ${{secrets.APP_PASSWORD}}
   ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  BETA_JUDGE_URI: ${{secrets.BETA_JUDGE_URI}}
+  DB_URI: ${{secrets.DB_URI}}
+  EDUGATOR_API_PASS: ${{secrets.EDUGATOR_API_PASS}}
+  EDUGATOR_API_URL: ${{secrets.EDUGATOR_API_URL}}
+  EDUGATOR_API_USER: ${{secrets.EDUGATOR_API_USER}}
+  EDUGATOR_AUTH_TOKEN: ${{secrets.EDUGATOR_AUTH_TOKEN}}
+  JOB_DEFINITION: ${{secrets.JOB_DEFINITION}}
+  JOB_QUEUE: ${{secrets.JOB_QUEUE}}
+  JUDGE_URL: ${{secrets.JUDGE_URL}}
+  JWT_SECRET: ${{secrets.JWT_SECRET}}
+  PROD_JUDGE_URI: ${{secrets.PROD_JUDGE_URI}}
+  REGION_AWS: ${{secrets.REGION_AWS}}
+  SENDER_EMAIL: ${{secrets.SENDER_EMAIL}}
+  UPLOAD_SUBMISSIONS_BUCKET: ${{secrets.UPLOAD_SUBMISSIONS_BUCKET}}
   SECRET_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 # This action works with pull requests and pushes
@@ -36,3 +48,7 @@ jobs:
           ISOLATE: true
       - name: build
         run: npm run build
+        env:
+          CI: true
+          ISOLATE: true
+          NODE_ENV: production

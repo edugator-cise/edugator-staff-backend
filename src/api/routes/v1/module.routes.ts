@@ -19,5 +19,8 @@ moduleRouter
   .get(modules.getModuleByID)
   .put(authenticateJWT, modules.putModule)
   .delete(authenticateJWT, modules.deleteModule);
+moduleRouter
+  .route('/ByProblemId/:problemId')
+  .get(authenticateJWT, modules.getModuleByProblemId);
 
 export { moduleRouter };
