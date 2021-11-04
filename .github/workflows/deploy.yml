@@ -67,7 +67,7 @@ jobs:
           AWS_VERSION_LABEL=${{env.APP_NAME}}-${{env.PIPELINE_ID}}
 
           echo "Creating Source bundle"
-          zip -r ${{env.APP_NAME}}.zip src/ Dockerfile docker-compose.yml .env .dockerignore package.json .eslintrc .eslintignore .prettierrc tsconfig.json tsconfig.release.json jest.config.js
+          zip -r ${{env.APP_NAME}}.zip src/ Dockerfile docker-compose.yml .env .dockerignore package.json .eslintrc .eslintignore .prettierrc tsconfig.json tsconfig.release.json jest.config.js package-lock.json
           S3_KEY="$AWS_VERSION_LABEL.zip"
 
           echo "Uploading Source bundle to s3"
