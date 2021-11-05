@@ -16,17 +16,3 @@ const batchClient = new BatchClient({
   credentials: creds
 });
 export { s3Client, batchClient };
-
-// import { BUCKET_NAME } from '../../config/vars';
-// const s3 = new AWS.S3();
-// const uploader = multer({
-//   limits: {
-//     fileSize: 100000
-//   },
-//   storage: multer.memoryStorage()
-// });
-
-// const params = {
-//   Bucket: BUCKET_NAME,
-//   Key: ''
-// }
