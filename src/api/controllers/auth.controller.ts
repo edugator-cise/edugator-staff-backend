@@ -5,6 +5,17 @@ import { UserModel, IUser } from '../models/user.model';
 import { jwtSecret, jwtExpirationInterval } from '../../config/vars';
 import * as bcrypt from 'bcrypt';
 
+const getUsers = async (_req: Request, res: Response): Promise<void> => {
+  let users: IUser[];
+  try {
+    //Find All modules
+    users = await UserModel.find().sort({ role: 1 });
+    res.status(200).send(users);
+  } catch (err) {
+    res.status(400).type('json').send(err);
+  }
+};
+
 const createUser = async (req: Request, res: Response): Promise<void> => {
   try {
     if (Object.keys(req.body).length === 0) {
@@ -93,4 +104,4 @@ const authenticateUser = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export { authenticateUser, createUser };
+export { authenticateUser, createUser, getUsers };
