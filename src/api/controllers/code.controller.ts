@@ -55,7 +55,8 @@ const submissionValidator = (
     return false;
   } else {
     return base64
-      ? Buffer.from(data.stdout || '', 'base64').toString() === expectedOutput
+      ? Buffer.from(data.stdout || '', 'base64').toString() ===
+          Buffer.from(expectedOutput || '', 'base64').toString()
       : data.stdout === expectedOutput;
   }
 };
@@ -64,10 +65,16 @@ const submissionValidator = (
 const createErrObject = (
   hidden: number,
   stdin: string,
-  expectedOutput: string
+  expectedOutput: string,
+  base64: boolean
 ) => {
   return {
-    stdin: hidden === 0 ? 'hidden' : stdin,
+    stdin:
+      hidden === 0
+        ? 'hidden'
+        : base64
+        ? Buffer.from(stdin || '', 'base64').toString()
+        : stdin,
     output: 'Server Error',
     expectedOutput: hidden === 0 || hidden == 1 ? 'hidden' : expectedOutput,
     result: false
@@ -82,9 +89,19 @@ const createPassFailObject = (
   base64: boolean
 ) => {
   return {
-    stdin: hidden === 0 ? 'hidden' : stdin,
+    stdin:
+      hidden === 0
+        ? 'hidden'
+        : base64
+        ? Buffer.from(stdin || '', 'base64').toString()
+        : stdin,
     output: outputValidator(data, base64),
-    expectedOutput: hidden === 0 || hidden == 1 ? 'hidden' : expectedOutput,
+    expectedOutput:
+      hidden === 0 || hidden == 1
+        ? 'hidden'
+        : base64
+        ? Buffer.from(expectedOutput || '', 'base64').toString()
+        : expectedOutput,
     result: submissionValidator(data, expectedOutput, base64)
   };
 };
@@ -202,15 +219,16 @@ const submitCode = async (
     const problem = await Problem.findOne({
       _id: problemId
     });
-
     const { testCases } = problem;
     // create an array payload for judge0 create submissions
     const options: CodeSubmission[] = testCases.map((value) => ({
       source_code,
       language_id,
       base_64,
-      stdin: value.input,
-      expectedOutput: value.expectedOutput,
+      stdin: Buffer.from(value.input || '', 'utf-8').toString('base64'),
+      expectedOutput: Buffer.from(value.expectedOutput || '', 'utf-8').toString(
+        'base64'
+      ),
       hidden: value.visibility
     }));
 
@@ -262,7 +280,8 @@ const submitCode = async (
           return createErrObject(
             tokenObject.hidden,
             tokenObject.stdin,
-            tokenObject.expectedOutput
+            tokenObject.expectedOutput,
+            base_64
           );
         });
     });
