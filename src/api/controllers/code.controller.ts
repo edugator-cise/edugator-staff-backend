@@ -161,7 +161,6 @@ const deleteCode = async (
 ): Promise<Response> => {
   // TODO: Add logger
   const { token, base64 } = req.query;
-  console.log(token, base64);
   return judgeEngine
     .deleteSubmission(token as string, base64 === 'true')
     .then((axiosResponse: AxiosResponse) => {
@@ -285,21 +284,22 @@ const submitCode = async (
           );
         });
     });
-    
+
     // runs all token fetch requests concurrently and awaits for all values
     return await Promise.all(arrayStatusPayload)
       .then(async (values) => {
-        const deletePayload = arrayTokenPayload.map((tokenObject) => (
-          judgeEngine.deleteSubmission(tokenObject.token, true)
-            .then(() => { 
+        const deletePayload = arrayTokenPayload.map((tokenObject) =>
+          judgeEngine
+            .deleteSubmission(tokenObject.token, true)
+            .then(() => {
               //TODO add logger
             })
-            .catch(() => { 
+            .catch(() => {
               //TODO add logger
             })
-        ));
+        );
         await Promise.all(deletePayload);
-        return response.status(200).send(values)
+        return response.status(200).send(values);
       })
       .catch(() => response.sendStatus(500));
   } catch (e) {
