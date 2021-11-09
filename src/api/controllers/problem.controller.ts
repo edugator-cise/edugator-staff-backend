@@ -28,6 +28,8 @@ const readStudentProblems = async (
         return res.status(404).send();
       }
       studentProblems = problem;
+      // make the test cases for a problem unaccessible to students
+      studentProblems.testCases = undefined;
     } catch (error) {
       return res.status(400).send(error);
     }
@@ -48,9 +50,17 @@ const readStudentProblems = async (
     studentProblems = module.problems.filter((item) => {
       return !(item as unknown as ProblemDocument).hidden;
     });
+    // make the test cases for all problems unaccessible to students
+    studentProblems.forEach((item) => {
+      item.testCases = undefined;
+    });
   } else {
     studentProblems = await Problem.find({
       hidden: false
+    });
+    // make the test cases for all problems unaccessible to students
+    studentProblems.forEach((item) => {
+      item.testCases = undefined;
     });
   }
 
