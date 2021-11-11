@@ -1,4 +1,5 @@
 import { model, Schema, Document } from 'mongoose';
+import { isEmail } from 'validator';
 interface User {
   username: string;
   password: string;
@@ -9,6 +10,8 @@ const userSchema = new Schema<User>(
   {
     username: {
       type: String,
+      unique: true,
+      validate: [isEmail, 'Invalid Email'],
       required: true
     },
     password: {

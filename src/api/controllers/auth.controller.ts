@@ -6,11 +6,106 @@ import { jwtSecret, jwtExpirationInterval } from '../../config/vars';
 import * as bcrypt from 'bcrypt';
 
 const getUsers = async (_req: Request, res: Response): Promise<void> => {
+  // TODO: Do we want TA's to be able to see all people's accounts
+  if (res.locals.role !== 'Professor') {
+    res
+      .status(403)
+      .type('json')
+      .send({ message: 'You do not have permission to make this request' });
+    return;
+  }
+
   let users: IUser[];
   try {
     //Find All modules
     users = await UserModel.find().sort({ role: 1 });
     res.status(200).send(users);
+  } catch (err) {
+    res.status(400).type('json').send(err);
+  }
+};
+
+const updateUser = async (req: Request, res: Response): Promise<void> => {
+  const newRole = req.body.role;
+  if (res.locals.role !== 'Professor') {
+    res
+      .status(403)
+      .type('json')
+      .send({ message: 'You do not have permission to make this request' });
+    return;
+  }
+
+  if (newRole !== 'Professor' && newRole !== 'TA') {
+    res
+      .status(400)
+      .type('json')
+      .send({ message: 'You cannot set an invalid role' });
+    return;
+  }
+
+  let user: IUser;
+  try {
+    user = await UserModel.findOneAndUpdate(
+      {
+        username: req.body.username
+      },
+      {
+        role: req.body.role
+      },
+      { new: true }
+    ).select('-password');
+
+    if (user) {
+      res.status(200).type('json').send(user);
+    } else {
+      res
+        .status(400)
+        .type('json')
+        .send({ message: 'User not found in database' });
+    }
+  } catch (err) {
+    res.status(400).type('json').send(err);
+  }
+};
+
+const updateRole = async (req: Request, res: Response): Promise<void> => {
+  const newRole = req.body.role;
+  if (res.locals.role !== 'Professor') {
+    res
+      .status(403)
+      .type('json')
+      .send({ message: 'You do not have permission to make this request' });
+    return;
+  }
+
+  if (newRole !== 'Professor' && newRole !== 'TA') {
+    res
+      .status(400)
+      .type('json')
+      .send({ message: 'You cannot set an invalid role' });
+    return;
+  }
+
+  let user: IUser;
+  try {
+    user = await UserModel.findOneAndUpdate(
+      {
+        username: req.body.username
+      },
+      {
+        role: req.body.role
+      },
+      { new: true }
+    ).select('-password');
+
+    if (user) {
+      res.status(200).type('json').send(user);
+    } else {
+      res
+        .status(400)
+        .type('json')
+        .send({ message: 'User not found in database' });
+    }
   } catch (err) {
     res.status(400).type('json').send(err);
   }
@@ -47,16 +142,37 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
         //Add into collection, if the password hashed properly
         try {
           if (result) {
-            const user = await UserModel.create({
+            const user = new UserModel({
               username: req.body.username,
               password: hash,
               role: req.body.role
             });
-            res.status(200).send(
-              JSON.stringify({
-                id: user._id
-              })
-            );
+            await user.save(function (err) {
+              if (err) {
+                if (err.code === 11000) {
+                  // Duplicate username
+                  return res.status(422).send({
+                    message: 'This username is already taken'
+                  });
+                }
+
+                if (err.name === 'ValidationError') {
+                  if (err.errors.username.message === 'Invalid Email') {
+                    return res.status(422).send({
+                      message: 'The email provided is invalid'
+                    });
+                  }
+                }
+                // Some other error
+                return res.status(422).send(err);
+              }
+
+              return res.status(200).send(
+                JSON.stringify({
+                  id: user._id
+                })
+              );
+            });
           } else {
             throw { message: 'Password hashing failed' };
           }
@@ -70,7 +186,7 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-//TODO: Write tests for this
+// Logs the validated user in
 const authenticateUser = async (req: Request, res: Response): Promise<void> => {
   try {
     const payload = {
@@ -104,4 +220,39 @@ const authenticateUser = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export { authenticateUser, createUser, getUsers };
+const deleteUser = async (req: Request, res: Response): Promise<void> => {
+  if (res.locals.role !== 'Professor') {
+    res
+      .status(403)
+      .type('json')
+      .send({ message: 'You do not have permission to make this request' });
+    return;
+  }
+
+  let user: IUser;
+  try {
+    user = await UserModel.findOneAndDelete({
+      username: req.body.username
+    });
+
+    if (!user) {
+      res.status(400).type('json').send({
+        message: 'User with given username is not found in the database'
+      });
+    }
+
+    await user.delete();
+    res.status(200).type('json').send({ message: 'User successfully deleted' });
+  } catch (err) {
+    res.status(400).type('json').send(err);
+  }
+};
+
+export {
+  authenticateUser,
+  createUser,
+  getUsers,
+  updateRole,
+  updateUser,
+  deleteUser
+};

@@ -7,9 +7,10 @@ import { jwtSecret } from '../src/config/vars';
 
 describe('GET /user/*', () => {
   let user: IUser;
+  let user1: IUser;
   let superUser: IUser;
 
-  // Auth token for the routes
+  // Auth token for the routess
   const professorToken = jwt.sign(
     { username: 'testProfessor@gmail.com', role: 'Professor' },
     jwtSecret
@@ -39,6 +40,12 @@ describe('GET /user/*', () => {
             role: 'TA'
           });
 
+          user1 = await UserModel.create({
+            username: 'testTA1@gmail.com',
+            password: hashedPassword,
+            role: 'TA'
+          });
+
           superUser = await UserModel.create({
             username: 'testProfessor@gmail.com',
             password: hashedPassword,
@@ -46,6 +53,7 @@ describe('GET /user/*', () => {
           });
 
           await user.save();
+          await user1.save();
           await superUser.save();
         } else {
           throw { message: 'Hash method not working properly' };
@@ -59,6 +67,119 @@ describe('GET /user/*', () => {
     done();
   });
 
+  //GET USERS TESTS -------------------------------------------------------------
+  //200 SUCCESS TEST
+  it('checks /user/getUsers GET route', async () => {
+    //Creates user in the DB with professor token
+    const result: request.Response = await request(expressApp)
+      .get('/v1/user/getUsers')
+      .set('Authorization', 'bearer ' + professorToken)
+      .send();
+    expect(result.statusCode).toEqual(200);
+  });
+
+  //403 FAIL TEST
+  it('checks /user/getUsers GET route', async () => {
+    //Creates user in the DB with professor token
+    const result: request.Response = await request(expressApp)
+      .get('/v1/user/getUsers')
+      .set('Authorization', 'bearer ' + taToken)
+      .send();
+    expect(result.statusCode).toEqual(403);
+    expect(result.text).toEqual(
+      JSON.stringify({
+        message: 'You do not have permission to make this request'
+      })
+    );
+  });
+
+  // UPDATE USER TESTS
+  // 200 SUCCESS TEST
+  it('checks /user/updateUser PUT route', async () => {
+    //Creates user in the DB with professor token
+    const result: request.Response = await request(expressApp)
+      .put('/v1/user/updateUser')
+      .set('Authorization', 'bearer ' + professorToken)
+      .send({
+        username: 'testTA1@gmail.com',
+        role: 'Professor'
+      });
+    expect(result.statusCode).toEqual(200);
+  });
+
+  // 403 FAIL TEST
+  it('checks /user/updateUser PUT route FAILS on a role that is not Professor', async () => {
+    //Creates user in the DB with professor token
+    const result: request.Response = await request(expressApp)
+      .put('/v1/user/updateUser')
+      .set('Authorization', 'bearer ' + taToken)
+      .send({
+        username: 'testTA1@gmail.com',
+        role: 'Professor'
+      });
+    expect(result.statusCode).toEqual(403);
+    expect(result.text).toEqual(
+      JSON.stringify({
+        message: 'You do not have permission to make this request'
+      })
+    );
+  });
+
+  // 403 FAIL TEST
+  it('checks /user/updateUser PUT route FAILS on a role that is not Professor and passed in an invalid role', async () => {
+    //Creates user in the DB with professor token
+    const result: request.Response = await request(expressApp)
+      .put('/v1/user/updateUser')
+      .set('Authorization', 'bearer ' + taToken)
+      .send({
+        username: 'testTA1@gmail.com',
+        role: 'Invalid Role'
+      });
+    expect(result.statusCode).toEqual(403);
+    expect(result.text).toEqual(
+      JSON.stringify({
+        message: 'You do not have permission to make this request'
+      })
+    );
+  });
+
+  // 400 FAIL TEST
+  it('checks /user/updateUser PUT route', async () => {
+    //Creates user in the DB with professor token
+    const result: request.Response = await request(expressApp)
+      .put('/v1/user/updateUser')
+      .set('Authorization', 'bearer ' + professorToken)
+      .send({
+        username: 'testTA1@gmail.com',
+        role: 'Invalid Role'
+      });
+    expect(result.statusCode).toEqual(400);
+    expect(result.text).toEqual(
+      JSON.stringify({
+        message: 'You cannot set an invalid role'
+      })
+    );
+  });
+
+  // 400 FAIL TEST
+  it('checks /user/updateUser PUT route', async () => {
+    //Creates user in the DB with professor token
+    const result: request.Response = await request(expressApp)
+      .put('/v1/user/updateUser')
+      .set('Authorization', 'bearer ' + professorToken)
+      .send({
+        // username not in DB
+        username: 'testta@gmail.com',
+        role: 'Professor'
+      });
+    expect(result.statusCode).toEqual(400);
+    expect(result.text).toEqual(
+      JSON.stringify({
+        message: 'User not found in database'
+      })
+    );
+  });
+
   // CREATE USER TESTS ----------------------------------------------------------
   // 200 SUCCESS TEST
   it('checks /user/create POST route and creates a user correctly', async () => {
@@ -67,7 +188,7 @@ describe('GET /user/*', () => {
       .post('/v1/user/create')
       .set('Authorization', 'bearer ' + professorToken)
       .send({
-        username: 'testTA1@gmail.com',
+        username: 'testTA2@gmail.com',
         password: 'password',
         role: 'TA'
       });

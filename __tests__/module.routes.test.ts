@@ -90,6 +90,36 @@ describe('GET /', () => {
 
   //400 Error Test
   it('checks /module POST route gives 400 response on empty body', async () => {
+    // Invalid Number (Greater than 100)
+    const sampleModule = createSampleModule();
+    sampleModule.number = 123;
+    const result: request.Response = await request(expressApp)
+      .post('/v1/module')
+      .set('Authorization', 'bearer ' + token)
+      .send(sampleModule);
+    expect(result.statusCode).toEqual(400);
+    expect(result.text).toEqual(
+      JSON.stringify({
+        message: 'This route requires a valid number to be passed in'
+      })
+    );
+
+    // Invalid Number (Less than 0)
+    sampleModule.number = -2;
+    const result1: request.Response = await request(expressApp)
+      .post('/v1/module')
+      .set('Authorization', 'bearer ' + token)
+      .send(sampleModule);
+    expect(result1.statusCode).toEqual(400);
+    expect(result1.text).toEqual(
+      JSON.stringify({
+        message: 'This route requires a valid number to be passed in'
+      })
+    );
+  });
+
+  //400 Error Test
+  it('checks /module POST route gives 400 response on invalid number', async () => {
     const result: request.Response = await request(expressApp)
       .post('/v1/module')
       .set('Authorization', 'bearer ' + token)
@@ -304,6 +334,60 @@ describe('GET /', () => {
     expect(result.statusCode).toEqual(400);
     expect(result.text).toEqual(
       JSON.stringify({ message: 'This route requires a body to be passed in' })
+    );
+  });
+
+  //400 error test
+  it('checks /module/moduleId PUT route returns status 400 for updateModule empty name or invalid number', async () => {
+    // Invalid Name
+    const result: request.Response = await request(expressApp)
+      .put('/v1/module/' + module2.id)
+      .set('Authorization', 'bearer ' + token)
+      .send({
+        name: '',
+        number: 10.2
+      });
+
+    expect(result.statusCode).toEqual(400);
+    expect(result.text).toEqual(
+      JSON.stringify({
+        message:
+          'This route requires a valid name and/or number to be passed in'
+      })
+    );
+
+    // Invalid Number
+    const result1: request.Response = await request(expressApp)
+      .put('/v1/module/' + module2.id)
+      .set('Authorization', 'bearer ' + token)
+      .send({
+        name: 'Hash Map',
+        number: -2
+      });
+
+    expect(result1.statusCode).toEqual(400);
+    expect(result1.text).toEqual(
+      JSON.stringify({
+        message:
+          'This route requires a valid name and/or number to be passed in'
+      })
+    );
+
+    // Invalid Name and Number
+    const result2: request.Response = await request(expressApp)
+      .put('/v1/module/' + module2.id)
+      .set('Authorization', 'bearer ' + token)
+      .send({
+        name: '',
+        number: 123
+      });
+
+    expect(result2.statusCode).toEqual(400);
+    expect(result2.text).toEqual(
+      JSON.stringify({
+        message:
+          'This route requires a valid name and/or number to be passed in'
+      })
     );
   });
 
