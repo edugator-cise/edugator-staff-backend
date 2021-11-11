@@ -33,7 +33,7 @@ const problemValidation = (data: any): ValidationResult => {
     templatePackage: string().uri().required(),
     timeLimit: number(),
     memoryLimit: number(),
-    buildCommand: string()
+    buildCommand: string().allow('')
   });
 
   return schema.validate(data);
@@ -62,7 +62,7 @@ const problemValidationWithoutModuleId = (data: any): ValidationResult => {
     templatePackage: string().uri().required(),
     timeLimit: number(),
     memoryLimit: number(),
-    buildCommand: string()
+    buildCommand: string().allow('')
   });
 
   return schema.validate(data);
