@@ -27,7 +27,7 @@ const problemValidation = (data: any): ValidationResult => {
     testCases: array().items({
       input: string().required(),
       expectedOutput: string().min(1).required(),
-      hint: string().required(),
+      hint: string().allow('').required(),
       visibility: number().valid(0, 1, 2).required()
     }),
     templatePackage: string().uri().required(),
@@ -56,7 +56,7 @@ const problemValidationWithoutModuleId = (data: any): ValidationResult => {
     testCases: array().items({
       input: string().required(),
       expectedOutput: string().min(1).required(),
-      hint: string().required(),
+      hint: string().allow('').required(),
       visibility: number().valid(0, 1, 2).required()
     }),
     templatePackage: string().uri().required(),
