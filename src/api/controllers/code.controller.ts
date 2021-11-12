@@ -140,10 +140,29 @@ const runCode = async (req: Request, response: Response): Promise<Response> => {
     return response.sendStatus(httpStatus.BAD_REQUEST);
   }
 
-  const { source_code, language_id, base_64, stdin } = req.body;
+  const { source_code, language_id, base_64, stdin, problemId } = req.body;
+
+  // find the problem
+  const problem = await Problem.findOne({
+    _id: problemId
+  });
+  if (!problem) {
+    return response.status(404).send();
+  }
+  const { header, footer } = problem.code;
+
+  let fullCode = '';
+  if (base_64) {
+    // have to decode and recode header + code + footer
+    fullCode =
+      header + Buffer.from(source_code || '', 'base64').toString() + footer;
+    fullCode = Buffer.from(fullCode || '', 'utf-8').toString('base64');
+  } else {
+    fullCode = header + source_code + footer;
+  }
 
   return judgeEngine
-    .createSubmission(source_code, language_id, base_64, stdin)
+    .createSubmission(fullCode, language_id, base_64, stdin)
     .then((axiosResponse: AxiosResponse) => {
       return response.send(axiosResponse.data).status(httpStatus.OK);
     })
@@ -176,7 +195,6 @@ const deleteCode = async (
 
 const getCode = async (req: Request, response: Response): Promise<Response> => {
   // TODO: Add logger
-
   const tokenValidationResponse = tokenValidation(req.body);
   if (tokenValidationResponse.error) {
     return response.sendStatus(httpStatus.BAD_REQUEST);
@@ -218,10 +236,23 @@ const submitCode = async (
     const problem = await Problem.findOne({
       _id: problemId
     });
-    const { testCases } = problem;
+    if (!problem) {
+      return response.status(404).send();
+    }
+    const { testCases, code } = problem;
+    const { header, footer } = code;
+    let fullCode = '';
+    if (base_64) {
+      // have to decode and recode header + code + footer
+      fullCode =
+        header + Buffer.from(source_code || '', 'base64').toString() + footer;
+      fullCode = Buffer.from(fullCode || '', 'utf-8').toString('base64');
+    } else {
+      fullCode = header + source_code + footer;
+    }
     // create an array payload for judge0 create submissions
     const options: CodeSubmission[] = testCases.map((value) => ({
-      source_code,
+      source_code: fullCode,
       language_id,
       base_64,
       stdin: Buffer.from(value.input || '', 'utf-8').toString('base64'),

@@ -26,25 +26,14 @@ export const getModulesWithNonHiddenProblemsAndTestCases = async (
   res: Response
 ): Promise<void> => {
   try {
-    const modules = await Module.find().populate({
-      path: 'problems',
-      match: { hidden: false }
-    });
-    const modulesWithNonHiddenTestCases = modules.map((val) => {
-      const currentModule = {
-        _id: val._id,
-        name: val.name,
-        number: val.number
-      };
-      const problemsWithoutTestCases = val.problems.map((problem) => {
-        const problemToReturn = problem;
-        problemToReturn['testCases'] = undefined;
-        return problemToReturn;
-      });
-      currentModule['problems'] = problemsWithoutTestCases;
-      return currentModule;
-    });
-    res.status(200).send(modulesWithNonHiddenTestCases);
+    const modules = await Module.find()
+      .populate({
+        path: 'problems',
+        select: 'id title',
+        match: { hidden: false }
+      })
+      .sort({ number: 1 });
+    res.status(200).send(modules);
   } catch (err) {
     res.status(400).send(err);
   }
@@ -125,7 +114,6 @@ export const postModules = async (
 ): Promise<void> => {
   try {
     const module = await Module.create(req.body);
-    // console.log(res);
     res.status(200).send(
       JSON.stringify({
         id: module._id
