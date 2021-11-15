@@ -5,7 +5,11 @@ import submissionValidation from '../validation/submission.validation';
 import { Problem } from '../models/problem.model';
 import { tokenValidation } from '../validation/tokenPayload.validation';
 import { ValidationResult } from 'joi';
-import { judgeEngine, JudgeServer } from '../services/judge0';
+import {
+  judgeEngine,
+  JudgeServer,
+  SubmissionPayload
+} from '../services/judge0';
 import { AxiosError, AxiosResponse } from 'axios';
 
 declare interface IJudge0Response {
@@ -140,7 +144,16 @@ const runCode = async (req: Request, response: Response): Promise<Response> => {
     return response.sendStatus(httpStatus.BAD_REQUEST);
   }
 
-  const { source_code, language_id, base_64, stdin, problemId } = req.body;
+  const {
+    source_code,
+    language_id,
+    base_64,
+    stdin,
+    problemId,
+    cpu_time_limit,
+    memory_limit,
+    compiler_options
+  } = req.body;
 
   // find the problem
   const problem = await Problem.findOne({
@@ -161,8 +174,16 @@ const runCode = async (req: Request, response: Response): Promise<Response> => {
     fullCode = header + source_code + footer;
   }
 
+  const payload: SubmissionPayload = {
+    language_id,
+    source_code: fullCode,
+    stdin,
+    cpu_time_limit,
+    memory_limit,
+    compiler_options
+  };
   return judgeEngine
-    .createSubmission(fullCode, language_id, base_64, stdin)
+    .createSubmission(payload, base_64)
     .then((axiosResponse: AxiosResponse) => {
       return response.send(axiosResponse.data).status(httpStatus.OK);
     })
@@ -230,7 +251,15 @@ const submitCode = async (
   if (validationResponse.error) {
     return response.sendStatus(400);
   }
-  const { source_code, language_id, base_64, problemId } = req.body;
+  const {
+    source_code,
+    language_id,
+    base_64,
+    problemId,
+    cpu_time_limit,
+    memory_limit,
+    compiler_options
+  } = req.body;
   try {
     // find the problem
     const problem = await Problem.findOne({
@@ -263,14 +292,17 @@ const submitCode = async (
     }));
 
     // makes promise calls for judgeEngine tokens
-    const getTokens = options.map((opt) =>
-      judgeEngine
-        .createSubmission(
-          opt.source_code,
-          opt.language_id,
-          opt.base_64,
-          opt.stdin
-        )
+    const getTokens = options.map((opt) => {
+      const payload: SubmissionPayload = {
+        language_id: opt.language_id,
+        source_code: opt.source_code,
+        stdin: opt.stdin,
+        cpu_time_limit,
+        memory_limit,
+        compiler_options
+      };
+      return judgeEngine
+        .createSubmission(payload, opt.base_64)
         .then((axiosResponse: AxiosResponse) => ({
           token: axiosResponse.data.token,
           stdin: opt.stdin,
@@ -284,8 +316,8 @@ const submitCode = async (
           expectedOutput: opt.expectedOutput,
           hidden: opt.hidden,
           code: e.code
-        }))
-    );
+        }));
+    });
 
     // runs the judge0 api calls to get token payload
     const arrayTokenPayload = await Promise.all(getTokens);
