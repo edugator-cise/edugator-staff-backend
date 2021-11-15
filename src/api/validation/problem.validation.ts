@@ -8,7 +8,6 @@ import {
   number
 } from 'joi';
 
-//eslint-disable-next-line
 //Joi does not allow empty strings by default (Reason why 'min(1)' is not in the validation for strings)
 const problemValidation = (data: any): ValidationResult => {
   const schema = object({
