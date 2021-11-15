@@ -4,6 +4,7 @@ import * as jwt from 'jsonwebtoken';
 import { UserModel, IUser } from '../models/user.model';
 import { jwtSecret, jwtExpirationInterval } from '../../config/vars';
 import * as bcrypt from 'bcrypt';
+import userValidation from '../validation/user.validation';
 
 const createUser = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -16,6 +17,14 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
         message:
           'This route requires a username, password, and role field to be passed in the body'
       };
+    }
+
+    const { error } = userValidation(req.body);
+    // console.log(value, error);
+
+    if (error) {
+      res.status(400).type('json').send(error);
+      return;
     }
 
     if (res.locals.role !== 'Professor') {
@@ -36,16 +45,38 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
         //Add into collection, if the password hashed properly
         try {
           if (result) {
-            const user = await UserModel.create({
+            const user = new UserModel({
+              name: req.body.name,
               username: req.body.username,
               password: hash,
               role: req.body.role
             });
-            res.status(200).send(
-              JSON.stringify({
-                id: user._id
-              })
-            );
+            await user.save(function (err) {
+              if (err) {
+                if (err.code === 11000) {
+                  // Duplicate username
+                  return res.status(422).send({
+                    message: 'This username is already taken'
+                  });
+                }
+
+                // if (err.name === 'ValidationError') {
+                //   if (err.errors.username.message === 'Invalid Email') {
+                //     return res.status(422).send({
+                //       message: 'The email provided is invalid'
+                //     });
+                //   }
+                // }
+                // Some other error
+                return res.status(422).send(err);
+              }
+
+              return res.status(200).send(
+                JSON.stringify({
+                  id: user._id
+                })
+              );
+            });
           } else {
             throw { message: 'Password hashing failed' };
           }

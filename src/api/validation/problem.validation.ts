@@ -26,8 +26,8 @@ const problemValidation = (data: any): ValidationResult => {
     fileExtension: string().valid('.java', '.cpp', '.h').min(1).required(),
     testCases: array().items({
       input: string().required(),
-      expectedOutput: string().min(1).required(),
-      hint: string().allow('').required(),
+      expectedOutput: string().required(),
+      hint: string().required(),
       visibility: number().valid(0, 1, 2).required()
     }),
     templatePackage: string().uri().required(),
