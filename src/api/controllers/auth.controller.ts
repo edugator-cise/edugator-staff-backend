@@ -50,6 +50,7 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
             });
             await user.save(function (err) {
               if (err) {
+                // Monogo DB error
                 if (err.code === 11000) {
                   // Duplicate username
                   return res.status(422).send({
