@@ -113,6 +113,106 @@ describe('GET /user/*', () => {
   });
 
   // 400 FAIL TEST
+  it('checks /user/create POST route FAILS on invalid data types passed in', async () => {
+    //Creates user in the DB with professor token
+    const result: request.Response = await request(expressApp)
+      .post('/v1/user/create')
+      .set('Authorization', 'bearer ' + professorToken)
+      .send({
+        name: 'Test TA',
+        username: 'testTA1om',
+        role: 'TA',
+        password: 'password'
+      });
+    expect(result.statusCode).toEqual(400);
+    expect(result.text).toEqual(
+      JSON.stringify({
+        message: 'username must be a valid email'
+      })
+    );
+
+    const result1: request.Response = await request(expressApp)
+      .post('/v1/user/create')
+      .set('Authorization', 'bearer ' + professorToken)
+      .send({
+        name: 2,
+        username: 'testTA1@gmail.com',
+        role: 'TA',
+        password: 'password'
+      });
+    expect(result1.statusCode).toEqual(400);
+    expect(result1.text).toEqual(
+      JSON.stringify({
+        message: 'name must be a string'
+      })
+    );
+
+    const result2: request.Response = await request(expressApp)
+      .post('/v1/user/create')
+      .set('Authorization', 'bearer ' + professorToken)
+      .send({
+        name: 'Test TA',
+        username: 2,
+        role: 'TA',
+        password: 'password'
+      });
+    expect(result2.statusCode).toEqual(400);
+    expect(result2.text).toEqual(
+      JSON.stringify({
+        message: 'username must be a string'
+      })
+    );
+
+    const result3: request.Response = await request(expressApp)
+      .post('/v1/user/create')
+      .set('Authorization', 'bearer ' + professorToken)
+      .send({
+        name: 'Test TA',
+        username: 'testTA1@gmail.com',
+        role: 12,
+        password: 'password'
+      });
+    expect(result3.statusCode).toEqual(400);
+    expect(result3.text).toEqual(
+      JSON.stringify({
+        message: 'role must be one of [Professor, TA]'
+      })
+    );
+
+    const result4: request.Response = await request(expressApp)
+      .post('/v1/user/create')
+      .set('Authorization', 'bearer ' + professorToken)
+      .send({
+        name: 'Test TA',
+        username: 'testTA1@gmail.com',
+        role: 'TA',
+        password: 2
+      });
+    expect(result4.statusCode).toEqual(400);
+    expect(result4.text).toEqual(
+      JSON.stringify({
+        message: 'password must be a string'
+      })
+    );
+
+    const result5: request.Response = await request(expressApp)
+      .post('/v1/user/create')
+      .set('Authorization', 'bearer ' + professorToken)
+      .send({
+        name: 'Test TA',
+        username: 'testTA1@gmail.com',
+        role: 'student',
+        password: 'password'
+      });
+    expect(result5.statusCode).toEqual(400);
+    expect(result5.text).toEqual(
+      JSON.stringify({
+        message: 'role must be one of [Professor, TA]'
+      })
+    );
+  });
+
+  // 400 FAIL TEST
   it('checks /user/create POST route FAILS on invalid body (NO username or password or role in body)', async () => {
     //Creates user in the DB with professor token
     const result: request.Response = await request(expressApp)
