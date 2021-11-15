@@ -12,26 +12,12 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
       throw { message: 'This route requires a body to be passed in' };
     }
 
-    // if (
-    //   !req.body.name ||
-    //   !req.body.username ||
-    //   !req.body.password ||
-    //   !req.body.role
-    // ) {
-    //   throw {
-    //     message:
-    //       'This route requires a name, username, password, and role field to be passed in the body'
-    //   };
-    // }
-
     //Joi Validation
     const { error } = userValidation(req.body);
-    // console.log(error.details[0].message);
-    // console.log(JSON.stringify(error.details[0].message));
 
     if (error) {
-      let errorMessage = error.details[0].message;
-      let errorMessageNoQuotes = errorMessage.replace(/["]+/g, '');
+      const errorMessage = error.details[0].message;
+      const errorMessageNoQuotes = errorMessage.replace(/["]+/g, '');
       res.status(400).type('json').send({
         message: errorMessageNoQuotes
       });
@@ -70,15 +56,6 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
                     message: 'This username is already taken'
                   });
                 }
-
-                // if (err.name === 'ValidationError') {
-                //   if (err.errors.username.message === 'Invalid Email') {
-                //     return res.status(422).send({
-                //       message: 'The email provided is invalid'
-                //     });
-                //   }
-                // }
-                // Some other error
                 return res.status(422).send(err);
               }
 

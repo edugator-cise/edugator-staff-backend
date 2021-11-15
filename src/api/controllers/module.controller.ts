@@ -122,8 +122,8 @@ export const postModules = async (
     const { error } = moduleValidation(req.body);
 
     if (error) {
-      let errorMessage = error.details[0].message;
-      let errorMessageNoQuotes = errorMessage.replace(/["]+/g, '');
+      const errorMessage = error.details[0].message;
+      const errorMessageNoQuotes = errorMessage.replace(/["]+/g, '');
       res.status(400).type('json').send({
         message: errorMessageNoQuotes
       });
