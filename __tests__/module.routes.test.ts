@@ -111,7 +111,7 @@ describe('GET /', () => {
   });
 
   //400 Error Test
-  it('checks /module POST route gives 400 response on empty body', async () => {
+  it('checks /module POST route gives 400 response on name or numebr not passed in', async () => {
     const result: request.Response = await request(expressApp)
       .post('/v1/module')
       .set('Authorization', 'bearer ' + token)
