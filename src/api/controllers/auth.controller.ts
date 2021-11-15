@@ -12,18 +12,29 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
       throw { message: 'This route requires a body to be passed in' };
     }
 
-    if (!req.body.username || !req.body.password || !req.body.role) {
-      throw {
-        message:
-          'This route requires a username, password, and role field to be passed in the body'
-      };
-    }
+    // if (
+    //   !req.body.name ||
+    //   !req.body.username ||
+    //   !req.body.password ||
+    //   !req.body.role
+    // ) {
+    //   throw {
+    //     message:
+    //       'This route requires a name, username, password, and role field to be passed in the body'
+    //   };
+    // }
 
+    //Joi Validation
     const { error } = userValidation(req.body);
-    // console.log(value, error);
+    // console.log(error.details[0].message);
+    // console.log(JSON.stringify(error.details[0].message));
 
     if (error) {
-      res.status(400).type('json').send(error);
+      let errorMessage = error.details[0].message;
+      let errorMessageNoQuotes = errorMessage.replace(/["]+/g, '');
+      res.status(400).type('json').send({
+        message: errorMessageNoQuotes
+      });
       return;
     }
 

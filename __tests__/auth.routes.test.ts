@@ -34,12 +34,14 @@ describe('GET /user/*', () => {
         //Add into collection, if the password hashed properly
         if (result) {
           user = await UserModel.create({
+            name: 'Test TA',
             username: 'testTA@gmail.com',
             password: hashedPassword,
             role: 'TA'
           });
 
           superUser = await UserModel.create({
+            name: 'Test Professor',
             username: 'testProfessor@gmail.com',
             password: hashedPassword,
             role: 'Professor'
@@ -67,6 +69,7 @@ describe('GET /user/*', () => {
       .post('/v1/user/create')
       .set('Authorization', 'bearer ' + professorToken)
       .send({
+        name: 'Test TA',
         username: 'testTA1@gmail.com',
         password: 'password',
         role: 'TA'
@@ -81,6 +84,7 @@ describe('GET /user/*', () => {
       .post('/v1/user/create')
       .set('Authorization', 'bearer ' + taToken)
       .send({
+        name: 'Test TA 1',
         username: 'testTA1@gmail.com',
         password: 'password',
         role: 'TA'
@@ -115,13 +119,15 @@ describe('GET /user/*', () => {
       .post('/v1/user/create')
       .set('Authorization', 'bearer ' + professorToken)
       .send({
-        username: 'testTA1@gmail.com'
+        username: 'testTA1@gmail.com',
+        role: 'TA',
+        password: 'password'
       });
     expect(result.statusCode).toEqual(400);
+    // console.log(result.text);
     expect(result.text).toEqual(
       JSON.stringify({
-        message:
-          'This route requires a username, password, and role field to be passed in the body'
+        message: 'name is required'
       })
     );
 
@@ -129,13 +135,14 @@ describe('GET /user/*', () => {
       .post('/v1/user/create')
       .set('Authorization', 'bearer ' + professorToken)
       .send({
-        role: 'TA'
+        name: 'Test TA 1',
+        role: 'TA',
+        password: 'password'
       });
     expect(result1.statusCode).toEqual(400);
     expect(result1.text).toEqual(
       JSON.stringify({
-        message:
-          'This route requires a username, password, and role field to be passed in the body'
+        message: 'username is required'
       })
     );
 
@@ -143,13 +150,29 @@ describe('GET /user/*', () => {
       .post('/v1/user/create')
       .set('Authorization', 'bearer ' + professorToken)
       .send({
+        name: 'Test TA 1',
+        username: 'testTA1@gmail.com',
         password: 'password'
       });
     expect(result2.statusCode).toEqual(400);
     expect(result2.text).toEqual(
       JSON.stringify({
-        message:
-          'This route requires a username, password, and role field to be passed in the body'
+        message: 'role is required'
+      })
+    );
+
+    const result3: request.Response = await request(expressApp)
+      .post('/v1/user/create')
+      .set('Authorization', 'bearer ' + professorToken)
+      .send({
+        name: 'Test TA 1',
+        username: 'testTA1@gmail.com',
+        role: 'TA'
+      });
+    expect(result3.statusCode).toEqual(400);
+    expect(result3.text).toEqual(
+      JSON.stringify({
+        message: 'password is required'
       })
     );
   });
