@@ -26,6 +26,7 @@ describe('GET /', () => {
         if (result) {
           //User creation for token
           await UserModel.create({
+            name: 'Test TA',
             username: 'dhruv2000patel@gmail.com',
             password: hashedPassword,
             role: 'TA'

@@ -1,6 +1,5 @@
 import * as Joi from 'joi';
 
-//eslint-disable-next-line
 const runValidation = (data: any): Joi.ValidationResult => {
   const schema = Joi.object({
     source_code: Joi.string().required(),

@@ -6,6 +6,7 @@ import {
   ModuleInterface
 } from '../models/module.model';
 import { Problem } from '../models/problem.model';
+import moduleValidation from '../validation/module.validation';
 
 export const getModules = async (
   _req: Request,
@@ -113,7 +114,27 @@ export const postModules = async (
   res: Response
 ): Promise<void> => {
   try {
-    const module = await Module.create(req.body);
+    if (Object.keys(req.body).length === 0) {
+      throw { message: 'This route requires a body to be passed in' };
+    }
+
+    //Joi Validation
+    const { error } = moduleValidation(req.body);
+
+    if (error) {
+      const errorMessage = error.details[0].message;
+      const errorMessageNoQuotes = errorMessage.replace(/["]+/g, '');
+      res.status(400).type('json').send({
+        message: errorMessageNoQuotes
+      });
+      return;
+    }
+
+    const module = await Module.create({
+      name: req.body.name,
+      number: req.body.number
+    });
+
     res.status(200).send(
       JSON.stringify({
         id: module._id

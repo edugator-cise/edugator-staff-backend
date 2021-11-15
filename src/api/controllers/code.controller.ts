@@ -1,9 +1,9 @@
 import * as httpStatus from 'http-status';
 import { Request, Response } from 'express';
-import runValidation from '../../validation/run.validation';
-import submissionValidation from '../../validation/submission.validation';
+import runValidation from '../validation/run.validation';
+import submissionValidation from '../validation/submission.validation';
 import { Problem } from '../models/problem.model';
-import { tokenValidation } from '../../validation/tokenPayload.validation';
+import { tokenValidation } from '../validation/tokenPayload.validation';
 import { ValidationResult } from 'joi';
 import {
   judgeEngine,
