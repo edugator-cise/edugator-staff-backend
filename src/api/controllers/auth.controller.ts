@@ -4,6 +4,7 @@ import * as jwt from 'jsonwebtoken';
 import { UserModel, IUser } from '../models/user.model';
 import { jwtSecret, jwtExpirationInterval } from '../../config/vars';
 import * as bcrypt from 'bcrypt';
+import userValidation from '../validation/user.validation';
 
 const getUsers = async (_req: Request, res: Response): Promise<void> => {
   // TODO: Do we want TA's to be able to see all people's accounts
@@ -117,11 +118,16 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
       throw { message: 'This route requires a body to be passed in' };
     }
 
-    if (!req.body.username || !req.body.password || !req.body.role) {
-      throw {
-        message:
-          'This route requires a username, password, and role field to be passed in the body'
-      };
+    //Joi Validation
+    const { error } = userValidation(req.body);
+
+    if (error) {
+      const errorMessage = error.details[0].message;
+      const errorMessageNoQuotes = errorMessage.replace(/["]+/g, '');
+      res.status(400).type('json').send({
+        message: errorMessageNoQuotes
+      });
+      return;
     }
 
     if (res.locals.role !== 'Professor') {
@@ -143,27 +149,20 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
         try {
           if (result) {
             const user = new UserModel({
+              name: req.body.name,
               username: req.body.username,
               password: hash,
               role: req.body.role
             });
             await user.save(function (err) {
               if (err) {
+                // Monogo DB error
                 if (err.code === 11000) {
                   // Duplicate username
                   return res.status(422).send({
                     message: 'This username is already taken'
                   });
                 }
-
-                if (err.name === 'ValidationError') {
-                  if (err.errors.username.message === 'Invalid Email') {
-                    return res.status(422).send({
-                      message: 'The email provided is invalid'
-                    });
-                  }
-                }
-                // Some other error
                 return res.status(422).send(err);
               }
 

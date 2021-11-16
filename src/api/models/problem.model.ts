@@ -1,5 +1,11 @@
 import { model, Document, Schema } from 'mongoose';
 
+interface TestCase {
+  input: string;
+  expectedOutput: string;
+  hint: string;
+  visibility: number; // doesn't enforce visibility: 0, 1, or 2
+}
 interface ProblemInterface {
   statement: string;
   title: string;
@@ -12,14 +18,7 @@ interface ProblemInterface {
     footer: string;
   };
   fileExtension: string; //Interface doesn't enforce enum
-  testCases: [
-    {
-      input: string;
-      expectedOutput: string;
-      hint: string;
-      visibility: number; // doesn't enforce visibility: 0, 1, or 2
-    }
-  ];
+  testCases: TestCase[];
   templatePackage: string;
   timeLimit: number;
   memoryLimit: number;
@@ -109,4 +108,4 @@ const problemSchema = new Schema<ProblemInterface>(
 // the first argument does not name the collection
 const Problem = model<ProblemInterface>('_problem', problemSchema);
 
-export { Problem, ProblemDocument, ProblemInterface };
+export { Problem, ProblemDocument, ProblemInterface, TestCase };

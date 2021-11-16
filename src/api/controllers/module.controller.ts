@@ -7,6 +7,7 @@ import {
 } from '../models/module.model';
 import { Problem } from '../models/problem.model';
 import * as validator from 'validator';
+import moduleValidation from '../validation/module.validation';
 
 const validateNumberField = (number: number) => {
   if (number < 0 || number > 100) {
@@ -34,25 +35,14 @@ export const getModulesWithNonHiddenProblemsAndTestCases = async (
   res: Response
 ): Promise<void> => {
   try {
-    const modules = await Module.find().populate({
-      path: 'problems',
-      match: { hidden: false }
-    });
-    const modulesWithNonHiddenTestCases = modules.map((val) => {
-      const currentModule = {
-        _id: val._id,
-        name: val.name,
-        number: val.number
-      };
-      const problemsWithoutTestCases = val.problems.map((problem) => {
-        const problemToReturn = problem;
-        problemToReturn['testCases'] = undefined;
-        return problemToReturn;
-      });
-      currentModule['problems'] = problemsWithoutTestCases;
-      return currentModule;
-    });
-    res.status(200).send(modulesWithNonHiddenTestCases);
+    const modules = await Module.find()
+      .populate({
+        path: 'problems',
+        select: 'id title',
+        match: { hidden: false }
+      })
+      .sort({ number: 1 });
+    res.status(200).send(modules);
   } catch (err) {
     res.status(400).send(err);
   }
@@ -131,12 +121,27 @@ export const postModules = async (
   res: Response
 ): Promise<void> => {
   try {
-    console.log('TEMP');
-    if (!validateNumberField(req.body.number)) {
-      throw { message: 'This route requires a valid number to be passed in' };
+    if (Object.keys(req.body).length === 0) {
+      throw { message: 'This route requires a body to be passed in' };
     }
 
-    const module = await Module.create(req.body);
+    //Joi Validation
+    const { error } = moduleValidation(req.body);
+
+    if (error) {
+      const errorMessage = error.details[0].message;
+      const errorMessageNoQuotes = errorMessage.replace(/["]+/g, '');
+      res.status(400).type('json').send({
+        message: errorMessageNoQuotes
+      });
+      return;
+    }
+
+    const module = await Module.create({
+      name: req.body.name,
+      number: req.body.number
+    });
+
     res.status(200).send(
       JSON.stringify({
         id: module._id
