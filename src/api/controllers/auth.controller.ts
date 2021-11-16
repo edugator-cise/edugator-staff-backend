@@ -20,7 +20,7 @@ const getUsers = async (_req: Request, res: Response): Promise<void> => {
   try {
     //Find All modules
     users = await UserModel.find().select('-password').sort({ role: 1 });
-    let responseObject = {
+    const responseObject = {
       users: users,
       currentUser: res.locals.username
     };
@@ -49,14 +49,6 @@ const updateUser = async (req: Request, res: Response): Promise<void> => {
     });
     return;
   }
-
-  // if (newRole !== 'Professor' && newRole !== 'TA') {
-  //   res
-  //     .status(400)
-  //     .type('json')
-  //     .send({ message: 'You cannot set an invalid role' });
-  //   return;
-  // }
 
   let user: IUser;
   try {
@@ -105,14 +97,6 @@ const updateRole = async (req: Request, res: Response): Promise<void> => {
     });
     return;
   }
-
-  // if (newRole !== 'Professor' && newRole !== 'TA') {
-  //   res
-  //     .status(400)
-  //     .type('json')
-  //     .send({ message: 'You cannot set an invalid role' });
-  //   return;
-  // }
 
   let user: IUser;
   try {
@@ -186,7 +170,7 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
                 // Monogo DB error
                 if (err.code === 11000) {
                   // Duplicate username
-                  return res.status(422).send({
+                  return res.status(403).send({
                     message: 'This username is already taken'
                   });
                 }
@@ -215,11 +199,23 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
 // Logs the validated user in
 const authenticateUser = async (req: Request, res: Response): Promise<void> => {
   try {
+    if (Object.keys(req.body).length === 0) {
+      throw { message: 'This route requires a body to be passed in' };
+    }
+
     const payload = {
       username: req.body.username
     };
 
     const user: IUser = await UserModel.findOne(payload);
+
+    if (!user) {
+      res.status(401).type('json').send({
+        message: 'User with given username is not found - Unauthorized'
+      });
+      return;
+      // throw { message: 'User with given username is not found' };
+    }
 
     // Compares the passed in password to the hashed password in the collection
     bcrypt.compare(req.body.password, user.password, function (_err, result) {
@@ -234,15 +230,20 @@ const authenticateUser = async (req: Request, res: Response): Promise<void> => {
           );
           res.status(httpStatus.OK).send({ token });
         } else {
-          throw { message: 'Invalid Password - Unauthorized' };
+          res.status(401).type('json').send({
+            message: 'Invalid Password - Unauthorized'
+          });
+          return;
+          // throw { message: 'Invalid Password - Unauthorized' };
         }
       } catch (err) {
         res.status(400).type('json').send(err);
       }
     });
   } catch (err) {
-    // logger error
-    res.sendStatus(httpStatus.UNAUTHORIZED);
+    // catches empty body error - the other errors are dealt with individually
+    res.status(400).type('json').send(err);
+    // res.sendStatus(httpStatus.UNAUTHORIZED);
   }
 };
 
@@ -265,12 +266,15 @@ const deleteUser = async (req: Request, res: Response): Promise<void> => {
       res.status(400).type('json').send({
         message: 'User with given username is not found in the database'
       });
+      return;
     }
 
     await user.delete();
     res.status(200).type('json').send({ message: 'User successfully deleted' });
+    return;
   } catch (err) {
     res.status(400).type('json').send(err);
+    return;
   }
 };
 

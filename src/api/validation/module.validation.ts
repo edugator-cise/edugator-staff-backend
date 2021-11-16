@@ -1,6 +1,6 @@
 import * as Joi from 'joi';
 
-const moduleValidation = (data: any): Joi.ValidationResult => {
+const moduleValidation = (data: JSON): Joi.ValidationResult => {
   const schema = Joi.object({
     name: Joi.string().required(),
     number: Joi.number().min(1).max(100).required()

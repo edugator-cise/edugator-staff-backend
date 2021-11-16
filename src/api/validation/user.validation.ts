@@ -2,7 +2,7 @@ import * as Joi from 'joi';
 
 const userValidation = (
   data: any,
-  updateValidation: Boolean
+  updateValidation: boolean
 ): Joi.ValidationResult => {
   if (!updateValidation) {
     const schema = Joi.object({

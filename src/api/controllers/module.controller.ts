@@ -9,13 +9,6 @@ import { Problem } from '../models/problem.model';
 import * as validator from 'validator';
 import moduleValidation from '../validation/module.validation';
 
-// const validateNumberField = (number: number) => {
-//   if (number < 0 || number > 100) {
-//     return false;
-//   }
-//   return true;
-// };
-
 export const getModules = async (
   _req: Request,
   res: Response
