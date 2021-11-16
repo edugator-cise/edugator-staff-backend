@@ -19,15 +19,18 @@ const getUsers = async (_req: Request, res: Response): Promise<void> => {
   let users: IUser[];
   try {
     //Find All modules
-    users = await UserModel.find().sort({ role: 1 });
-    res.status(200).send(users);
+    users = await UserModel.find().select('-password').sort({ role: 1 });
+    let responseObject = {
+      users: users,
+      currentUser: res.locals.username
+    };
+    res.status(200).send(responseObject);
   } catch (err) {
     res.status(400).type('json').send(err);
   }
 };
 
 const updateUser = async (req: Request, res: Response): Promise<void> => {
-  const newRole = req.body.role;
   if (res.locals.role !== 'Professor') {
     res
       .status(403)
@@ -36,13 +39,24 @@ const updateUser = async (req: Request, res: Response): Promise<void> => {
     return;
   }
 
-  if (newRole !== 'Professor' && newRole !== 'TA') {
-    res
-      .status(400)
-      .type('json')
-      .send({ message: 'You cannot set an invalid role' });
+  const { error } = userValidation(req.body, true);
+
+  if (error) {
+    const errorMessage = error.details[0].message;
+    const errorMessageNoQuotes = errorMessage.replace(/["]+/g, '');
+    res.status(400).type('json').send({
+      message: errorMessageNoQuotes
+    });
     return;
   }
+
+  // if (newRole !== 'Professor' && newRole !== 'TA') {
+  //   res
+  //     .status(400)
+  //     .type('json')
+  //     .send({ message: 'You cannot set an invalid role' });
+  //   return;
+  // }
 
   let user: IUser;
   try {
@@ -51,6 +65,7 @@ const updateUser = async (req: Request, res: Response): Promise<void> => {
         username: req.body.username
       },
       {
+        name: req.body.name,
         role: req.body.role
       },
       { new: true }
@@ -70,7 +85,7 @@ const updateUser = async (req: Request, res: Response): Promise<void> => {
 };
 
 const updateRole = async (req: Request, res: Response): Promise<void> => {
-  const newRole = req.body.role;
+  // const newRole = req.body.role;
   if (res.locals.role !== 'Professor') {
     res
       .status(403)
@@ -79,13 +94,25 @@ const updateRole = async (req: Request, res: Response): Promise<void> => {
     return;
   }
 
-  if (newRole !== 'Professor' && newRole !== 'TA') {
-    res
-      .status(400)
-      .type('json')
-      .send({ message: 'You cannot set an invalid role' });
+  //Joi Validation
+  const { error } = userValidation(req.body, true);
+
+  if (error) {
+    const errorMessage = error.details[0].message;
+    const errorMessageNoQuotes = errorMessage.replace(/["]+/g, '');
+    res.status(400).type('json').send({
+      message: errorMessageNoQuotes
+    });
     return;
   }
+
+  // if (newRole !== 'Professor' && newRole !== 'TA') {
+  //   res
+  //     .status(400)
+  //     .type('json')
+  //     .send({ message: 'You cannot set an invalid role' });
+  //   return;
+  // }
 
   let user: IUser;
   try {
@@ -119,7 +146,7 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
     }
 
     //Joi Validation
-    const { error } = userValidation(req.body);
+    const { error } = userValidation(req.body, false);
 
     if (error) {
       const errorMessage = error.details[0].message;

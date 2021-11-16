@@ -9,12 +9,12 @@ import { Problem } from '../models/problem.model';
 import * as validator from 'validator';
 import moduleValidation from '../validation/module.validation';
 
-const validateNumberField = (number: number) => {
-  if (number < 0 || number > 100) {
-    return false;
-  }
-  return true;
-};
+// const validateNumberField = (number: number) => {
+//   if (number < 0 || number > 100) {
+//     return false;
+//   }
+//   return true;
+// };
 
 export const getModules = async (
   _req: Request,
@@ -165,11 +165,16 @@ export const putModule = async (req: Request, res: Response): Promise<void> => {
       throw { message: 'This route requires a body to be passed in' };
     }
 
-    if (req.body.name === '' || !validateNumberField(req.body.number)) {
-      throw {
-        message:
-          'This route requires a valid name and/or number to be passed in'
-      };
+    //Joi Validation
+    const { error } = moduleValidation(req.body);
+
+    if (error) {
+      const errorMessage = error.details[0].message;
+      const errorMessageNoQuotes = errorMessage.replace(/["]+/g, '');
+      res.status(400).type('json').send({
+        message: errorMessageNoQuotes
+      });
+      return;
     }
 
     const module = await Module.findByIdAndUpdate(
