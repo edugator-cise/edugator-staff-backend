@@ -22,7 +22,6 @@ const authenticateJWT = (
     if (!jwtToken) {
       return res.sendStatus(httpStatus.UNAUTHORIZED);
     } else {
-      // console.log(jwtToken);
       //Sets the local variable to the next middleware
       res.locals.role = jwtToken.role;
       return next();
