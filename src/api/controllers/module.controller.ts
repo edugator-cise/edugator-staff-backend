@@ -6,6 +6,7 @@ import {
   ModuleInterface
 } from '../models/module.model';
 import { Problem } from '../models/problem.model';
+import * as validator from 'validator';
 import moduleValidation from '../validation/module.validation';
 
 export const getModules = async (
@@ -46,8 +47,7 @@ export const getModuleByID = async (
 ): Promise<void> => {
   let modules: ModuleDocument;
   try {
-    const ObjectId = Types.ObjectId;
-    if (!ObjectId.isValid(req.params.moduleId)) {
+    if (!validator.isMongoId(req.params.moduleId)) {
       throw { message: 'This route requires a valid module ID' };
     }
 
@@ -70,7 +70,7 @@ export const getModuleByProblemId = async (
   req: Request,
   res: Response
 ): Promise<Response<any, Record<string, any>>> => {
-  if (!Types.ObjectId.isValid(req.params.problemId)) {
+  if (!validator.isMongoId(req.params.problemId)) {
     return res.status(400).send('This route requires a valid problem ID');
   }
   // Get all modules
@@ -141,6 +141,8 @@ export const postModules = async (
       })
     );
   } catch (err) {
+    // if(res.body.code == 11000)
+    // console.log(res);
     res.status(400).type('json').send(err);
   }
 };
@@ -148,13 +150,24 @@ export const postModules = async (
 export const putModule = async (req: Request, res: Response): Promise<void> => {
   // makes sure there is a moduleId given in the params
   try {
-    const ObjectId = Types.ObjectId;
-    if (!ObjectId.isValid(req.params.moduleId)) {
+    if (!validator.isMongoId(req.params.moduleId)) {
       throw { message: 'This route requires a valid module ID' };
     }
 
     if (Object.keys(req.body).length === 0) {
       throw { message: 'This route requires a body to be passed in' };
+    }
+
+    //Joi Validation
+    const { error } = moduleValidation(req.body);
+
+    if (error) {
+      const errorMessage = error.details[0].message;
+      const errorMessageNoQuotes = errorMessage.replace(/["]+/g, '');
+      res.status(400).type('json').send({
+        message: errorMessageNoQuotes
+      });
+      return;
     }
 
     const module = await Module.findByIdAndUpdate(

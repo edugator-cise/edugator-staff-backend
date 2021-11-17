@@ -79,8 +79,9 @@ describe('GET /', () => {
   // Auth token for the routes
 
   // POST Routes for Module ------------------------------------------------
+  // postModule
   // 200 SUCCESS Test
-  it('checks /module POST route and creates a module', async () => {
+  it('checks /module POST route PASSES on valid route call', async () => {
     const sampleModule = createSampleModule();
     const result = await request(expressApp)
       .post('/v1/module')
@@ -89,8 +90,50 @@ describe('GET /', () => {
     expect(result.statusCode).toEqual(200);
   });
 
+  // postModule
+  // 401 Error Test
+  it('checks /module POST route FAILS on no authorization token', async () => {
+    const sampleModule = createSampleModule();
+    const result: request.Response = await request(expressApp)
+      .post('/v1/module')
+      .send(sampleModule);
+    expect(result.statusCode).toEqual(401);
+  });
+
+  // postModule
   //400 Error Test
-  it('checks /module POST route gives 400 response on empty body', async () => {
+  it('checks /module POST route FAILS on invalid number', async () => {
+    // Invalid Number (Greater than 100)
+    const sampleModule = createSampleModule();
+    sampleModule.number = 123;
+    const result: request.Response = await request(expressApp)
+      .post('/v1/module')
+      .set('Authorization', 'bearer ' + token)
+      .send(sampleModule);
+    expect(result.statusCode).toEqual(400);
+    expect(result.text).toEqual(
+      JSON.stringify({
+        message: 'number must be less than or equal to 100'
+      })
+    );
+
+    // Invalid Number (Less than 1)
+    sampleModule.number = -2;
+    const result1: request.Response = await request(expressApp)
+      .post('/v1/module')
+      .set('Authorization', 'bearer ' + token)
+      .send(sampleModule);
+    expect(result1.statusCode).toEqual(400);
+    expect(result1.text).toEqual(
+      JSON.stringify({
+        message: 'number must be greater than or equal to 1'
+      })
+    );
+  });
+
+  // postModule
+  //400 Error Test
+  it('checks /module POST route FAILS on empty body', async () => {
     const result: request.Response = await request(expressApp)
       .post('/v1/module')
       .set('Authorization', 'bearer ' + token)
@@ -101,17 +144,9 @@ describe('GET /', () => {
     );
   });
 
-  //401 Error Test
-  it('checks /module POST route gives 401 response on no authorization token', async () => {
-    const sampleModule = createSampleModule();
-    const result: request.Response = await request(expressApp)
-      .post('/v1/module')
-      .send(sampleModule);
-    expect(result.statusCode).toEqual(401);
-  });
-
-  //400 Error Test
-  it('checks /module POST route gives 400 response on name or numebr not passed in', async () => {
+  // postModule
+  // 400 Error Test
+  it('checks /module POST route FAILS on name or number not passed in', async () => {
     const result: request.Response = await request(expressApp)
       .post('/v1/module')
       .set('Authorization', 'bearer ' + token)
@@ -136,7 +171,9 @@ describe('GET /', () => {
   });
 
   //GET Routes for Module --------------------------------------------------------
-  it('checks /module GET route returns status 200 for getModules', async () => {
+  // getModules
+  // 200 SUCCESS TEST
+  it('checks /module GET route PASSES on valid route call', async () => {
     const result: request.Response = await request(expressApp)
       .get('/v1/module')
       .send();
@@ -146,9 +183,9 @@ describe('GET /', () => {
     expect(result.statusCode).toEqual(200);
   });
 
-  //getModuleByID
+  // getModuleById ------------------------------------------------------------------
   // 200 SUCCESS Test
-  it('checks /module/moduleId GET route returns status 200 for getModuleByID', async () => {
+  it('checks /module/moduleId GET route PASSES on valid route call', async () => {
     const result: request.Response = await request(expressApp)
       .get('/v1/module/' + module2.id)
       .send();
@@ -158,9 +195,9 @@ describe('GET /', () => {
     expect(result.statusCode).toEqual(200);
   });
 
-  //getModuleByID
-  //400 error test
-  it('checks /module/moduleId GET route returns status 400 for getModuleByID for Invalid Object/Module ID', async () => {
+  // getModuleById
+  // 400 error test
+  it('checks /module/moduleId GET route FAILS on Invalid Object/Module ID', async () => {
     const result: request.Response = await request(expressApp)
       .get('/v1/module/' + 'dhruv')
       .send();
@@ -170,9 +207,9 @@ describe('GET /', () => {
     );
   });
 
-  //getModuleByID
+  // getModuleById
   //400 error test
-  it('checks /module/moduleId GET route returns status 400 for getModuleByID with ID NOT in database', async () => {
+  it('checks /module/moduleId GET route FAILS on ID NOT in database', async () => {
     const result: request.Response = await request(expressApp)
       .get('/v1/module/' + '615a931f4cd3749f5a675f61')
       .send();
@@ -182,9 +219,19 @@ describe('GET /', () => {
     );
   });
 
-  //getModulesWithProblems
+  // getModulesWithNonHiddenProblemsAndTestCases ----------------------------------------------
+  // 200 SUCCESS TEST
+  it('checks /module/WithNonHiddenProblems GET route PASSES on valid route call', async () => {
+    const result: request.Response = await request(expressApp)
+      .get('/v1/module/WithNonHiddenProblems')
+      .set('Authorization', 'bearer ' + token)
+      .send();
+    expect(result.statusCode).toEqual(200);
+  });
+
+  // getModulesWithProblems -----------------------------------------------------------------------------
   // 200 SUCCESS Test
-  it('checks /module/WithProblems GET route returns status 200 for getModulesWithProblems', async () => {
+  it('checks /module/WithProblems GET route SUCCEEDS on valid route call', async () => {
     const result: request.Response = await request(expressApp)
       .get('/v1/module/WithProblems')
       .set('Authorization', 'bearer ' + token)
@@ -204,18 +251,18 @@ describe('GET /', () => {
     expect(result.statusCode).toEqual(200);
   });
 
-  //getModulesWithProblems
-  //401 error test
-  it('checks /module/WithProblems GET route returns status 401 for getModulesWithProblems with NO Auth Token', async () => {
+  // getModulesWithProblems
+  // 401 error test
+  it('checks /module/WithProblems GET route FAILS with NO Auth Token', async () => {
     const result: request.Response = await request(expressApp)
       .get('/v1/module/WithProblems')
       .send();
     expect(result.statusCode).toEqual(401);
   });
 
-  //getModulesByProblemId
+  //getModulesByProblemId -------------------------------------------------------------------------
   //200 success test
-  it('checks /module/ByProblemId/:problemId GET route returns status 200 for a valid problemId', async () => {
+  it('checks /module/ByProblemId/:problemId GET route PASSES for a valid problemId', async () => {
     const result: request.Response = await request(expressApp)
       .get(`/v1/module/ByProblemId/${problem1.id}`)
       .set('Authorization', 'bearer ' + token)
@@ -225,9 +272,9 @@ describe('GET /', () => {
     expect(result.body.number).toEqual(module1.number);
   });
 
-  //getModulesByProblemId
-  //400 malformed request test
-  it('checks /module/ByProblemId/:problemId GET route returns status 400 for an ill-formed problemId', async () => {
+  // getModulesByProblemId
+  // 400 malformed request test
+  it('checks /module/ByProblemId/:problemId GET route FAILS on an ill-formed problemId', async () => {
     const result: request.Response = await request(expressApp)
       .get('/v1/module/ByProblemId/010101')
       .set('Authorization', 'bearer ' + token)
@@ -235,18 +282,18 @@ describe('GET /', () => {
     expect(result.statusCode).toEqual(400);
   });
 
-  //getModulesByProblemId
-  //401 unauthorized test
-  it('checks /module/ByProblemId/:problemId GET route returns status 400 for an ill-formed problemId', async () => {
+  // getModulesByProblemId
+  // 401 Unauthorized test
+  it('checks /module/ByProblemId/:problemId GET route FAILS for an ill-formed problemId', async () => {
     const result: request.Response = await request(expressApp)
       .get(`/v1/module/ByProblemId/${problem1.id}`)
       .send();
     expect(result.statusCode).toEqual(401);
   });
 
-  //getModulesByProblemId
-  //404 not found test
-  it('checks /module/ByProblemId/:problemId GET route returns status 404 for a nonexistent problemId', async () => {
+  // getModulesByProblemId
+  // 404 not found test
+  it('checks /module/ByProblemId/:problemId GET route FAILS for a nonexistent problemId', async () => {
     const result: request.Response = await request(expressApp)
       .get('/v1/module/ByProblemId/012345678901234567890123')
       .set('Authorization', 'bearer ' + token)
@@ -255,8 +302,9 @@ describe('GET /', () => {
   });
 
   // PUT Routes for Modules ------------------------------------------------------------
+  // putModule
   // 200 SUCCESS Test
-  it('checks /module/moduleId PUT route returns status 200 for updateModule', async () => {
+  it('checks /module/moduleId PUT route PASSES on valid route call', async () => {
     const nameUpdate = 'Stacks UPDATE';
     const numberUpdate = 10;
     const result: request.Response = await request(expressApp)
@@ -273,8 +321,9 @@ describe('GET /', () => {
     expect(result.statusCode).toEqual(200);
   });
 
+  // putModule
   // 401 error test
-  it('checks /module/moduleId PUT route returns status 401 for updateModule with NO Auth Token', async () => {
+  it('checks /module/moduleId PUT route FAILS with NO Auth Token', async () => {
     const nameUpdate = 'Stacks UPDATE';
     const numberUpdate = 10.2;
     const result: request.Response = await request(expressApp)
@@ -287,8 +336,9 @@ describe('GET /', () => {
     expect(result.statusCode).toEqual(401);
   });
 
+  // putModule
   //400 error test
-  it('checks /module/moduleId PUT route returns status 400 for updateModule with Invalid Object/Module ID', async () => {
+  it('checks /module/moduleId PUT route FAILS on Invalid Object/Module ID', async () => {
     const nameUpdate = 'Stacks UPDATE';
     const numberUpdate = 10.2;
     const result: request.Response = await request(expressApp)
@@ -305,8 +355,9 @@ describe('GET /', () => {
     );
   });
 
+  // putModule
   //400 error test
-  it('checks /module/moduleId PUT route returns status 400 for updateModule with ID NOT in database', async () => {
+  it('checks /module/moduleId PUT route FAILS on ID NOT in database', async () => {
     const nameUpdate = 'Stacks UPDATE';
     const numberUpdate = 10.2;
     const result: request.Response = await request(expressApp)
@@ -323,8 +374,9 @@ describe('GET /', () => {
     );
   });
 
+  // putModule
   //400 error test
-  it('checks /module/moduleId PUT route returns status 400 for updateModule NO body passed in', async () => {
+  it('checks /module/moduleId PUT route FAILS on NO body passed in', async () => {
     const result: request.Response = await request(expressApp)
       .put('/v1/module/' + module2.id)
       .set('Authorization', 'bearer ' + token)
@@ -336,9 +388,90 @@ describe('GET /', () => {
     );
   });
 
+  // putModule
+  //400 error test
+  it('checks /module/moduleId PUT route FAILS on empty name or INVALID name or number passed in', async () => {
+    // Empty Name
+    const result: request.Response = await request(expressApp)
+      .put('/v1/module/' + module2.id)
+      .set('Authorization', 'bearer ' + token)
+      .send({
+        name: '',
+        number: 10.2
+      });
+
+    expect(result.statusCode).toEqual(400);
+    expect(result.text).toEqual(
+      JSON.stringify({
+        message: 'name is not allowed to be empty'
+      })
+    );
+
+    // Invalid Number (Less than 0)
+    const result1: request.Response = await request(expressApp)
+      .put('/v1/module/' + module2.id)
+      .set('Authorization', 'bearer ' + token)
+      .send({
+        name: 'Hash Map',
+        number: -2
+      });
+
+    expect(result1.statusCode).toEqual(400);
+    expect(result1.text).toEqual(
+      JSON.stringify({
+        message: 'number must be greater than or equal to 1'
+      })
+    );
+
+    // Invalid Name and Number
+    const result2: request.Response = await request(expressApp)
+      .put('/v1/module/' + module2.id)
+      .set('Authorization', 'bearer ' + token)
+      .send({
+        name: 'name',
+        number: 123
+      });
+
+    expect(result2.statusCode).toEqual(400);
+    expect(result2.text).toEqual(
+      JSON.stringify({
+        message: 'number must be less than or equal to 100'
+      })
+    );
+  });
+
+  // putModule
+  //400 error test
+  it('checks /module/moduleId PUT route FAILS on NO name or number field passed in', async () => {
+    const result: request.Response = await request(expressApp)
+      .put('/v1/module/' + module2.id)
+      .set('Authorization', 'bearer ' + token)
+      .send({
+        number: 10
+      });
+
+    expect(result.statusCode).toEqual(400);
+    expect(result.text).toEqual(
+      JSON.stringify({ message: 'name is required' })
+    );
+
+    const result1: request.Response = await request(expressApp)
+      .put('/v1/module/' + module2.id)
+      .set('Authorization', 'bearer ' + token)
+      .send({
+        name: 'testName'
+      });
+
+    expect(result1.statusCode).toEqual(400);
+    expect(result1.text).toEqual(
+      JSON.stringify({ message: 'number is required' })
+    );
+  });
+
   // DELETE Routes for Modules ------------------------------------------------------------
+  // deleteModule
   // 200 SUCCESS Test
-  it('checks /module/moduleId DELETE route returns status 200 for deleteModule', async () => {
+  it('checks /module/moduleId DELETE route PASSES on valid route call', async () => {
     const result: request.Response = await request(expressApp)
       .delete('/v1/module/' + module1.id)
       .set('Authorization', 'bearer ' + token)
@@ -352,8 +485,9 @@ describe('GET /', () => {
     expect(result.statusCode).toEqual(200);
   });
 
+  // deleteModule
   //401 Error Test
-  it('checks /module/moduleId DELETE route returns status 401 for NO AUTH Token', async () => {
+  it('checks /module/moduleId DELETE route FAILS on NO AUTH Token', async () => {
     const result: request.Response = await request(expressApp)
       .delete('/v1/module/' + module1.id)
       .send();
@@ -361,8 +495,9 @@ describe('GET /', () => {
     expect(result.statusCode).toEqual(401);
   });
 
+  // deleteModule
   //400 Error Test
-  it('checks /module/moduleId DELETE route returns status 400 for Module ID NOT in database', async () => {
+  it('checks /module/moduleId DELETE route FAILS for Module ID NOT in database', async () => {
     const result: request.Response = await request(expressApp)
       .delete('/v1/module/' + '615a931f4cd3749f5a675f61')
       .set('Authorization', 'bearer ' + token)
@@ -376,8 +511,9 @@ describe('GET /', () => {
     );
   });
 
+  // deleteModule
   //400 Error Test
-  it('checks /module/moduleId DELETE route returns status 400 for Problem ID NOT in database', async () => {
+  it('checks /module/moduleId DELETE route FAILS for Problem ID NOT in database', async () => {
     const result: request.Response = await request(expressApp)
       .delete('/v1/module/' + module3.id)
       .set('Authorization', 'bearer ' + token)
