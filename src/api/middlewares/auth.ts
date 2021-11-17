@@ -24,6 +24,7 @@ const authenticateJWT = (
     } else {
       //Sets the local variable to the next middleware
       res.locals.role = jwtToken.role;
+      res.locals.username = jwtToken.username;
       return next();
     }
   })(req, res, next);
