@@ -16,7 +16,6 @@ const userSchema = new Schema<User>(
     username: {
       type: String,
       unique: true,
-      // validate: [isEmail, 'Invalid Email'],
       required: true
     },
     password: {
