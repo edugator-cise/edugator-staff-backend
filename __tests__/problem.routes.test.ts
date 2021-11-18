@@ -1,8 +1,8 @@
 import { expressApp } from '../src/config/express';
 import * as request from 'supertest';
 import { UserModel } from '../src/api/models/user.model';
-import { Module } from '../src/api/models/module.model';
-import { createSamplePayload, addOrEditField } from '../mocks/problems';
+import { Module, ModuleInterface } from '../src/api/models/module.model';
+import { createSamplePayload } from '../mocks/problems';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { jwtSecret } from '../src/config/vars';
@@ -354,6 +354,14 @@ describe('GET /', () => {
       .send(sampleProblem);
     expect(postResult.statusCode).toEqual(200);
 
+    // Ensure module has one problem
+    const moduleAfterProblemAddedResult = await request(expressApp)
+      .get('/v1/module/WithProblems')
+      .set('Authorization', 'bearer ' + token);
+    let module: ModuleInterface = moduleAfterProblemAddedResult
+      .body[0] as ModuleInterface;
+    expect(module.problems.length).toEqual(1);
+
     let result = await request(expressApp)
       .get('/v1/admin/problem')
       .set('Authorization', 'bearer ' + token);
@@ -391,5 +399,12 @@ describe('GET /', () => {
       .set('Authorization', 'bearer ' + token);
     expect(result.statusCode).toEqual(200);
     expect(result.body.length).toEqual(0);
+
+    // Check that module.problems length is now 0
+    const moduleAfterProblemDeletedResult = await request(expressApp)
+      .get('/v1/module/WithProblems')
+      .set('Authorization', 'bearer ' + token);
+    module = moduleAfterProblemDeletedResult.body[0] as ModuleInterface;
+    expect(module.problems.length).toEqual(0);
   });
 });
