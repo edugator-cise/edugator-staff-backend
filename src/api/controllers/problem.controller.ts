@@ -223,7 +223,7 @@ const deleteProblem = async (
     let i: number;
     for (i = 0; i < modules.length; i++) {
       modules[i].problems = modules[i].problems.filter((problemId) => {
-        problemId != new Types.ObjectId(req.params.problemId);
+        return problemId != new Types.ObjectId(req.params.problemId);
       }) as [Types.ObjectId];
     }
     modules.forEach(async (module) => {
