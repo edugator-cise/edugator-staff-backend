@@ -170,31 +170,6 @@ describe('GET /', () => {
     );
   });
 
-  //400 Error Test
-  it('checks /module POST route gives 400 response on name or numebr not passed in', async () => {
-    const result: request.Response = await request(expressApp)
-      .post('/v1/module')
-      .set('Authorization', 'bearer ' + token)
-      .send({
-        number: 2
-      });
-    expect(result.statusCode).toEqual(400);
-    expect(result.text).toEqual(
-      JSON.stringify({ message: 'name is required' })
-    );
-
-    const result2: request.Response = await request(expressApp)
-      .post('/v1/module')
-      .set('Authorization', 'bearer ' + token)
-      .send({
-        name: 'Test Module'
-      });
-    expect(result2.statusCode).toEqual(400);
-    expect(result2.text).toEqual(
-      JSON.stringify({ message: 'number is required' })
-    );
-  });
-
   //GET Routes for Module --------------------------------------------------------
   // getModules
   // 200 SUCCESS TEST
