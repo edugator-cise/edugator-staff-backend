@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
-import { Module, ModuleDocument } from '../models/module.model';
+import { Types } from 'mongoose';
+import { Module, ModuleDocument, ModuleInterface } from '../models/module.model';
 import { Problem, ProblemDocument } from '../models/problem.model';
 import {
   problemValidation,
@@ -216,6 +217,18 @@ const deleteProblem = async (
       return res.status(404).send();
     }
     await problem.delete();
+    
+    // Delete from problems array on each module
+    let modules: ModuleDocument[] = await Module.find();
+    let i: number;
+    for(i=0; i < modules.length; i++){
+      modules[i].problems = modules[i].problems.filter((problemId) => {
+        problemId != new Types.ObjectId(req.params.problemId);
+      }) as [Types.ObjectId];
+    }
+    modules.forEach(async (module) => {
+      await module.save();
+    });
     return res.sendStatus(200);
   } catch (error) {
     return res.status(400).send(error);
