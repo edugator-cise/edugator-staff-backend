@@ -1,5 +1,3 @@
-// import { ProblemInterface } from "../src/api/models/problem.model";
-
 //eslint-disable-next-line
 const createSampleProblem = () => {
   return {
@@ -19,7 +17,7 @@ const createSampleProblem = () => {
         input: '123',
         expectedOutput: '12345',
         hint: 'n/a',
-        visibility: 1
+        visibility: 0
       }
     ],
     templatePackage: 'https://www.google.com',
@@ -36,4 +34,8 @@ const createSamplePayload = (_moduleId = '53b1c579bdf3de74f76bdac9') => {
   };
   return temp;
 };
-export { createSampleProblem, createSamplePayload };
+const addOrEditField = (samplePayload, field, value) => {
+  samplePayload[field] = value;
+  return { ...samplePayload };
+};
+export { createSampleProblem, createSamplePayload, addOrEditField };
