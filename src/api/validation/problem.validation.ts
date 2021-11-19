@@ -26,14 +26,14 @@ const problemValidation = (data: any): ValidationResult => {
     fileExtension: string().valid('.java', '.cpp', '.h').min(1).required(),
     testCases: array().items({
       input: string().required(),
-      expectedOutput: string().min(1).required(),
-      hint: string().required(),
+      expectedOutput: string().allow('').required(),
+      hint: string().allow('').required(),
       visibility: number().valid(0, 1, 2).required()
     }),
     templatePackage: string().uri().required(),
     timeLimit: number(),
     memoryLimit: number(),
-    buildCommand: string()
+    buildCommand: string().allow('')
   });
 
   return schema.validate(data);
@@ -55,14 +55,14 @@ const problemValidationWithoutModuleId = (data: any): ValidationResult => {
     fileExtension: string().valid('.java', '.cpp', '.h').min(1).required(),
     testCases: array().items({
       input: string().required(),
-      expectedOutput: string().min(1).required(),
-      hint: string().required(),
+      expectedOutput: string().allow('').required(),
+      hint: string().allow('').required(),
       visibility: number().valid(0, 1, 2).required()
     }),
     templatePackage: string().uri().required(),
     timeLimit: number(),
     memoryLimit: number(),
-    buildCommand: string()
+    buildCommand: string().allow('')
   });
 
   return schema.validate(data);
