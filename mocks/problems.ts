@@ -17,7 +17,7 @@ const createSampleProblem = () => {
         input: '123',
         expectedOutput: '12345',
         hint: 'n/a',
-        visibility: 0
+        visibility: 2
       }
     ],
     templatePackage: 'https://www.google.com',
