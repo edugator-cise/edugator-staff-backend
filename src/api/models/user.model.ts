@@ -1,5 +1,6 @@
 import { model, Schema, Document } from 'mongoose';
 interface User {
+  name: string;
   username: string;
   password: string;
   role: string;
@@ -7,8 +8,13 @@ interface User {
 
 const userSchema = new Schema<User>(
   {
+    name: {
+      type: String,
+      required: true
+    },
     username: {
       type: String,
+      unique: true,
       required: true
     },
     password: {

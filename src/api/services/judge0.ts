@@ -1,6 +1,14 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { judgeURI } from '../../config/vars';
 
+interface SubmissionPayload {
+  language_id: number;
+  source_code: string;
+  stdin: string;
+  cpu_time_limit: number; // seconds
+  memory_limit: number;
+  compiler_options: string;
+}
 class JudgeServer {
   url: string;
   axiosInstance: AxiosInstance;
@@ -18,19 +26,12 @@ class JudgeServer {
   }
 
   createSubmission(
-    code: string,
-    language: number,
-    base64: boolean,
-    cArgs: string
+    submissionPayload: SubmissionPayload,
+    base64: boolean
   ): Promise<AxiosResponse> {
-    const payload = {
-      language_id: language,
-      source_code: code,
-      stdin: cArgs
-    };
     return this.axiosInstance.post(
       `/submissions/?base64_encoded=${base64}`,
-      payload
+      submissionPayload
     );
   }
 
@@ -63,4 +64,4 @@ class JudgeServer {
 
 const judgeEngine = new JudgeServer(judgeURI);
 
-export { judgeEngine, JudgeServer };
+export { judgeEngine, JudgeServer, SubmissionPayload };

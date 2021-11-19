@@ -1,11 +1,15 @@
 import * as httpStatus from 'http-status';
 import { Request, Response } from 'express';
-import runValidation from '../../validation/run.validation';
-import submissionValidation from '../../validation/submission.validation';
+import runValidation from '../validation/run.validation';
+import submissionValidation from '../validation/submission.validation';
 import { Problem } from '../models/problem.model';
-import { tokenValidation } from '../../validation/tokenPayload.validation';
+import { tokenValidation } from '../validation/tokenPayload.validation';
 import { ValidationResult } from 'joi';
-import { judgeEngine, JudgeServer } from '../services/judge0';
+import {
+  judgeEngine,
+  JudgeServer,
+  SubmissionPayload
+} from '../services/judge0';
 import { AxiosError, AxiosResponse } from 'axios';
 
 declare interface IJudge0Response {
@@ -140,10 +144,46 @@ const runCode = async (req: Request, response: Response): Promise<Response> => {
     return response.sendStatus(httpStatus.BAD_REQUEST);
   }
 
-  const { source_code, language_id, base_64, stdin } = req.body;
+  const {
+    source_code,
+    language_id,
+    base_64,
+    stdin,
+    problemId,
+    cpu_time_limit,
+    memory_limit,
+    compiler_options
+  } = req.body;
 
+  // find the problem
+  const problem = await Problem.findOne({
+    _id: problemId
+  });
+  if (!problem) {
+    return response.status(404).send();
+  }
+  const { header, footer } = problem.code;
+
+  let fullCode = '';
+  if (base_64) {
+    // have to decode and recode header + code + footer
+    fullCode =
+      header + Buffer.from(source_code || '', 'base64').toString() + footer;
+    fullCode = Buffer.from(fullCode || '', 'utf-8').toString('base64');
+  } else {
+    fullCode = header + source_code + footer;
+  }
+
+  const payload: SubmissionPayload = {
+    language_id,
+    source_code: fullCode,
+    stdin,
+    cpu_time_limit,
+    memory_limit,
+    compiler_options
+  };
   return judgeEngine
-    .createSubmission(source_code, language_id, base_64, stdin)
+    .createSubmission(payload, base_64)
     .then((axiosResponse: AxiosResponse) => {
       return response.send(axiosResponse.data).status(httpStatus.OK);
     })
@@ -176,7 +216,6 @@ const deleteCode = async (
 
 const getCode = async (req: Request, response: Response): Promise<Response> => {
   // TODO: Add logger
-
   const tokenValidationResponse = tokenValidation(req.body);
   if (tokenValidationResponse.error) {
     return response.sendStatus(httpStatus.BAD_REQUEST);
@@ -212,16 +251,37 @@ const submitCode = async (
   if (validationResponse.error) {
     return response.sendStatus(400);
   }
-  const { source_code, language_id, base_64, problemId } = req.body;
+  const {
+    source_code,
+    language_id,
+    base_64,
+    problemId,
+    cpu_time_limit,
+    memory_limit,
+    compiler_options
+  } = req.body;
   try {
     // find the problem
     const problem = await Problem.findOne({
       _id: problemId
     });
-    const { testCases } = problem;
+    if (!problem) {
+      return response.status(404).send();
+    }
+    const { testCases, code } = problem;
+    const { header, footer } = code;
+    let fullCode = '';
+    if (base_64) {
+      // have to decode and recode header + code + footer
+      fullCode =
+        header + Buffer.from(source_code || '', 'base64').toString() + footer;
+      fullCode = Buffer.from(fullCode || '', 'utf-8').toString('base64');
+    } else {
+      fullCode = header + source_code + footer;
+    }
     // create an array payload for judge0 create submissions
     const options: CodeSubmission[] = testCases.map((value) => ({
-      source_code,
+      source_code: fullCode,
       language_id,
       base_64,
       stdin: Buffer.from(value.input || '', 'utf-8').toString('base64'),
@@ -232,14 +292,17 @@ const submitCode = async (
     }));
 
     // makes promise calls for judgeEngine tokens
-    const getTokens = options.map((opt) =>
-      judgeEngine
-        .createSubmission(
-          opt.source_code,
-          opt.language_id,
-          opt.base_64,
-          opt.stdin
-        )
+    const getTokens = options.map((opt) => {
+      const payload: SubmissionPayload = {
+        language_id: opt.language_id,
+        source_code: opt.source_code,
+        stdin: opt.stdin,
+        cpu_time_limit,
+        memory_limit,
+        compiler_options
+      };
+      return judgeEngine
+        .createSubmission(payload, opt.base_64)
         .then((axiosResponse: AxiosResponse) => ({
           token: axiosResponse.data.token,
           stdin: opt.stdin,
@@ -253,8 +316,8 @@ const submitCode = async (
           expectedOutput: opt.expectedOutput,
           hidden: opt.hidden,
           code: e.code
-        }))
-    );
+        }));
+    });
 
     // runs the judge0 api calls to get token payload
     const arrayTokenPayload = await Promise.all(getTokens);

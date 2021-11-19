@@ -1,11 +1,15 @@
 import { Request, Response } from 'express';
 import { Types } from 'mongoose';
 import { Module, ModuleDocument } from '../models/module.model';
-import { Problem, ProblemDocument } from '../models/problem.model';
+import { Problem, ProblemDocument, TestCase } from '../models/problem.model';
 import {
   problemValidation,
   problemValidationWithoutModuleId
 } from '../validation/problem.validation';
+
+const filterOpenTestCases = (testCases: TestCase[]): TestCase[] => {
+  return testCases.filter((test) => test.visibility === 0);
+};
 
 const readStudentProblems = async (
   req: Request,
@@ -30,7 +34,11 @@ const readStudentProblems = async (
       }
       studentProblems = problem;
       // make the test cases for a problem unaccessible to students
-      studentProblems.testCases = undefined;
+      studentProblems.testCases = filterOpenTestCases(
+        studentProblems.testCases
+      );
+      studentProblems.code.header = undefined;
+      studentProblems.code.footer = undefined;
     } catch (error) {
       return res.status(400).send(error);
     }
@@ -53,7 +61,9 @@ const readStudentProblems = async (
     });
     // make the test cases for all problems unaccessible to students
     studentProblems.forEach((item) => {
-      item.testCases = undefined;
+      item.testCases = filterOpenTestCases(item.testCases);
+      item.code.header = undefined;
+      item.code.footer = undefined;
     });
   } else {
     studentProblems = await Problem.find({
@@ -61,7 +71,9 @@ const readStudentProblems = async (
     });
     // make the test cases for all problems unaccessible to students
     studentProblems.forEach((item) => {
-      item.testCases = undefined;
+      item.testCases = filterOpenTestCases(item.testCases);
+      item.code.header = undefined;
+      item.code.footer = undefined;
     });
   }
 

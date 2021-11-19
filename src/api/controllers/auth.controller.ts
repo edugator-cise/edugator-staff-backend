@@ -4,6 +4,124 @@ import * as jwt from 'jsonwebtoken';
 import { UserModel, IUser } from '../models/user.model';
 import { jwtSecret, jwtExpirationInterval } from '../../config/vars';
 import * as bcrypt from 'bcrypt';
+import userValidation from '../validation/user.validation';
+
+const getUsers = async (_req: Request, res: Response): Promise<void> => {
+  // TODO: Do we want TA's to be able to see all people's accounts
+  if (res.locals.role !== 'Professor') {
+    res
+      .status(403)
+      .type('json')
+      .send({ message: 'You do not have permission to make this request' });
+    return;
+  }
+
+  let users: IUser[];
+  try {
+    //Find All modules
+    users = await UserModel.find().select('-password').sort({ role: 1 });
+    const responseObject = {
+      users: users,
+      currentUser: res.locals.username
+    };
+    res.status(200).send(responseObject);
+  } catch (err) {
+    res.status(400).type('json').send(err);
+  }
+};
+
+const updateUser = async (req: Request, res: Response): Promise<void> => {
+  if (res.locals.role !== 'Professor') {
+    res
+      .status(403)
+      .type('json')
+      .send({ message: 'You do not have permission to make this request' });
+    return;
+  }
+
+  const { error } = userValidation(req.body, true);
+
+  if (error) {
+    const errorMessage = error.details[0].message;
+    const errorMessageNoQuotes = errorMessage.replace(/["]+/g, '');
+    res.status(400).type('json').send({
+      message: errorMessageNoQuotes
+    });
+    return;
+  }
+
+  let user: IUser;
+  try {
+    user = await UserModel.findOneAndUpdate(
+      {
+        username: req.body.username
+      },
+      {
+        name: req.body.name,
+        role: req.body.role
+      },
+      { new: true }
+    ).select('-password');
+
+    if (user) {
+      res.status(200).type('json').send(user);
+    } else {
+      res
+        .status(400)
+        .type('json')
+        .send({ message: 'User not found in database' });
+    }
+  } catch (err) {
+    res.status(400).type('json').send(err);
+  }
+};
+
+const updateRole = async (req: Request, res: Response): Promise<void> => {
+  // const newRole = req.body.role;
+  if (res.locals.role !== 'Professor') {
+    res
+      .status(403)
+      .type('json')
+      .send({ message: 'You do not have permission to make this request' });
+    return;
+  }
+
+  //Joi Validation
+  const { error } = userValidation(req.body, true);
+
+  if (error) {
+    const errorMessage = error.details[0].message;
+    const errorMessageNoQuotes = errorMessage.replace(/["]+/g, '');
+    res.status(400).type('json').send({
+      message: errorMessageNoQuotes
+    });
+    return;
+  }
+
+  let user: IUser;
+  try {
+    user = await UserModel.findOneAndUpdate(
+      {
+        username: req.body.username
+      },
+      {
+        role: req.body.role
+      },
+      { new: true }
+    ).select('-password');
+
+    if (user) {
+      res.status(200).type('json').send(user);
+    } else {
+      res
+        .status(400)
+        .type('json')
+        .send({ message: 'User not found in database' });
+    }
+  } catch (err) {
+    res.status(400).type('json').send(err);
+  }
+};
 
 const createUser = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -11,11 +129,16 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
       throw { message: 'This route requires a body to be passed in' };
     }
 
-    if (!req.body.username || !req.body.password || !req.body.role) {
-      throw {
-        message:
-          'This route requires a username, password, and role field to be passed in the body'
-      };
+    //Joi Validation
+    const { error } = userValidation(req.body, false);
+
+    if (error) {
+      const errorMessage = error.details[0].message;
+      const errorMessageNoQuotes = errorMessage.replace(/["]+/g, '');
+      res.status(400).type('json').send({
+        message: errorMessageNoQuotes
+      });
+      return;
     }
 
     if (res.locals.role !== 'Professor') {
@@ -36,16 +159,30 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
         //Add into collection, if the password hashed properly
         try {
           if (result) {
-            const user = await UserModel.create({
+            const user = new UserModel({
+              name: req.body.name,
               username: req.body.username,
               password: hash,
               role: req.body.role
             });
-            res.status(200).send(
-              JSON.stringify({
-                id: user._id
-              })
-            );
+            await user.save(function (err) {
+              if (err) {
+                // Monogo DB error
+                if (err.code === 11000) {
+                  // Duplicate username
+                  return res.status(403).send({
+                    message: 'This username is already taken'
+                  });
+                }
+                return res.status(422).send(err);
+              }
+
+              return res.status(200).send(
+                JSON.stringify({
+                  id: user._id
+                })
+              );
+            });
           } else {
             throw { message: 'Password hashing failed' };
           }
@@ -59,14 +196,26 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-//TODO: Write tests for this
+// Logs the validated user in
 const authenticateUser = async (req: Request, res: Response): Promise<void> => {
   try {
+    if (Object.keys(req.body).length === 0) {
+      throw { message: 'This route requires a body to be passed in' };
+    }
+
     const payload = {
       username: req.body.username
     };
 
     const user: IUser = await UserModel.findOne(payload);
+
+    if (!user) {
+      res.status(401).type('json').send({
+        message: 'User with given username is not found - Unauthorized'
+      });
+      return;
+      // throw { message: 'User with given username is not found' };
+    }
 
     // Compares the passed in password to the hashed password in the collection
     bcrypt.compare(req.body.password, user.password, function (_err, result) {
@@ -81,16 +230,59 @@ const authenticateUser = async (req: Request, res: Response): Promise<void> => {
           );
           res.status(httpStatus.OK).send({ token });
         } else {
-          throw { message: 'Invalid Password - Unauthorized' };
+          res.status(401).type('json').send({
+            message: 'Invalid Password - Unauthorized'
+          });
+          return;
+          // throw { message: 'Invalid Password - Unauthorized' };
         }
       } catch (err) {
         res.status(400).type('json').send(err);
       }
     });
   } catch (err) {
-    // logger error
-    res.sendStatus(httpStatus.UNAUTHORIZED);
+    // catches empty body error - the other errors are dealt with individually
+    res.status(400).type('json').send(err);
+    // res.sendStatus(httpStatus.UNAUTHORIZED);
   }
 };
 
-export { authenticateUser, createUser };
+const deleteUser = async (req: Request, res: Response): Promise<void> => {
+  if (res.locals.role !== 'Professor') {
+    res
+      .status(403)
+      .type('json')
+      .send({ message: 'You do not have permission to make this request' });
+    return;
+  }
+
+  let user: IUser;
+  try {
+    user = await UserModel.findOneAndDelete({
+      username: req.body.username
+    });
+
+    if (!user) {
+      res.status(400).type('json').send({
+        message: 'User with given username is not found in the database'
+      });
+      return;
+    }
+
+    await user.delete();
+    res.status(200).type('json').send({ message: 'User successfully deleted' });
+    return;
+  } catch (err) {
+    res.status(400).type('json').send(err);
+    return;
+  }
+};
+
+export {
+  authenticateUser,
+  createUser,
+  getUsers,
+  updateRole,
+  updateUser,
+  deleteUser
+};
