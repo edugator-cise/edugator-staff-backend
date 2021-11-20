@@ -16,7 +16,7 @@ describe('GET /auth/*', () => {
       });
     });
 
-    const result: Boolean = await new Promise((resolve) => {
+    const result: boolean = await new Promise((resolve) => {
       bcrypt.compare(pass, hashedPassword, async function (_err, result) {
         try {
           return resolve(result);
