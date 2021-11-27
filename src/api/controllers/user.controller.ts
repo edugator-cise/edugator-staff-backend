@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { UserModel, IUser } from '../models/user.model';
 import * as bcrypt from 'bcrypt';
+import * as validator from 'validator';
 import userValidation from '../validation/user.validation';
 
 const getUsers = async (_req: Request, res: Response): Promise<void> => {
@@ -36,31 +37,54 @@ const updateUser = async (req: Request, res: Response): Promise<void> => {
     return;
   }
 
-  const { error } = userValidation(req.body, true);
-
-  if (error) {
-    const errorMessage = error.details[0].message;
-    const errorMessageNoQuotes = errorMessage.replace(/["]+/g, '');
-    res.status(400).type('json').send({
-      message: errorMessageNoQuotes
-    });
-    return;
-  }
-
-  let user: IUser;
   try {
-    user = await UserModel.findOneAndUpdate(
-      {
-        username: req.body.username
-      },
-      {
-        name: req.body.name,
-        role: req.body.role
-      },
-      { new: true }
-    ).select('-password');
+    //Joi Validation
+    const { error } = userValidation(req.body, true);
 
+    if (error) {
+      const errorMessage = error.details[0].message;
+      const errorMessageNoQuotes = errorMessage.replace(/["]+/g, '');
+      res.status(400).type('json').send({
+        message: errorMessageNoQuotes
+      });
+      return;
+    }
+
+    // Check to make sure ID is a valid mongoID
+    if (!validator.isMongoId(req.body._id)) {
+      res.status(400).send('This route requires a valid user ID');
+      return;
+    }
+
+    // let user: IUser;
+    let tempUser: IUser;
+    // Find the user by ID
+    const user = await UserModel.findOne({
+      _id: req.body._id
+    }).select('-password');
+
+    // Confirm they are modifying the username
     if (user) {
+      if (user.username !== req.body.username) {
+        // If modifying, make sure the username is not taken by anyone else
+        tempUser = await UserModel.findOne({
+          username: req.body.username
+        });
+
+        // If taken, then send an error
+        if (tempUser) {
+          res.status(403).send({
+            message: 'This username is already taken'
+          });
+          return;
+        }
+      }
+
+      // Find the user again and update
+      user.username = req.body.username;
+      user.name = req.body.name;
+      user.role = req.body.role;
+      user.save();
       res.status(200).type('json').send(user);
     } else {
       res
@@ -73,6 +97,7 @@ const updateUser = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+/*
 const updateRole = async (req: Request, res: Response): Promise<void> => {
   // const newRole = req.body.role;
   if (res.locals.role !== 'Professor') {
@@ -119,7 +144,7 @@ const updateRole = async (req: Request, res: Response): Promise<void> => {
     res.status(400).type('json').send(err);
   }
 };
-
+*/
 const createUser = async (req: Request, res: Response): Promise<void> => {
   try {
     if (Object.keys(req.body).length === 0) {
@@ -224,4 +249,4 @@ const deleteUser = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export { createUser, getUsers, updateRole, updateUser, deleteUser };
+export { createUser, getUsers, updateUser, deleteUser };
