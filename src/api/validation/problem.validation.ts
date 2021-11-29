@@ -8,6 +8,21 @@ import {
   number
 } from 'joi';
 
+enum TestCaseVisibility {
+  IO_HIDDEN = 0,
+  I_VISIBLE_O_HIDDEN = 1,
+  IO_VISBILE = 2
+}
+
+const validateTestCases = (testCases: any) => {
+  return (
+    testCases.length > 0 &&
+    testCases.some(
+      (testCase) => testCase['visibility'] === TestCaseVisibility.IO_VISBILE
+    )
+  );
+};
+
 //Joi does not allow empty strings by default (Reason why 'min(1)' is not in the validation for strings)
 const problemValidation = (data: any): ValidationResult => {
   const schema = object({
@@ -67,4 +82,8 @@ const problemValidationWithoutModuleId = (data: any): ValidationResult => {
   return schema.validate(data);
 };
 
-export { problemValidation, problemValidationWithoutModuleId };
+export {
+  problemValidation,
+  problemValidationWithoutModuleId,
+  validateTestCases
+};
