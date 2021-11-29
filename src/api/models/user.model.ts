@@ -1,4 +1,5 @@
 import { model, Schema, Document } from 'mongoose';
+// import { isEmail } from 'validator';
 interface User {
   name: string;
   username: string;

@@ -685,6 +685,7 @@ describe('GET /user/*', () => {
         password: 'password'
       });
     expect(result.statusCode).toEqual(400);
+    // console.log(result.text);
     expect(result.text).toEqual(
       JSON.stringify({
         message: 'name is required'
