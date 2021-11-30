@@ -1,8 +1,8 @@
 import { expressApp } from '../src/config/express';
 import * as request from 'supertest';
 import { UserModel } from '../src/api/models/user.model';
-import { Module } from '../src/api/models/module.model';
-import { createSamplePayload } from '../mocks/problems';
+import { createSamplePayload, addOrEditField } from '../mocks/problems';
+import { Module, ModuleInterface } from '../src/api/models/module.model';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { jwtSecret } from '../src/config/vars';
@@ -21,23 +21,27 @@ describe('GET /', () => {
       });
     });
 
-    bcrypt.compare(pass, hashedPassword, async function (_err, result) {
-      try {
-        if (result) {
-          //User creation for token
-          await UserModel.create({
-            name: 'Test TA',
-            username: 'dhruv2000patel@gmail.com',
-            password: hashedPassword,
-            role: 'TA'
-          });
-        } else {
-          throw { message: 'Hash method not working properly' };
+    const result: boolean = await new Promise((resolve) => {
+      bcrypt.compare(pass, hashedPassword, async function (_err, result) {
+        try {
+          return resolve(result);
+        } catch {
+          return false;
         }
-      } catch (err) {
-        return err;
-      }
+      });
     });
+
+    if (result) {
+      //User creation for token
+      await UserModel.create({
+        name: 'Test TA',
+        username: 'dhruv2000patel@gmail.com',
+        password: hashedPassword,
+        role: 'TA'
+      });
+    } else {
+      throw { message: 'Hash method not working properly' };
+    }
 
     const module = await Module.create({
       name: 'Stacks/Lists/Queues',
@@ -62,6 +66,27 @@ describe('GET /', () => {
       .set('Authorization', 'bearer ' + token)
       .send(sampleProblem);
     expect(result.statusCode).toEqual(200);
+  });
+
+  it('attempts to create a problem with no visible test cases', async () => {
+    const invalidTestCases = [
+      {
+        input: '123',
+        expectedOutput: '12345',
+        hint: 'n/a',
+        visibility: 1
+      }
+    ];
+    const sampleProblem = addOrEditField(
+      createSamplePayload(moduleId),
+      'testCases',
+      invalidTestCases
+    );
+    const result = await request(expressApp)
+      .post('/v1/admin/problem')
+      .set('Authorization', 'bearer ' + token)
+      .send(sampleProblem);
+    expect(result.statusCode).toEqual(400);
   });
 
   it('attempts to create a problem with an invalid moduleId', async () => {
@@ -333,6 +358,14 @@ describe('GET /', () => {
       .send(sampleProblem);
     expect(postResult.statusCode).toEqual(200);
 
+    // Ensure module has one problem
+    const moduleAfterProblemAddedResult = await request(expressApp)
+      .get('/v1/module/WithProblems')
+      .set('Authorization', 'bearer ' + token);
+    let module: ModuleInterface = moduleAfterProblemAddedResult
+      .body[0] as ModuleInterface;
+    expect(module.problems.length).toEqual(1);
+
     let result = await request(expressApp)
       .get('/v1/admin/problem')
       .set('Authorization', 'bearer ' + token);
@@ -370,5 +403,12 @@ describe('GET /', () => {
       .set('Authorization', 'bearer ' + token);
     expect(result.statusCode).toEqual(200);
     expect(result.body.length).toEqual(0);
+
+    // Check that module.problems length is now 0
+    const moduleAfterProblemDeletedResult = await request(expressApp)
+      .get('/v1/module/WithProblems')
+      .set('Authorization', 'bearer ' + token);
+    module = moduleAfterProblemDeletedResult.body[0] as ModuleInterface;
+    expect(module.problems.length).toEqual(0);
   });
 });
