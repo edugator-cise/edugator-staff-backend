@@ -5,6 +5,7 @@ import * as bcrypt from 'bcrypt';
 
 describe('GET /auth/*', () => {
   let user: IUser;
+  let user1: IUser;
   let superUser: IUser;
 
   beforeEach(async () => {
@@ -123,6 +124,48 @@ describe('GET /auth/*', () => {
   it('checks /auth/login route FAILS on wrong password', async () => {
     const result: request.Response = await request(expressApp)
       .post('/v1/auth/login')
+      .send({ username: 'testTA@gmail.com', password: 'wrongPassword' });
+    expect(result.statusCode).toEqual(401);
+    expect(result.text).toEqual(
+      JSON.stringify({
+        message: 'Invalid Password - Unauthorized'
+      })
+    );
+  });
+
+  // authenticateUser
+  // 400 FAIL TEST
+  it('checks /user/login route FAILS on empty username and pass', async () => {
+    const result: request.Response = await request(expressApp)
+      .post('/v1/user/login')
+      .send();
+    expect(result.statusCode).toEqual(400);
+    expect(result.text).toEqual(
+      JSON.stringify({
+        message: 'This route requires a body to be passed in'
+      })
+    );
+  });
+
+  // authenticateUser
+  // 401 FAIL TEST
+  it('checks /user/login route FAILS on wrong username', async () => {
+    const result: request.Response = await request(expressApp)
+      .post('/v1/user/login')
+      .send({ username: 'test@gm.com', password: 'password' });
+    expect(result.statusCode).toEqual(401);
+    expect(result.text).toEqual(
+      JSON.stringify({
+        message: 'User with given username is not found - Unauthorized'
+      })
+    );
+  });
+
+  // authenticateUser
+  // 401 FAIL TEST
+  it('checks /user/login route FAILS on wrong password', async () => {
+    const result: request.Response = await request(expressApp)
+      .post('/v1/user/login')
       .send({ username: 'testTA@gmail.com', password: 'wrongPassword' });
     expect(result.statusCode).toEqual(401);
     expect(result.text).toEqual(
