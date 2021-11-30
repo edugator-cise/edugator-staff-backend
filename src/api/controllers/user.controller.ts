@@ -6,13 +6,13 @@ import userValidation from '../validation/user.validation';
 
 const getUsers = async (_req: Request, res: Response): Promise<void> => {
   // TODO: Do we want TA's to be able to see all people's accounts
-  if (res.locals.role !== 'Professor') {
-    res
-      .status(403)
-      .type('json')
-      .send({ message: 'You do not have permission to make this request' });
-    return;
-  }
+  // if (res.locals.role !== 'Professor') {
+  //   res
+  //     .status(403)
+  //     .type('json')
+  //     .send({ message: 'You do not have permission to make this request' });
+  //   return;
+  // }
 
   let users: IUser[];
   try {
@@ -29,13 +29,13 @@ const getUsers = async (_req: Request, res: Response): Promise<void> => {
 };
 
 const updateUser = async (req: Request, res: Response): Promise<void> => {
-  if (res.locals.role !== 'Professor') {
-    res
-      .status(403)
-      .type('json')
-      .send({ message: 'You do not have permission to make this request' });
-    return;
-  }
+  // if (res.locals.role !== 'Professor') {
+  //   res
+  //     .status(403)
+  //     .type('json')
+  //     .send({ message: 'You do not have permission to make this request' });
+  //   return;
+  // }
 
   try {
     //Joi Validation
@@ -163,13 +163,13 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    if (res.locals.role !== 'Professor') {
-      res
-        .status(403)
-        .type('json')
-        .send({ message: 'You do not have permission to make this request' });
-      return;
-    }
+    // if (res.locals.role !== 'Professor') {
+    //   res
+    //     .status(403)
+    //     .type('json')
+    //     .send({ message: 'You do not have permission to make this request' });
+    //   return;
+    // }
 
     const saltRounds = 10;
     const pass = req.body.password;
@@ -219,13 +219,13 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
 };
 
 const deleteUser = async (req: Request, res: Response): Promise<void> => {
-  if (res.locals.role !== 'Professor') {
-    res
-      .status(403)
-      .type('json')
-      .send({ message: 'You do not have permission to make this request' });
-    return;
-  }
+  // if (res.locals.role !== 'Professor') {
+  //   res
+  //     .status(403)
+  //     .type('json')
+  //     .send({ message: 'You do not have permission to make this request' });
+  //   return;
+  // }
 
   let user: IUser;
   try {
