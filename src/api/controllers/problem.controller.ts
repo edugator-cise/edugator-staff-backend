@@ -4,7 +4,8 @@ import { Module, ModuleDocument } from '../models/module.model';
 import { Problem, ProblemDocument, TestCase } from '../models/problem.model';
 import {
   problemValidation,
-  problemValidationWithoutModuleId
+  problemValidationWithoutModuleId,
+  validateTestCases
 } from '../validation/problem.validation';
 
 const filterOpenTestCases = (testCases: TestCase[]): TestCase[] => {
@@ -134,6 +135,12 @@ const createProblem = async (
   if (error) {
     return res.status(400).send(error.details[0].message);
   }
+  if (!validateTestCases(req.body.testCases)) {
+    return res
+      .status(400)
+      .send('Body needs at least one test case visible to public');
+  }
+
   const problem = new Problem({
     statement: req.body.statement,
     title: req.body.title,

@@ -30,23 +30,28 @@ describe('GET /', () => {
       });
     });
 
-    bcrypt.compare(pass, hashedPassword, async function (_err, result) {
-      try {
-        if (result) {
-          //User creation for token
-          await UserModel.create({
-            name: 'Test TA',
-            username: 'dhruv2000patel@gmail.com',
-            password: hashedPassword,
-            role: 'TA'
-          });
-        } else {
-          throw { message: 'Hash method not working properly' };
+    const result: boolean = await new Promise((resolve) => {
+      bcrypt.compare(pass, hashedPassword, async function (_err, result) {
+        try {
+          return resolve(result);
+        } catch {
+          return false;
         }
-      } catch (err) {
-        return err;
-      }
+      });
     });
+
+    if (result) {
+      //User creation for token
+      await UserModel.create({
+        name: 'Test TA',
+        username: 'dhruv2000patel@gmail.com',
+        password: hashedPassword,
+        role: 'TA'
+      });
+    } else {
+      throw { message: 'Hash method not working properly' };
+    }
+
     // Problem creation for routes
     problem1 = await Problem.create(createSampleProblem());
     problem2 = await Problem.create(createSampleProblem());
