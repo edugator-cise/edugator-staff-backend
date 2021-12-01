@@ -64,6 +64,21 @@ describe('GET /', () => {
     expect(result.statusCode).toEqual(200);
   });
 
+  it('creates a problem with some empty fields and gets a 200 response', async () => {
+    let sampleProblem = createSamplePayload(moduleId);
+    sampleProblem.code.header = '';
+    sampleProblem.code.body = '';
+    sampleProblem.code.footer = '';
+    sampleProblem.testCases[0].hint = '';
+    sampleProblem.testCases[0].expectedOutput = '';
+    sampleProblem.buildCommand = '';
+    const result = await request(expressApp)
+      .post('/v1/admin/problem')
+      .set('Authorization', 'bearer ' + token)
+      .send(sampleProblem);
+    expect(result.statusCode).toEqual(200);
+  });
+
   it('attempts to create a problem with an invalid moduleId', async () => {
     const sampleProblem = createSamplePayload('invalidModuleId');
     const result = await request(expressApp)
