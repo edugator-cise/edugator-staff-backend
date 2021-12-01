@@ -65,7 +65,7 @@ describe('GET /', () => {
   });
 
   it('creates a problem with some empty fields and gets a 200 response', async () => {
-    let sampleProblem = createSamplePayload(moduleId);
+    const sampleProblem = createSamplePayload(moduleId);
     sampleProblem.code.header = '';
     sampleProblem.code.body = '';
     sampleProblem.code.footer = '';
