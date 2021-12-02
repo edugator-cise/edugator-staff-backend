@@ -36,7 +36,7 @@ const authenticateUser = async (req: Request, res: Response): Promise<void> => {
               expiresIn: jwtExpirationInterval
             }
           );
-          res.status(httpStatus.OK).send({ token });
+          res.status(httpStatus.OK).send({ token: token, role: user.role });
         } else {
           res.status(401).type('json').send({
             message: 'Invalid Password - Unauthorized'

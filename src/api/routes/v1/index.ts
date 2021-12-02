@@ -14,9 +14,6 @@ router.use('/module', moduleRouter);
 router.use('/code/run', codeRouter);
 router.use('/student/problem', studentProblemRouter);
 router.use('/admin/problem', adminProblemRouter);
-//This is the old ones
-// router.use('/user', authRouter);
-//This is the new addition
 router.use('/user', userRouter);
 router.use('/auth', authRouter);
 router.use('/submission', submissionRouter);

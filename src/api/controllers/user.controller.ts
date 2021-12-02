@@ -97,54 +97,6 @@ const updateUser = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-/*
-const updateRole = async (req: Request, res: Response): Promise<void> => {
-  // const newRole = req.body.role;
-  if (res.locals.role !== 'Professor') {
-    res
-      .status(403)
-      .type('json')
-      .send({ message: 'You do not have permission to make this request' });
-    return;
-  }
-
-  //Joi Validation
-  const { error } = userValidation(req.body, true);
-
-  if (error) {
-    const errorMessage = error.details[0].message;
-    const errorMessageNoQuotes = errorMessage.replace(/["]+/g, '');
-    res.status(400).type('json').send({
-      message: errorMessageNoQuotes
-    });
-    return;
-  }
-
-  let user: IUser;
-  try {
-    user = await UserModel.findOneAndUpdate(
-      {
-        username: req.body.username
-      },
-      {
-        role: req.body.role
-      },
-      { new: true }
-    ).select('-password');
-
-    if (user) {
-      res.status(200).type('json').send(user);
-    } else {
-      res
-        .status(400)
-        .type('json')
-        .send({ message: 'User not found in database' });
-    }
-  } catch (err) {
-    res.status(400).type('json').send(err);
-  }
-};
-*/
 const createUser = async (req: Request, res: Response): Promise<void> => {
   try {
     if (Object.keys(req.body).length === 0) {
