@@ -25,7 +25,7 @@ const userSchema = new Schema<User>(
     role: {
       type: String,
       required: true,
-      enum: ['Professor', 'TA']
+      enum: ['Master', 'Professor', 'TA']
     }
   },
   { collection: 'userModel' }

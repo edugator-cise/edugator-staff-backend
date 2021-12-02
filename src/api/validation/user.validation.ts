@@ -9,7 +9,7 @@ const userValidation = (
       name: Joi.string().required(),
       username: Joi.string().email().required(),
       password: Joi.string().required(),
-      role: Joi.string().valid('Professor', 'TA').required()
+      role: Joi.string().valid('Master', 'Professor', 'TA').required()
     });
     return schema.validate(data);
   } else {
@@ -17,7 +17,7 @@ const userValidation = (
       _id: Joi.string().required(),
       name: Joi.string().required(),
       username: Joi.string().email().required(),
-      role: Joi.string().valid('Professor', 'TA').required()
+      role: Joi.string().valid('Master', 'Professor', 'TA').required()
     });
     return schema.validate(data);
   }

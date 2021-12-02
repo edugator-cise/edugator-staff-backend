@@ -42,7 +42,6 @@ const authenticateUser = async (req: Request, res: Response): Promise<void> => {
             message: 'Invalid Password - Unauthorized'
           });
           return;
-          // throw { message: 'Invalid Password - Unauthorized' };
         }
       } catch (err) {
         res.status(400).type('json').send(err);
@@ -51,7 +50,6 @@ const authenticateUser = async (req: Request, res: Response): Promise<void> => {
   } catch (err) {
     // catches empty body error - the other errors are dealt with individually
     res.status(400).type('json').send(err);
-    // res.sendStatus(httpStatus.UNAUTHORIZED);
   }
 };
 
