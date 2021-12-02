@@ -72,12 +72,10 @@ const problemSchema = new Schema<ProblemInterface>(
           required: true
         },
         expectedOutput: {
-          type: String,
-          required: true
+          type: String
         },
         hint: {
-          type: String,
-          required: true
+          type: String
         },
         // visibility: 0, 1, or 2
         visibility: {
