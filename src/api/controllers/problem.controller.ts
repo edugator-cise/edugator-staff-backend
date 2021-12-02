@@ -5,11 +5,14 @@ import { Problem, ProblemDocument, TestCase } from '../models/problem.model';
 import {
   problemValidation,
   problemValidationWithoutModuleId,
-  validateTestCases
+  validateTestCases,
+  TestCaseVisibility
 } from '../validation/problem.validation';
 
 const filterOpenTestCases = (testCases: TestCase[]): TestCase[] => {
-  return testCases.filter((test) => test.visibility === 0);
+  return testCases.filter(
+    (test) => test.visibility === TestCaseVisibility.IO_VISIBLE
+  );
 };
 
 const readStudentProblems = async (
