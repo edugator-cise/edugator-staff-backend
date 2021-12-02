@@ -82,7 +82,7 @@ describe('GET /', () => {
       .send(sampleProblem);
     expect(result.statusCode).toEqual(200);
   });
-
+  
   it('attempts to create a problem with no visible test cases', async () => {
     const invalidTestCases = [
       {
