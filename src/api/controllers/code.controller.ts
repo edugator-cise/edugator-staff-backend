@@ -71,7 +71,8 @@ const createErrObject = (
   hidden: number,
   stdin: string,
   expectedOutput: string,
-  base64: boolean
+  base64: boolean,
+  hint: string
 ) => {
   return {
     stdin:
@@ -81,6 +82,7 @@ const createErrObject = (
         ? Buffer.from(stdin || '', 'base64').toString()
         : stdin,
     output: 'Server Error',
+    hint,
     expectedOutput:
       hidden === TestCaseVisibility.IO_HIDDEN ||
       hidden == TestCaseVisibility.I_VISIBLE_O_HIDDEN
@@ -97,7 +99,8 @@ const createPassFailObject = (
   hidden: number,
   stdin: string,
   expectedOutput: string,
-  base64: boolean
+  base64: boolean,
+  hint: string
 ) => {
   return {
     stdin:
@@ -110,6 +113,7 @@ const createPassFailObject = (
       hidden == TestCaseVisibility.IO_VISIBLE
         ? outputValidator(data, base64)
         : 'hidden',
+    hint,
     expectedOutput:
       hidden === 0 || hidden == 1
         ? 'hidden'
@@ -251,6 +255,7 @@ interface CodeSubmission {
   stdin: string;
   expectedOutput: string;
   hidden: number;
+  hint: string;
 }
 const submitCode = async (
   req: Request,
@@ -297,6 +302,7 @@ const submitCode = async (
       expectedOutput: Buffer.from(value.expectedOutput || '', 'utf-8').toString(
         'base64'
       ),
+      hint: value.hint,
       hidden: value.visibility
     }));
 
@@ -317,6 +323,7 @@ const submitCode = async (
           stdin: opt.stdin,
           expectedOutput: opt.expectedOutput,
           hidden: opt.hidden,
+          hint: opt.hint,
           code: '200'
         }))
         .catch((e: AxiosError) => ({
@@ -324,6 +331,7 @@ const submitCode = async (
           stdin: opt.stdin,
           expectedOutput: opt.expectedOutput,
           hidden: opt.hidden,
+          hint: opt.hint,
           code: e.code
         }));
     });
@@ -344,7 +352,8 @@ const submitCode = async (
             tokenObject.hidden,
             tokenObject.stdin,
             tokenObject.expectedOutput,
-            base_64
+            base_64,
+            tokenObject.hint
           );
         })
         .catch(() => {
@@ -352,7 +361,8 @@ const submitCode = async (
             tokenObject.hidden,
             tokenObject.stdin,
             tokenObject.expectedOutput,
-            base_64
+            base_64,
+            tokenObject.hint
           );
         });
     });
