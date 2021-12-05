@@ -80,7 +80,12 @@ const createErrObject = (
         ? Buffer.from(stdin || '', 'base64').toString()
         : stdin,
     output: 'Server Error',
-    expectedOutput: hidden === 0 || hidden == 1 ? 'hidden' : expectedOutput,
+    expectedOutput:
+      hidden === 0 || hidden == 1
+        ? 'hidden'
+        : base64
+        ? Buffer.from(expectedOutput || '', 'base64').toString()
+        : expectedOutput,
     result: false
   };
 };
@@ -163,7 +168,6 @@ const runCode = async (req: Request, response: Response): Promise<Response> => {
     return response.status(404).send();
   }
   const { header, footer } = problem.code;
-
   let fullCode = '';
   if (base_64) {
     // have to decode and recode header + code + footer
@@ -173,7 +177,6 @@ const runCode = async (req: Request, response: Response): Promise<Response> => {
   } else {
     fullCode = header + source_code + footer;
   }
-
   const payload: SubmissionPayload = {
     language_id,
     source_code: fullCode,
@@ -182,6 +185,7 @@ const runCode = async (req: Request, response: Response): Promise<Response> => {
     memory_limit,
     compiler_options
   };
+
   return judgeEngine
     .createSubmission(payload, base_64)
     .then((axiosResponse: AxiosResponse) => {
@@ -327,7 +331,7 @@ const submitCode = async (
         token: tokenObject.token,
         base64: true
       };
-      return poll(judgeEngine, load, judge0Validator, 3000, 4)
+      return poll(judgeEngine, load, judge0Validator, 3000, 10)
         .then((response: AxiosResponse) => {
           const { data }: { data: IJudge0Response } = response;
           return createPassFailObject(
