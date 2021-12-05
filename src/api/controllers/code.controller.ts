@@ -5,6 +5,7 @@ import submissionValidation from '../validation/submission.validation';
 import { Problem } from '../models/problem.model';
 import { tokenValidation } from '../validation/tokenPayload.validation';
 import { ValidationResult } from 'joi';
+import { TestCaseVisibility } from '../validation/problem.validation';
 import {
   judgeEngine,
   JudgeServer,
@@ -74,14 +75,15 @@ const createErrObject = (
 ) => {
   return {
     stdin:
-      hidden === 0
+      hidden === TestCaseVisibility.IO_HIDDEN
         ? 'hidden'
         : base64
         ? Buffer.from(stdin || '', 'base64').toString()
         : stdin,
     output: 'Server Error',
     expectedOutput:
-      hidden === 0 || hidden == 1
+      hidden === TestCaseVisibility.IO_HIDDEN ||
+      hidden == TestCaseVisibility.I_VISIBLE_O_HIDDEN
         ? 'hidden'
         : base64
         ? Buffer.from(expectedOutput || '', 'base64').toString()
@@ -104,7 +106,10 @@ const createPassFailObject = (
         : base64
         ? Buffer.from(stdin || '', 'base64').toString()
         : stdin,
-    output: outputValidator(data, base64),
+    output:
+      hidden == TestCaseVisibility.IO_VISIBLE
+        ? outputValidator(data, base64)
+        : 'hidden',
     expectedOutput:
       hidden === 0 || hidden == 1
         ? 'hidden'
