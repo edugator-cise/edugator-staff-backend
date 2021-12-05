@@ -6,7 +6,7 @@ const checkRolePrivileges = (
   next: NextFunction
 ): void => {
   const role = res.locals.role;
-  if (role !== 'Professor' && role !== 'Master') {
+  if (role !== 'Professor' && role !== 'Administrator') {
     res
       .status(403)
       .type('json')

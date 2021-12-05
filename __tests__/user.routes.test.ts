@@ -8,9 +8,15 @@ import { jwtSecret } from '../src/config/vars';
 describe('GET /user/*', () => {
   let user: IUser;
   let user1: IUser;
-  let superUser: IUser;
+  let professorUser: IUser;
+  let administratorUser: IUser;
 
   // Auth token for the routess
+  const superUserToken = jwt.sign(
+    { username: 'testAdministrator@gmail.com', role: 'Administrator' },
+    jwtSecret
+  );
+
   const professorToken = jwt.sign(
     { username: 'testProfessor@gmail.com', role: 'Professor' },
     jwtSecret
@@ -55,16 +61,24 @@ describe('GET /user/*', () => {
         role: 'TA'
       });
 
-      superUser = await UserModel.create({
+      professorUser = await UserModel.create({
         name: 'Test Professor',
         username: 'testProfessor@gmail.com',
         password: hashedPassword,
         role: 'Professor'
       });
 
+      administratorUser = await UserModel.create({
+        name: 'Test Super User',
+        username: 'testAdministrator@gmail.com',
+        password: hashedPassword,
+        role: 'Administrator'
+      });
+
       await user.save();
       await user1.save();
-      await superUser.save();
+      await professorUser.save();
+      await administratorUser.save();
     } else {
       throw { message: 'Hash method not working properly' };
     }
@@ -76,8 +90,17 @@ describe('GET /user/*', () => {
   // GET USERS TESTS -------------------------------------------------------------
   // getUsers
   // 200 SUCCESS TEST
-  it('checks /user/getUsers GET route PASSES on valid route call', async () => {
-    //Creates user in the DB with professor token
+  it('checks /user/getUsers GET route PASSES on valid route call with Administrator Token', async () => {
+    const result: request.Response = await request(expressApp)
+      .get('/v1/user/getUsers')
+      .set('Authorization', 'bearer ' + superUserToken)
+      .send();
+    expect(result.statusCode).toEqual(200);
+  });
+
+  // getUsers
+  // 200 SUCCESS TEST
+  it('checks /user/getUsers GET route PASSES on valid route call with Professor Token', async () => {
     const result: request.Response = await request(expressApp)
       .get('/v1/user/getUsers')
       .set('Authorization', 'bearer ' + professorToken)
@@ -88,7 +111,6 @@ describe('GET /user/*', () => {
   // getUsers
   // 403 FAIL TEST
   it('checks /user/getUsers GET route FAILS with TA Token', async () => {
-    //Creates user in the DB with professor token
     const result: request.Response = await request(expressApp)
       .get('/v1/user/getUsers')
       .set('Authorization', 'bearer ' + taToken)
@@ -116,7 +138,22 @@ describe('GET /user/*', () => {
   // UPDATE USER TESTS -----------------------------------------------------------
   // updateUser
   // 200 SUCCESS TEST
-  it('checks /user/updateUser PUT route PASSES on valid route call', async () => {
+  it('checks /user/updateUser PUT route PASSES on valid route call with Super User Token', async () => {
+    const result: request.Response = await request(expressApp)
+      .put('/v1/user/updateUser')
+      .set('Authorization', 'bearer ' + superUserToken)
+      .send({
+        _id: user1.id,
+        name: 'testTA1',
+        username: 'testTA1@gmail.com',
+        role: 'Professor'
+      });
+    expect(result.statusCode).toEqual(200);
+  });
+
+  // updateUser
+  // 200 SUCCESS TEST
+  it('checks /user/updateUser PUT route PASSES on valid route call with Professor Token', async () => {
     const result: request.Response = await request(expressApp)
       .put('/v1/user/updateUser')
       .set('Authorization', 'bearer ' + professorToken)
@@ -183,7 +220,7 @@ describe('GET /user/*', () => {
     expect(result.statusCode).toEqual(400);
     expect(result.text).toEqual(
       JSON.stringify({
-        message: 'role must be one of [Professor, TA]'
+        message: 'role must be one of [Administrator, Professor, TA]'
       })
     );
 
@@ -231,7 +268,7 @@ describe('GET /user/*', () => {
     expect(result3.statusCode).toEqual(400);
     expect(result3.text).toEqual(
       JSON.stringify({
-        message: 'role must be one of [Professor, TA]'
+        message: 'role must be one of [Administrator, Professor, TA]'
       })
     );
 
@@ -358,7 +395,23 @@ describe('GET /user/*', () => {
   // CREATE USER TESTS ----------------------------------------------------------
   // createUser
   // 200 SUCCESS TEST
-  it('checks /user/create POST route PASSES on valid route call', async () => {
+  it('checks /user/create POST route PASSES on valid route call with Super User Token', async () => {
+    //Creates user in the DB with professor token
+    const result: request.Response = await request(expressApp)
+      .post('/v1/user/create')
+      .set('Authorization', 'bearer ' + superUserToken)
+      .send({
+        name: 'Test TA 2',
+        username: 'testTA2@gmail.com',
+        password: 'password',
+        role: 'TA'
+      });
+    expect(result.statusCode).toEqual(200);
+  });
+
+  // createUser
+  // 200 SUCCESS TEST
+  it('checks /user/create POST route PASSES on valid route call with Professor Token', async () => {
     //Creates user in the DB with professor token
     const result: request.Response = await request(expressApp)
       .post('/v1/user/create')
@@ -510,7 +563,7 @@ describe('GET /user/*', () => {
     expect(result3.statusCode).toEqual(400);
     expect(result3.text).toEqual(
       JSON.stringify({
-        message: 'role must be one of [Professor, TA]'
+        message: 'role must be one of [Administrator, Professor, TA]'
       })
     );
 
@@ -542,7 +595,7 @@ describe('GET /user/*', () => {
     expect(result5.statusCode).toEqual(400);
     expect(result5.text).toEqual(
       JSON.stringify({
-        message: 'role must be one of [Professor, TA]'
+        message: 'role must be one of [Administrator, Professor, TA]'
       })
     );
   });
@@ -615,7 +668,17 @@ describe('GET /user/*', () => {
   // DELETE USER TESTS----------------------------------------------------------------------
   // deleteUser
   // 200 SUCCESS TEST
-  it('checks /user/deleteUser DELETE route PASSES on valid route call', async () => {
+  it('checks /user/deleteUser DELETE route PASSES on valid route call with Administrator Token', async () => {
+    const result: request.Response = await request(expressApp)
+      .delete('/v1/user/deleteUser')
+      .set('Authorization', 'bearer ' + superUserToken)
+      .send({ username: 'testTA@gmail.com' });
+    expect(result.statusCode).toEqual(200);
+  });
+
+  // deleteUser
+  // 200 SUCCESS TEST
+  it('checks /user/deleteUser DELETE route PASSES on valid route call with Professor Token', async () => {
     const result: request.Response = await request(expressApp)
       .delete('/v1/user/deleteUser')
       .set('Authorization', 'bearer ' + professorToken)

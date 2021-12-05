@@ -63,7 +63,7 @@ const problemSchema = new Schema<ProblemInterface>(
     fileExtension: {
       type: String,
       required: true,
-      enum: ['.java', '.cpp', '.h'] //I don't know what else could go in here? Maybe ".cxx"?
+      enum: ['.java', '.cpp', '.h']
     },
     testCases: [
       {

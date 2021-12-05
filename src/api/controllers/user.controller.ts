@@ -3,6 +3,7 @@ import { UserModel, IUser } from '../models/user.model';
 import * as bcrypt from 'bcrypt';
 import * as validator from 'validator';
 import userValidation from '../validation/user.validation';
+import canUpdate from '../validation/adminAccounts.valiation';
 
 const getUsers = async (_req: Request, res: Response): Promise<void> => {
   // TODO: Do we want TA's to be able to see all people's accounts
@@ -16,8 +17,38 @@ const getUsers = async (_req: Request, res: Response): Promise<void> => {
 
   let users: IUser[];
   try {
-    //Find All modules
-    users = await UserModel.find().select('-password').sort({ role: 1 });
+    // Find All user with non Administrator role
+    // UserModel.find({ role: { $ne: 'Administrator' } })
+    // m = { "$match" : { "enumField" : { "$in" : enumOrder } } };
+    // let enumOrder = ['Administrator', 'Professor', 'TA'];
+    // .match({ role: { $in: enumOrder } });
+    // UserModel.aggregate([
+    //   {
+    //     $project: {
+    //       _id: 1,
+    //       name: 1,
+    //       username: 1,
+    //       order: {
+    //         $cond: {
+    //           if: { $eq: ['$role', 'Administrator'] },
+    //           then: 1,
+    //           else: {
+    //             $cond: {
+    //               if: { $eq: ['$role', 'Professor'] },
+    //               then: 2,
+    //               else: 3
+    //             }
+    //           }
+    //         }
+    //       }
+    //     }
+    //   },
+    //   { $sort: { order: 1 } },
+    //   { $project: { _id: 1, task: 1, status: 1 } }
+    // ]);
+
+    users = await UserModel.find().select('-password');
+
     const responseObject = {
       users: users,
       currentUser: res.locals.username
@@ -29,14 +60,6 @@ const getUsers = async (_req: Request, res: Response): Promise<void> => {
 };
 
 const updateUser = async (req: Request, res: Response): Promise<void> => {
-  // if (res.locals.role !== 'Professor') {
-  //   res
-  //     .status(403)
-  //     .type('json')
-  //     .send({ message: 'You do not have permission to make this request' });
-  //   return;
-  // }
-
   try {
     //Joi Validation
     const { error } = userValidation(req.body, true);
@@ -63,8 +86,24 @@ const updateUser = async (req: Request, res: Response): Promise<void> => {
       _id: req.body._id
     }).select('-password');
 
-    // Confirm they are modifying the username
+    // If the user is found
     if (user) {
+      // This checks if the requester can make edits to the role in the body
+      if (
+        !canUpdate(
+          res.locals.role,
+          res.locals.username,
+          user.role,
+          user.username
+        )
+      ) {
+        res.status(403).send({
+          message: 'You do not have access to make edits to that user'
+        });
+        return;
+      }
+
+      // Confirm they are modifying the username
       if (user.username !== req.body.username) {
         // If modifying, make sure the username is not taken by anyone else
         tempUser = await UserModel.findOne({
@@ -81,6 +120,16 @@ const updateUser = async (req: Request, res: Response): Promise<void> => {
       }
 
       // Find the user again and update
+      // If a professor is trying to promote a user up to Administrator, throw error
+      if (
+        req.body.role === 'Administrator' &&
+        res.locals.role !== 'Administrator'
+      ) {
+        res.status(403).send({
+          message: 'You cannot promote the role of a user to Administrator'
+        });
+        return;
+      }
       user.username = req.body.username;
       user.name = req.body.name;
       user.role = req.body.role;
