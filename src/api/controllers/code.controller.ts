@@ -80,7 +80,12 @@ const createErrObject = (
         ? Buffer.from(stdin || '', 'base64').toString()
         : stdin,
     output: 'Server Error',
-    expectedOutput: hidden === 0 || hidden == 1 ? 'hidden' : base64 ? Buffer.from(expectedOutput || '', 'base64').toString() : expectedOutput,
+    expectedOutput:
+      hidden === 0 || hidden == 1
+        ? 'hidden'
+        : base64
+        ? Buffer.from(expectedOutput || '', 'base64').toString()
+        : expectedOutput,
     result: false
   };
 };
