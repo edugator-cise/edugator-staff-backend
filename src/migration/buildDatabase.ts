@@ -100,7 +100,7 @@ connection.query(
     PRIMARY KEY (id),
     FOREIGN KEY (problem_id) REFERENCES Problem(id)
     	ON UPDATE CASCADE
-	ON DELETE CASCADE
+	    ON DELETE CASCADE
   )
   `,
   function (err) {
