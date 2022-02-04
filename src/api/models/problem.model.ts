@@ -20,8 +20,8 @@ interface ProblemInterface {
   fileExtension: string; //Interface doesn't enforce enum
   testCases: TestCase[];
   templatePackage: string;
-  timeLimit: number;
-  memoryLimit: number;
+  timeLimit: number; // in seconds
+  memoryLimit: number; // in KB
   buildCommand: string;
 }
 
