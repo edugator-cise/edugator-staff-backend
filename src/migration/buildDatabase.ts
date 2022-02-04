@@ -39,7 +39,7 @@ connection.query('DROP TABLE IF EXISTS Module', function (err) {
 connection.query(
   `
   CREATE TABLE IF NOT EXISTS Module (
-    id INT NOT NULL,
+    id INT NOT NULL AUTO_INCREMENT,
     name VARCHAR(500) NOT NULL,
     number DECIMAL(11,1) NOT NULL,
     PRIMARY KEY (id)
@@ -63,7 +63,7 @@ connection.query(
 connection.query(
   `
   CREATE TABLE IF NOT EXISTS Problem (
-    id INT NOT NULL,
+    id INT NOT NULL AUTO_INCREMENT,
     statement TEXT NOT NULL,
     title VARCHAR(500) NOT NULL,
     hidden BOOL NOT NULL,
@@ -92,7 +92,7 @@ connection.query(
 connection.query(
   `
   CREATE TABLE IF NOT EXISTS Code (
-    id INT NOT NULL,
+    id INT NOT NULL AUTO_INCREMENT,
     header TEXT,
     body TEXT,
     footer TEXT,
@@ -111,7 +111,7 @@ connection.query(
 connection.query(
   `
   CREATE TABLE IF NOT EXISTS TestCase (
-    id INT NOT NULL,
+    id INT NOT NULL AUTO_INCREMENT,
     input TEXT NOT NULL,
     expected_output TEXT NOT NULL,
     hint TEXT NOT NULL,
