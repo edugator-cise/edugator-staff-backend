@@ -1,5 +1,6 @@
-var mysql = require('mysql2');
-var connection = mysql.createConnection({
+import mysql from 'mysql2';
+
+const connection: mysql.Connection = mysql.createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
@@ -9,29 +10,21 @@ var connection = mysql.createConnection({
 connection.connect();
 
 // Drop existing tables; ordered based on foreign keys
-connection.query('DROP TABLE IF EXISTS TestCase',
-  function (err, rows, fields) {
-    if (err) throw err;
-  }
-);
+connection.query('DROP TABLE IF EXISTS TestCase', function (err) {
+  if (err) throw err;
+});
 
-connection.query('DROP TABLE IF EXISTS Code',
-  function (err, rows, fields) {
-    if (err) throw err;
-  }
-);
+connection.query('DROP TABLE IF EXISTS Code', function (err) {
+  if (err) throw err;
+});
 
-connection.query('DROP TABLE IF EXISTS Problem',
-  function (err, rows, fields) {
-    if (err) throw err;
-  }
-);
+connection.query('DROP TABLE IF EXISTS Problem', function (err) {
+  if (err) throw err;
+});
 
-connection.query('DROP TABLE IF EXISTS Module',
-  function (err, rows, fields) {
-    if (err) throw err;
-  }
-);
+connection.query('DROP TABLE IF EXISTS Module', function (err) {
+  if (err) throw err;
+});
 
 // Create tables in reverse referential order
 
@@ -52,7 +45,7 @@ connection.query(
     PRIMARY KEY (id)
   )
   `,
-  function(err, rows, fields) {
+  function (err) {
     if (err) throw err;
   }
 );
@@ -86,7 +79,7 @@ connection.query(
     FOREIGN KEY (module_id) REFERENCES Module(id)
   )
   `,
-  function(err, rows, fields) {
+  function (err) {
     if (err) throw err;
   }
 );
@@ -110,7 +103,7 @@ connection.query(
 	ON DELETE CASCADE
   )
   `,
-  function(err, rows, fields) {
+  function (err) {
     if (err) throw err;
   }
 );
@@ -130,10 +123,9 @@ connection.query(
       CHECK (visibility = 0 OR visibility = 1 OR visibility = 3)
   )
   `,
-  function(err, rows, fields) {
+  function (err) {
     if (err) throw err;
   }
 );
 
 connection.end();
-
