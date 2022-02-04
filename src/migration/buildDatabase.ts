@@ -39,7 +39,7 @@ connection.query('DROP TABLE IF EXISTS Module', function (err) {
 connection.query(
   `
   CREATE TABLE IF NOT EXISTS Module (
-    id INT,
+    id INT NOT NULL,
     name VARCHAR(500) NOT NULL,
     number DECIMAL(11,1) NOT NULL,
     PRIMARY KEY (id)
