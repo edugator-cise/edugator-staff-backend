@@ -120,7 +120,7 @@ connection.query(
     PRIMARY KEY (id),
     FOREIGN KEY (problem_id) REFERENCES Problem(id),
     CONSTRAINT visibility_enumeration
-      CHECK (visibility = 0 OR visibility = 1 OR visibility = 3)
+      CHECK (visibility = 0 OR visibility = 1 OR visibility = 2)
   )
   `,
   function (err) {
