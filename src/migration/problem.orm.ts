@@ -59,6 +59,36 @@ class ProblemOrm {
   }
 
   private findAll(): ProblemInterface {
+    this._pool.getConnection((err, conn) => {
+      if (err) {
+        throw err;
+      }
+
+      let problems: any[] = [];
+      conn.query(
+        `SELECT 
+          statement,
+          title,
+          hidden,
+          language,
+          due_date,
+          file_extension,
+          template_package,
+          time_limit,
+          memory_limit,
+          build_command,
+        FROM Problem`,
+        (err, rows, fields) => {
+          if (err) {
+            throw err;
+          } else {
+            problems = rows;
+          }
+        }
+      );
+
+      // TODO: Get code and test cases, then build object
+    });
     return {} as ProblemInterface; // TODO
   }
 }
