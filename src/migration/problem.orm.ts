@@ -46,19 +46,19 @@ class ProblemOrm {
     }
   }
 
-  findById(id: number): ProblemInterface {
+  private findById(id: number): ProblemInterface {
     return {} as ProblemInterface; // TODO
   }
 
-  findByHidden(hidden: boolean): ProblemInterface {
+  private findByHidden(hidden: boolean): ProblemInterface {
     return {} as ProblemInterface; // TODO
   }
 
-  findByIdAndHidden(id: number, hidden: boolean): ProblemInterface {
+  private findByIdAndHidden(id: number, hidden: boolean): ProblemInterface {
     return {} as ProblemInterface; // TODO
   }
 
-  findAll(): ProblemInterface {
+  private findAll(): ProblemInterface {
     return {} as ProblemInterface; // TODO
   }
 }
