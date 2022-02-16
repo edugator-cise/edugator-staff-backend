@@ -65,7 +65,7 @@ connection.query(
   CREATE TABLE IF NOT EXISTS Problem (
     id INT NOT NULL AUTO_INCREMENT,
     statement TEXT NOT NULL,
-    title VARCHAR(500) NOT NULL,
+    title VARCHAR(500) NOT NULL UNIQUE,
     hidden BOOL NOT NULL,
     language VARCHAR(500) NOT NULL,
     due_date DATETIME NOT NULL,
