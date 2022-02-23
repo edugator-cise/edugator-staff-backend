@@ -30,7 +30,7 @@ class ProblemOrm {
     this._pool = pool;
   }
 
-  find(filter: ProblemQueryFilter): ProblemInterface {
+  find(filter: ProblemQueryFilter): ProblemInterface[] {
     if (!filter.id) {
       if (filter.hidden === undefined) {
         return this.findAll();
@@ -46,19 +46,19 @@ class ProblemOrm {
     }
   }
 
-  private findById(id: number): ProblemInterface {
-    return {} as ProblemInterface; // TODO
+  private findById(id: number): ProblemInterface[] {
+    return []; // TODO
   }
 
-  private findByHidden(hidden: boolean): ProblemInterface {
-    return {} as ProblemInterface; // TODO
+  private findByHidden(hidden: boolean): ProblemInterface[] {
+    return []; // TODO
   }
 
-  private findByIdAndHidden(id: number, hidden: boolean): ProblemInterface {
-    return {} as ProblemInterface; // TODO
+  private findByIdAndHidden(id: number, hidden: boolean): ProblemInterface[] {
+    return []; // TODO
   }
 
-  private findAll(): ProblemInterface {
+  private findAll(): ProblemInterface[] {
     this._pool.getConnection((err, conn) => {
       if (err) {
         throw err;
@@ -89,7 +89,7 @@ class ProblemOrm {
 
       // TODO: Get code and test cases, then build object
     });
-    return {} as ProblemInterface; // TODO
+    return []; // TODO
   }
 
   private problemsFromRows(
