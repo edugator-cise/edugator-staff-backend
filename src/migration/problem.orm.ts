@@ -87,7 +87,9 @@ class ProblemOrm {
         }
       );
 
-      // TODO: Get code and test cases, then build object
+      if (problems.length != 0) {
+        // TODO: Get code and test cases, then build object
+      }
     });
     return []; // TODO
   }
