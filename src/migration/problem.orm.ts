@@ -64,7 +64,7 @@ class ProblemOrm {
         throw err;
       }
 
-      const problems: Partial<ProblemInterface>[] = [];
+      let problems: Partial<ProblemInterface>[] = [];
       conn.query(
         `SELECT 
           statement,
@@ -82,36 +82,7 @@ class ProblemOrm {
           if (err) {
             throw err;
           } else {
-            if (rows.constructor.name === 'OkPacket') {
-              // handle OkPacket
-              rows = rows as OkPacket;
-            } else if (rows[0].constructor.name === 'OkPacket') {
-              // handle OkPacket[]
-              rows = rows as OkPacket[];
-            } else if (rows.constructor.name === 'ResultSetHeader') {
-              // handle ResultSetHeader
-              rows = rows as ResultSetHeader;
-            } else if (rows[0].constructor.name === 'RowDataPacket') {
-              // handle RowDataPacket[]
-              rows = rows as RowDataPacket[];
-              for (const row of rows) {
-                problems.push({
-                  statement: row.statement,
-                  title: row.title,
-                  hidden: row.hidden,
-                  language: row.language,
-                  dueDate: row.due_date,
-                  fileExtension: row.file_extension,
-                  templatePackage: row.template_package,
-                  timeLimit: row.time_limit,
-                  memoryLimit: row.memory_limit,
-                  buildCommand: row.build_command
-                });
-              }
-            } else if (rows[0][0].constructor.name === 'RowDataPacket') {
-              // handle RowDataPacket[][]
-              rows = rows as RowDataPacket[][];
-            }
+            problems = this.problemsFromRows(rows);
           }
         }
       );
@@ -119,6 +90,46 @@ class ProblemOrm {
       // TODO: Get code and test cases, then build object
     });
     return {} as ProblemInterface; // TODO
+  }
+
+  private problemsFromRows(
+    rows:
+      | RowDataPacket[]
+      | RowDataPacket[][]
+      | OkPacket
+      | OkPacket[]
+      | ResultSetHeader
+  ): Partial<ProblemInterface>[] {
+    const problems: Partial<ProblemInterface>[] = [];
+    if (
+      rows.constructor.name !== 'OkPacket' &&
+      rows.constructor.name !== 'ResultSetHeader'
+    ) {
+      // Drop rows not of type RowDataPacket
+      rows = rows as RowDataPacket[] | RowDataPacket[][] | OkPacket[];
+      (rows as unknown[]).filter(
+        (row) => row.constructor.name === 'RowDataPacket'
+      );
+      for (const row of rows) {
+        problems.push(this.problemFromRow(row as RowDataPacket));
+      }
+    }
+    return problems;
+  }
+
+  private problemFromRow(row: RowDataPacket): Partial<ProblemInterface> {
+    return {
+      statement: row.statement,
+      title: row.title,
+      hidden: row.hidden,
+      language: row.language,
+      dueDate: row.due_date,
+      fileExtension: row.file_extension,
+      templatePackage: row.template_package,
+      timeLimit: row.time_limit,
+      memoryLimit: row.memory_limit,
+      buildCommand: row.build_command
+    };
   }
 }
 
