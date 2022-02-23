@@ -1,5 +1,5 @@
 import { ProblemInterface } from '../api/models/problem.model';
-import { Pool } from 'mysql2';
+import { Pool, RowDataPacket, OkPacket, ResultSetHeader } from 'mysql2';
 import pool from './pool';
 
 // Is this possible without code duplication from ProblemInterface?
@@ -64,7 +64,7 @@ class ProblemOrm {
         throw err;
       }
 
-      let problems: any[] = [];
+      const problems: Partial<ProblemInterface>[] = [];
       conn.query(
         `SELECT 
           statement,
@@ -82,7 +82,36 @@ class ProblemOrm {
           if (err) {
             throw err;
           } else {
-            problems = rows;
+            if (rows.constructor.name === 'OkPacket') {
+              // handle OkPacket
+              rows = rows as OkPacket;
+            } else if (rows[0].constructor.name === 'OkPacket') {
+              // handle OkPacket[]
+              rows = rows as OkPacket[];
+            } else if (rows.constructor.name === 'ResultSetHeader') {
+              // handle ResultSetHeader
+              rows = rows as ResultSetHeader;
+            } else if (rows[0].constructor.name === 'RowDataPacket') {
+              // handle RowDataPacket[]
+              rows = rows as RowDataPacket[];
+              for (const row of rows) {
+                problems.push({
+                  statement: row.statement,
+                  title: row.title,
+                  hidden: row.hidden,
+                  language: row.language,
+                  dueDate: row.due_date,
+                  fileExtension: row.file_extension,
+                  templatePackage: row.template_package,
+                  timeLimit: row.time_limit,
+                  memoryLimit: row.memory_limit,
+                  buildCommand: row.build_command
+                });
+              }
+            } else if (rows[0][0].constructor.name === 'RowDataPacket') {
+              // handle RowDataPacket[][]
+              rows = rows as RowDataPacket[][];
+            }
           }
         }
       );
