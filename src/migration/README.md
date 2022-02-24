@@ -17,11 +17,13 @@ the host properly in the `.env` file for this directory (see below).
 
 ## Running
 
-To build the database, you will need to create a `.env` file (may want
-to rename so at not to conflict with the app's `.env` file) with variables
+To build the database, you will need to create a `.env` file. Let's name it db.env so as not
+to conflict with the app's `.env` file. Fill it with variables
 following the schema of the `env.example` file.
-Once this is done, source it with `source .env` in BASH.
 
-After doing this, simply run `node buildDatabase.js`. No output means
+Once this is done, simply run `source exportEnv.sh` while in the /migration directory.
+This will populate the env vars and also removes 
+
+After doing this, simply run `npx ts-node buildDatabase.ts`. No output means
 the script exited successfully. Logs should be added.
 

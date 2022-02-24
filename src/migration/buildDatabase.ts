@@ -4,10 +4,17 @@ const connection: Connection = createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME
 });
 
 connection.connect();
+
+connection.query('CREATE DATABASE IF NOT EXISTS test_db', function (err) {
+  if (err) throw err;
+});
+
+connection.query('USE test_db', function (err) {
+  if (err) throw err;
+});
 
 // Drop existing tables; ordered based on foreign keys
 connection.query('DROP TABLE IF EXISTS TestCase', function (err) {
