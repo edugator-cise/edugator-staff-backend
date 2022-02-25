@@ -1,6 +1,12 @@
 import { connect } from '../config/database';
 import { Module, ModuleInterface } from '../api/models/module.model';
 import { Problem, ProblemInterface } from '../api/models/problem.model';
+import {
+  mySQLCode,
+  mySQLModule,
+  mySQLProblem,
+  mySQLTestCase
+} from './mySQLTypes';
 
 // await this function inside another async in order to access the data.
 const getModuleData = async (): Promise<ModuleInterface[]> => {
@@ -24,6 +30,21 @@ connect();
 const modulesPromise: Promise<ModuleInterface[]> = getModuleData();
 const problemsPromise: Promise<ProblemInterface[]> = getProblemData();
 
+let mySQLModuleArray: mySQLModule[];
+let mySQLProblemArray: mySQLProblem[];
+let mySQLCodeArray: mySQLCode[];
+let mySQLTestCaseArray: mySQLTestCase[];
+
+const transformData = async () => {
+  const mongoModulesArray = await modulesPromise;
+  const mongoProblemsArray = await problemsPromise;
+
+  // TODO: here, parse out all of the data from mongo and insert accordingly into the new mySQL Arrays
+};
+
+// TODO: we should then insert all of this data into the mysql database.
+
+// for logging/data exploration
 const logModules = async () => {
   const modulesArray: ModuleInterface[] = await modulesPromise;
   for (const module of modulesArray) {
@@ -33,6 +54,7 @@ const logModules = async () => {
   console.log(modulesArray.length);
 };
 
+// for logging/data exploration
 const logProblems = async () => {
   const problemsArray: ProblemInterface[] = await problemsPromise;
   for (const problem of problemsArray) {
@@ -42,5 +64,6 @@ const logProblems = async () => {
   console.log(problemsArray.length);
 };
 
+// logging
 logModules();
 logProblems();
