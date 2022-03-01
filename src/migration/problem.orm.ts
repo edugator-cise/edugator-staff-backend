@@ -59,6 +59,7 @@ class ProblemOrm {
   }
 
   private findAll(): ProblemInterface[] {
+    let result: ProblemInterface[] = [];
     this._pool.getConnection((err, conn) => {
       if (err) {
         throw err;
@@ -88,6 +89,15 @@ class ProblemOrm {
       );
 
       if (problems.length != 0) {
+        for (const problem of problems) {
+          problem.code = {
+            header: '',
+            body: '',
+            footer: ''
+          };
+          problem.testCases = [];
+          result.push(this.completeProblem(problem));
+        }
         // TODO: Get code and test cases, then build object
       }
     });
@@ -131,6 +141,30 @@ class ProblemOrm {
       timeLimit: row.time_limit,
       memoryLimit: row.memory_limit,
       buildCommand: row.build_command
+    };
+  }
+
+  private completeProblem(
+    problem: Partial<ProblemInterface>
+  ): ProblemInterface {
+    for (const key in problem) {
+      if (problem[key] === undefined) {
+        return undefined;
+      }
+    }
+    return <ProblemInterface>{
+      statement: problem.statement,
+      title: problem.title,
+      hidden: problem.hidden,
+      language: problem.language,
+      dueDate: problem.dueDate,
+      code: problem.code,
+      fileExtension: problem.fileExtension,
+      testCases: problem.testCases,
+      templatePackage: problem.templatePackage,
+      timeLimit: problem.timeLimit,
+      memoryLimit: problem.memoryLimit,
+      buildCommand: problem.buildCommand
     };
   }
 }
