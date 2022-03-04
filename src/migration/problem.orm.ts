@@ -3,25 +3,10 @@ import { Pool, RowDataPacket, OkPacket, ResultSetHeader } from 'mysql2';
 import pool from './pool';
 
 // Is this possible without code duplication from ProblemInterface?
-interface ProblemQueryFilter {
-  id?: number;
-  hidden?: boolean;
-}
-
-const PROBLEM_TABLE_COLUMNS: string[] = [
-  'id',
-  'statement',
-  'title',
-  'hidden',
-  'language',
-  'due_date',
-  'file_extension',
-  'template_package',
-  'time_limit',
-  'memory_limit',
-  'build_command',
-  'module_id'
-];
+// interface ProblemQueryFilter {
+//   id?: number;
+//   hidden?: boolean;
+// }
 
 class ProblemOrm {
   private _pool: Pool;
@@ -30,77 +15,58 @@ class ProblemOrm {
     this._pool = pool;
   }
 
-  find(filter: ProblemQueryFilter): ProblemInterface[] {
-    if (!filter.id) {
-      if (filter.hidden === undefined) {
-        return this.findAll();
-      } else {
-        return this.findByHidden(filter.hidden);
-      }
-    } else {
-      if (filter.hidden === undefined) {
-        return this.findById(filter.id);
-      } else {
-        return this.findByIdAndHidden(filter.id, filter.hidden);
-      }
-    }
-  }
+  // find(filter: ProblemQueryFilter): ProblemInterface[] {
+  //   if (!filter.id) {
+  //     if (filter.hidden === undefined) {
+  //       return this.findAll();
+  //     } else {
+  //       return this.findByHidden(filter.hidden);
+  //     }
+  //   } else {
+  //     if (filter.hidden === undefined) {
+  //       return this.findById(filter.id);
+  //     } else {
+  //       return this.findByIdAndHidden(filter.id, filter.hidden);
+  //     }
+  //   }
+  // }
 
-  private findById(id: number): ProblemInterface[] {
-    return []; // TODO
-  }
+  // private findById(id: number): ProblemInterface[] {
+  //   return []; // TODO
+  // }
 
-  private findByHidden(hidden: boolean): ProblemInterface[] {
-    return []; // TODO
-  }
+  // private findByHidden(hidden: boolean): ProblemInterface[] {
+  //   return []; // TODO
+  // }
 
-  private findByIdAndHidden(id: number, hidden: boolean): ProblemInterface[] {
-    return []; // TODO
-  }
+  // private findByIdAndHidden(id: number, hidden: boolean): ProblemInterface[] {
+  //   return []; // TODO
+  // }
 
-  private findAll(): ProblemInterface[] {
+  findAll(): ProblemInterface[] {
     const result: ProblemInterface[] = [];
-    this._pool.getConnection((err, conn) => {
+
+    let problems: Partial<ProblemInterface>[] = [];
+    this._pool.query(`SELECT * FROM Problem`, (err, rows) => {
       if (err) {
         throw err;
-      }
-
-      let problems: Partial<ProblemInterface>[] = [];
-      conn.query(
-        `SELECT 
-          statement,
-          title,
-          hidden,
-          language,
-          due_date,
-          file_extension,
-          template_package,
-          time_limit,
-          memory_limit,
-          build_command,
-        FROM Problem`,
-        (err, rows) => {
-          if (err) {
-            throw err;
-          } else {
-            problems = this.problemsFromRows(rows);
-          }
-        }
-      );
-
-      if (problems.length != 0) {
-        for (const problem of problems) {
-          problem.code = {
-            header: '',
-            body: '',
-            footer: ''
-          };
-          problem.testCases = [];
-          result.push(this.completeProblem(problem));
-        }
-        // TODO: Get code and test cases, then build object
+      } else {
+        problems = this.problemsFromRows(rows);
       }
     });
+
+    if (problems.length != 0) {
+      for (const problem of problems) {
+        problem.code = {
+          header: '',
+          body: '',
+          footer: ''
+        };
+        problem.testCases = [];
+        result.push(this.completeProblem(problem));
+      }
+      // TODO: Get code and test cases, then build object
+    }
     return result; // TODO
   }
 
