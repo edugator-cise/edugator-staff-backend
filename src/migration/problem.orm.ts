@@ -59,7 +59,7 @@ class ProblemOrm {
   }
 
   private findAll(): ProblemInterface[] {
-    let result: ProblemInterface[] = [];
+    const result: ProblemInterface[] = [];
     this._pool.getConnection((err, conn) => {
       if (err) {
         throw err;
@@ -79,7 +79,7 @@ class ProblemOrm {
           memory_limit,
           build_command,
         FROM Problem`,
-        (err, rows, fields) => {
+        (err, rows) => {
           if (err) {
             throw err;
           } else {
@@ -101,7 +101,7 @@ class ProblemOrm {
         // TODO: Get code and test cases, then build object
       }
     });
-    return []; // TODO
+    return result; // TODO
   }
 
   private problemsFromRows(
