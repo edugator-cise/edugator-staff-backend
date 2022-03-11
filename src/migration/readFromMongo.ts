@@ -1,27 +1,16 @@
-import { connect } from '../config/database';
+import { connect, disconnect } from '../config/database';
 import { createConnection, Connection } from 'mysql2';
-import {
-  Module,
-  ModuleDocument,
-  ModuleInterface
-} from '../api/models/module.model';
-import {
-  Problem,
-  ProblemDocument,
-  ProblemInterface
-} from '../api/models/problem.model';
+import { Module, ModuleInterface } from '../api/models/module.model';
 import {
   mySQLCode,
-  mySQLModule,
-  mySQLProblem,
-  mySQLTestCase
+  mySQLModule, mySQLProblem, mySQLTestCase
 } from './mySQLTypes';
-import { ObjectId, Types } from 'mongoose';
+import { Types } from 'mongoose';
 
 // await this function inside another async in order to access the data.
 const getModuleData = async (): Promise<ModuleInterface[]> => {
   let modules: ModuleInterface[];
-  modules = await Module.find().select('-problems').sort({ number: 1 }); // what is this really doing, why select like this?
+  modules = await Module.find().sort({ number: 1 }); // what is this really doing, why select like this?
 
   return modules;
 };
@@ -37,17 +26,15 @@ const getProblemData = async (): Promise<ProblemInterface[]> => {
 // connect to the mongo instance.
 connect();
 
-const modulesPromise: Promise<ModuleInterface[]> = getModuleData();
-const problemsPromise: Promise<ProblemInterface[]> = getProblemData();
-
-let mySQLModuleArray: mySQLModule[];
-let mySQLProblemArray: mySQLProblem[];
-let mySQLCodeArray: mySQLCode[];
-let mySQLTestCaseArray: mySQLTestCase[];
-
 const transformData = async () => {
-  const mongoModulesArray = await modulesPromise;
-  const mongoProblemsArray = await problemsPromise;
+
+  let mySQLModuleArray: mySQLModule[] = [];
+  let mySQLProblemArray: mySQLProblem[] = [];
+  let mySQLCodeArray: mySQLCode[] = [];
+  let mySQLTestCaseArray: mySQLTestCase[] = [];
+
+  const mongoModulesArray = await getModuleData();
+  const mongoProblemsArray = await getProblemData();
 
   // TODO: here, parse out all of the data from mongo and insert accordingly into the new mySQL Arrays
 
@@ -56,10 +43,10 @@ const transformData = async () => {
 
   // need to make a hash map that keeps track of the problem ObjectIDs that are associated with each module
 
-  let moduleCounter = 0;
-  let problemCounter = 0;
-  let codeCounter = 0;
-  let testCounter = 0;
+  let moduleCounter = 1;
+  let problemCounter = 1;
+  let codeCounter = 1;
+  let testCounter = 1;
 
   // will map moduleID to problems
   let mapModuleProblems: Map<number, Types.ObjectId[]> = new Map<
@@ -78,26 +65,26 @@ const transformData = async () => {
 
     let x: Types.ObjectId[] = [];
 
-    //TODO: Deal with mapping to problems
-    // we can use this to do a reverse lookup
-    for (const mongoProblem of mongoModule.problems) {
-      x.push(mongoProblem._id);
-    }
+    mongoModule.problems.forEach((value: Types.ObjectId) => {
+      x.push(value._id);
+    });
 
-    // let x: Types.ObjectId[] = mongoModule.problems.map(obj => Object.values(obj));
     mapModuleProblems.set(moduleCounter, x);
     moduleCounter++;
   }
 
+  let moduleMatch = -1;
+
+  // TODO: Work more on FK stuff
   for (const mongoProblem of mongoProblemsArray) {
     // we need to first determine the module this problem maps to
 
     // let's find the associated module here - reverse lookup time.
 
-    let moduleMatch = -1;
 
     mapModuleProblems.forEach(async (value: Types.ObjectId[], key: number) => {
       // now we can see if any of the objectIds match for this module
+
       for (const potentialID of value) {
         const potentialProblem: ProblemInterface = await Problem.findById(
           potentialID
@@ -109,6 +96,8 @@ const transformData = async () => {
         }
       }
     });
+
+    console.log(moduleMatch);
 
     const mySQLProblem: mySQLProblem = {
       id: problemCounter,
@@ -158,59 +147,80 @@ const transformData = async () => {
     // similar to before with a module containing problems, a problem now contains both
     // test cases AND code. There is a 1:1 mapping for code but a 1:many for testcases.
   }
-};
 
-const connection: Connection = createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD
-});
+  const connection: Connection = createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD
+  });
 
-//connect to the MySQL Database
-connection.connect();
+  //connect to the MySQL Database
+  connection.connect();
 
-// need to remap for how SQL expects the values
-let mySQLModuleArrayValues: any[][] = mySQLModuleArray.map((obj) =>
-  Object.values(obj)
-);
-let mySQLProblemArrayValues: any[][] = mySQLProblemArray.map((obj) =>
-  Object.values(obj)
-);
-let mySQLCodeArrayValues: any[][] = mySQLCodeArray.map((obj) =>
-  Object.values(obj)
-);
-let mySQLTestCaseArrayValues: any[][] = mySQLTestCaseArray.map((obj) =>
-  Object.values(obj)
-);
+  connection.query('USE test_db', function (err) {
+    if (err) throw err;
+  });
 
-// TODO: we should then insert all of this data into the mysql database.
+  // need to remap for how SQL expects the values
+  const mySQLModuleArrayValues: any[][] = mySQLModuleArray.map((obj) =>
+    Object.values(obj)
+  );
+  // const mySQLProblemArrayValues: any[][] = mySQLProblemArray.map((obj) =>
+  //   Object.values(obj)
+  // );
+  // const mySQLCodeArrayValues: any[][] = mySQLCodeArray.map((obj) =>
+  //   Object.values(obj)
+  // );
+  // const mySQLTestCaseArrayValues: any[][] = mySQLTestCaseArray.map((obj) =>
+  //   Object.values(obj)
+  // );
 
-connection.query('INSERT INTO Module VALUES ?', [mySQLModuleArrayValues]);
+  // TODO: we should then insert all of this data into the mysql database.
+  console.log(mySQLModuleArrayValues);
 
-// Insert Modules, then Problem, then TestCase, then Code
+  for (const mySQLModuleArrayValue of mySQLModuleArrayValues) {
+    console.log(mySQLModuleArrayValue);
 
-connection.query('INSERT INTO Module () VALUES ?');
-
-// for logging/data exploration
-const logModules = async () => {
-  const modulesArray: ModuleInterface[] = await modulesPromise;
-  for (const module of modulesArray) {
-    console.log(module);
+    connection.query(
+      'INSERT INTO Module (id,name,number) VALUES (?)',
+      [mySQLModuleArrayValue],
+      function (err) {
+        if (err) throw err;
+      }
+    );
   }
+  disconnect();
+  connection.end();
 
-  console.log(modulesArray.length);
 };
 
-// for logging/data exploration
-const logProblems = async () => {
-  const problemsArray: ProblemInterface[] = await problemsPromise;
-  for (const problem of problemsArray) {
-    console.log(problem);
-  }
+transformData();
 
-  console.log(problemsArray.length);
-};
 
-// logging
-logModules();
-logProblems();
+// // Insert Modules, then Problem, then TestCase, then Code
+
+// //connection.query('INSERT INTO Module () VALUES ?');
+
+// // for logging/data exploration
+// const logModules = async () => {
+//   const modulesArray: ModuleInterface[] = await modulesPromise;
+//   for (const module of modulesArray) {
+//     console.log(module);
+//   }
+
+//   console.log(modulesArray.length);
+// };
+
+// // for logging/data exploration
+// const logProblems = async () => {
+//   const problemsArray: ProblemInterface[] = await problemsPromise;
+//   for (const problem of problemsArray) {
+//     console.log(problem);
+//   }
+
+//   console.log(problemsArray.length);
+// };
+
+// // logging
+// logModules();
+// logProblems();
