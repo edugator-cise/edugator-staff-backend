@@ -41,4 +41,12 @@ interface mySQLTestCase {
   problem_id: number;
 }
 
-export { mySQLModule, mySQLProblem, mySQLCode, mySQLTestCase };
+interface mySQLUser {
+  id: number;
+  username: string;
+  password: string;
+  salt: number;
+  role: string;
+}
+
+export { mySQLModule, mySQLProblem, mySQLCode, mySQLTestCase, mySQLUser };

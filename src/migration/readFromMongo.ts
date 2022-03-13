@@ -5,25 +5,26 @@ import {
   mySQLCode,
   mySQLModule,
   mySQLProblem,
-  mySQLTestCase
+  mySQLTestCase,
+  mySQLUser
 } from './mySQLTypes';
 import { Types } from 'mongoose';
 import { Problem, ProblemInterface } from '../api/models/problem.model';
+import { IUser, UserModel } from '../api/models/user.model';
 
 // await this function inside another async in order to access the data.
 const getModuleData = async (): Promise<ModuleInterface[]> => {
-  let modules: ModuleInterface[];
-  modules = await Module.find().sort({ number: 1 }); // what is this really doing, why select like this?
-
-  return modules;
+  return await Module.find().sort({ number: 1 });
 };
 
 // await this function inside another async in order to access the data.
 const getProblemData = async (): Promise<ProblemInterface[]> => {
-  let problems: ProblemInterface[];
-  problems = await Problem.find({});
+  return await Problem.find({});
+};
 
-  return problems;
+// await this function inside another async in order to access the data.
+const getUserData = async (): Promise<IUser[]> => {
+  return await UserModel.find();
 };
 
 // For storing the data to inject into mySQL
@@ -31,20 +32,23 @@ const mySQLModuleArray: mySQLModule[] = [];
 const mySQLProblemArray: mySQLProblem[] = [];
 const mySQLCodeArray: mySQLCode[] = [];
 const mySQLTestCaseArray: mySQLTestCase[] = [];
+const mySQLUserArray: mySQLUser[] = [];
 
 const transformData = async () => {
   // connect to the mongo instance.
   connect();
 
   //get all data
-  const mongoModulesArray = await getModuleData();
-  const mongoProblemsArray = await getProblemData();
+  const mongoModulesArray: ModuleInterface[] = await getModuleData();
+  const mongoProblemsArray: ProblemInterface[] = await getProblemData();
+  const mongoUserArray: IUser[] = await getUserData();
 
   // Counters for ids for mySQL data
   let moduleCounter = 1;
   let problemCounter = 1;
   let codeCounter = 1;
   let testCounter = 1;
+  let userCounter = 1;
 
 
   // will be used to map ProblemObjectID and Module(number)
@@ -92,25 +96,6 @@ const transformData = async () => {
         }
       }
     }
-
-    // mapModuleProblems.forEach(async (value: Types.ObjectId[], key: number) => {
-    //   // now we can see if any of the objectIds match for this module
-
-    //   for (const potentialID of value) {
-
-    //     const potentialProblem: ProblemInterface = await Problem.findById(
-    //       potentialID
-    //     );
-
-
-    //     if (potentialProblem != null && potentialProblem.title == mongoProblem.title) {
-    //       // this is a match
-    //       moduleMatch = key;
-    //     }
-
-    //   }
-    // });
-
 
     const mySQLProblem: mySQLProblem = {
       id: problemCounter,
@@ -161,6 +146,19 @@ const transformData = async () => {
     // test cases AND code. There is a 1:1 mapping for code but a 1:many for testcases.
   }
 
+  for (const mongoUser of mongoUserArray) {
+    const mySQLUser: mySQLUser = {
+      id: userCounter,
+      username: mongoUser.username,
+      password: mongoUser.password,
+      salt: 1, // need to correct this
+      role: mongoUser.role
+    };
+
+    mySQLUserArray.push(mySQLUser);
+    userCounter++;
+  }
+
   // TODO: we should then insert all of this data into the mysql database.
 
 };
@@ -196,6 +194,9 @@ const runMigration = async (): Promise<void> => {
     Object.values(obj)
   );
   const mySQLTestCaseArrayValues: any[][] = mySQLTestCaseArray.map((obj) =>
+    Object.values(obj)
+  );
+  const mySQLUserArrayValues: any[][] = mySQLUserArray.map((obj) =>
     Object.values(obj)
   );
 
@@ -248,6 +249,17 @@ const runMigration = async (): Promise<void> => {
       }
     );
     console.log("inserted testcase");
+  }
+
+  for (const mySQLUserArrayValue of mySQLUserArrayValues) {
+    connection.query(
+      'INSERT INTO User (id, username, password, salt, role) VALUES (?)',
+      [mySQLUserArrayValue],
+      function (err) {
+        if (err) throw err;
+      }
+    );
+    console.log("inserted User");
   }
 
   connection.end();
