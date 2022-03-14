@@ -50,41 +50,47 @@ class ProblemOrm {
   // }
 
   async findAll(conn: Connection): Promise<ProblemInterface[]> {
-    const result: ProblemInterface[] = [];
-
-    const problems: Partial<ProblemInterface>[] = await this.queryProblem(
-      conn,
-      'SELECT * FROM Problem'
-    );
-
-    if (problems.length != 0) {
-      for (const problem of problems) {
-        problem.code = {
-          header: '',
-          body: '',
-          footer: ''
-        };
-        problem.testCases = [];
-        result.push(this.completeProblem(problem));
-      }
-      // TODO: Get code and test cases, then build object
-    }
-    return result; // TODO
+    return new Promise((resolve, reject) => {
+      this.queryProblem(
+        conn,
+        'SELECT * FROM Problem',
+        (err, problems: Partial<ProblemInterface>[]) => {
+          if (err) {
+            return reject(err);
+          }
+          const result: ProblemInterface[] = [];
+          if (problems.length != 0) {
+            for (const problem of problems) {
+              problem.code = {
+                header: '',
+                body: '',
+                footer: ''
+              };
+              problem.testCases = [];
+              result.push(this.completeProblem(problem));
+            }
+            // TODO: Get code and test cases, then build object
+          }
+          resolve(result);
+        }
+      );
+    });
   }
 
-  private async queryProblem(
+  private queryProblem(
     conn: Connection,
-    query: string
-  ): Promise<Partial<ProblemInterface>[]> {
-    let problems: Partial<ProblemInterface>[] = [];
+    query: string,
+    callback: (err, partial: Partial<ProblemInterface>[]) => void
+  ) {
     conn.query(query, (err, rows) => {
       if (err) {
-        throw err;
+        callback(err, []);
       } else {
-        problems = this.problemsFromRows(rows);
+        const problems: Partial<ProblemInterface>[] =
+          this.problemsFromRows(rows);
+        callback(false, problems);
       }
     });
-    return problems;
   }
 
   private problemsFromRows(
