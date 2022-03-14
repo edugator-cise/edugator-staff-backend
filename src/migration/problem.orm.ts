@@ -1,6 +1,12 @@
 import { ProblemInterface } from '../api/models/problem.model';
-import { Pool, RowDataPacket, OkPacket, ResultSetHeader } from 'mysql2';
-import pool from './pool';
+import {
+  Connection,
+  // Pool,
+  RowDataPacket,
+  OkPacket,
+  ResultSetHeader
+} from 'mysql2';
+// import pool from './pool';
 
 // Is this possible without code duplication from ProblemInterface?
 // interface ProblemQueryFilter {
@@ -9,11 +15,11 @@ import pool from './pool';
 // }
 
 class ProblemOrm {
-  private _pool: Pool;
+  // private _pool: Pool;
 
-  constructor(pool: Pool) {
-    this._pool = pool;
-  }
+  // constructor(pool: Pool) {
+  //   this._pool = pool;
+  // }
 
   // find(filter: ProblemQueryFilter): ProblemInterface[] {
   //   if (!filter.id) {
@@ -43,17 +49,13 @@ class ProblemOrm {
   //   return []; // TODO
   // }
 
-  findAll(): ProblemInterface[] {
+  async findAll(conn: Connection): Promise<ProblemInterface[]> {
     const result: ProblemInterface[] = [];
 
-    let problems: Partial<ProblemInterface>[] = [];
-    this._pool.query(`SELECT * FROM Problem`, (err, rows) => {
-      if (err) {
-        throw err;
-      } else {
-        problems = this.problemsFromRows(rows);
-      }
-    });
+    const problems: Partial<ProblemInterface>[] = await this.queryProblem(
+      conn,
+      'SELECT * FROM Problem'
+    );
 
     if (problems.length != 0) {
       for (const problem of problems) {
@@ -68,6 +70,21 @@ class ProblemOrm {
       // TODO: Get code and test cases, then build object
     }
     return result; // TODO
+  }
+
+  private async queryProblem(
+    conn: Connection,
+    query: string
+  ): Promise<Partial<ProblemInterface>[]> {
+    let problems: Partial<ProblemInterface>[] = [];
+    conn.query(query, (err, rows) => {
+      if (err) {
+        throw err;
+      } else {
+        problems = this.problemsFromRows(rows);
+      }
+    });
+    return problems;
   }
 
   private problemsFromRows(
@@ -135,4 +152,4 @@ class ProblemOrm {
   }
 }
 
-export const Problem = new ProblemOrm(pool);
+export const Problem = new ProblemOrm();
