@@ -58,6 +58,58 @@ const insertProblems = async (connection: Connection) => {
       if (err) throw err;
     }
   );
+  connection.query(
+    `
+    INSERT INTO Problem 
+      (statement, title, hidden, language, due_date, file_extension,
+       template_package, time_limit, memory_limit, build_command,
+       module_id)
+    SELECT
+      'test statement 2',
+      'test title 2',
+      FALSE,
+      'cpp',
+      DATE('2022-12-31 01:00:00'),
+      '.cpp',
+      'test template_package 2',
+      1.00,
+      1.00,
+      'test build_command 2',
+      Module.id
+    FROM Module
+    WHERE name = 'Test Module One'
+    LIMIT 1
+    `,
+    function (err) {
+      if (err) throw err;
+    }
+  );
+  connection.query(
+    `
+    INSERT INTO Problem 
+      (statement, title, hidden, language, due_date, file_extension,
+       template_package, time_limit, memory_limit, build_command,
+       module_id)
+    SELECT
+      'test statement 3',
+      'test title 3',
+      FALSE,
+      'cpp',
+      DATE('2022-12-31 01:00:00'),
+      '.cpp',
+      'test template_package 3',
+      1.00,
+      1.00,
+      'test build_command 3',
+      Module.id
+    FROM Module
+    WHERE name = 'Test Module One'
+    LIMIT 1
+    `,
+    function (err) {
+      if (err) throw err;
+    }
+  );
 };
 
 const selectProblems = async (connection: Connection) => {
@@ -75,7 +127,11 @@ const selectProblems = async (connection: Connection) => {
 const deleteProblems = async (connection: Connection) => {
   console.log('Deleting from Problem. . .');
   connection.query(
-    `DELETE FROM Problem WHERE title='test title 1'`,
+    `DELETE FROM Problem WHERE 
+      title='test title 1' OR
+      title='test title 2' OR
+      title='test title 3'
+    `,
     function (err) {
       if (err) throw err;
     }
