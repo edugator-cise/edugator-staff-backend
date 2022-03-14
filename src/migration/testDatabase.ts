@@ -24,7 +24,7 @@ const selectModules = async (connection: Connection) => {
       if (err) {
         throw err;
       } else {
-        console.log(`Module Rows:\n${rows}`);
+        console.log(`Module Rows:\n${JSON.stringify(rows)}`);
       }
     }
   );
@@ -62,13 +62,13 @@ const insertProblems = async (connection: Connection) => {
 
 const selectProblems = async (connection: Connection) => {
   console.log('Accessing from Problem using ORM. . .');
-  const result = Problem.findAll(connection);
+  const result = await Problem.findAll(connection);
   if (!result) {
     // eslint-disable-next-line no-console
     console.log('Result is empty!');
   } else {
     // eslint-disable-next-line no-console
-    console.log(`ORM Result:\n${result}`);
+    console.log(`ORM Result:\n${JSON.stringify(result)}`);
   }
 };
 
