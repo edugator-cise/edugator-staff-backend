@@ -1,6 +1,8 @@
 /* eslint-disable no-console */
 import { createConnection, Connection } from 'mysql2';
-import { Problem } from './problem.orm';
+import { ProblemOrm } from './problem.orm';
+
+const INSERT_DATA = false;
 
 const insertModules = async (connection: Connection) => {
   console.log('Inserting into Module. . .');
@@ -112,9 +114,9 @@ const insertProblems = async (connection: Connection) => {
   );
 };
 
-const selectProblems = async (connection: Connection) => {
+const selectProblems = async (problem: ProblemOrm) => {
   console.log('Accessing from Problem using ORM. . .');
-  const result = await Problem.findAll(connection);
+  const result = await problem.findAll();
   if (!result) {
     // eslint-disable-next-line no-console
     console.log('Result is empty!');
@@ -156,12 +158,17 @@ const runTest = async (): Promise<void> => {
     database: process.env.DB_NAME
   });
 
-  connection.connect();
+  connection.connect(function (err) {
+    if (err) throw err;
+  });
 
-  await insertModules(connection);
+  if (INSERT_DATA) {
+    await insertModules(connection);
+    await insertProblems(connection);
+  }
   await selectModules(connection);
-  await insertProblems(connection);
-  await selectProblems(connection);
+  const problem = new ProblemOrm(connection);
+  await selectProblems(problem);
   await deleteProblems(connection);
   await deleteModules(connection);
 

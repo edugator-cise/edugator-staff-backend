@@ -1,12 +1,5 @@
 import { ProblemInterface } from '../api/models/problem.model';
-import {
-  Connection,
-  // Pool,
-  RowDataPacket,
-  OkPacket,
-  ResultSetHeader
-} from 'mysql2';
-// import pool from './pool';
+import { Connection, RowDataPacket, OkPacket, ResultSetHeader } from 'mysql2';
 
 // Is this possible without code duplication from ProblemInterface?
 // interface ProblemQueryFilter {
@@ -14,12 +7,12 @@ import {
 //   hidden?: boolean;
 // }
 
-class ProblemOrm {
-  // private _pool: Pool;
+export class ProblemOrm {
+  private _conn: Connection;
 
-  // constructor(pool: Pool) {
-  //   this._pool = pool;
-  // }
+  constructor(conn: Connection) {
+    this._conn = conn;
+  }
 
   // find(filter: ProblemQueryFilter): ProblemInterface[] {
   //   if (!filter.id) {
@@ -49,29 +42,45 @@ class ProblemOrm {
   //   return []; // TODO
   // }
 
-  async findAll(conn: Connection): Promise<ProblemInterface[]> {
+  async findAll(): Promise<ProblemInterface[]> {
+    return new Promise((resolve, reject) => {
+      const result = this._findAll(this._conn, (err) => {
+        if (err) {
+          reject(err);
+        }
+      });
+      resolve(result);
+    });
+  }
+
+  private async _findAll(
+    conn: Connection,
+    callback: (err) => void
+  ): Promise<ProblemInterface[]> {
     return new Promise((resolve, reject) => {
       this.queryProblem(
         conn,
         'SELECT * FROM Problem',
         (err, problems: Partial<ProblemInterface>[]) => {
           if (err) {
-            return reject(err);
-          }
-          const result: ProblemInterface[] = [];
-          if (problems.length != 0) {
-            for (const problem of problems) {
-              problem.code = {
-                header: '',
-                body: '',
-                footer: ''
-              };
-              problem.testCases = [];
-              result.push(this.completeProblem(problem));
+            reject(err);
+          } else {
+            const result: ProblemInterface[] = [];
+            if (problems.length != 0) {
+              for (const problem of problems) {
+                problem.code = {
+                  header: '',
+                  body: '',
+                  footer: ''
+                };
+                problem.testCases = [];
+                result.push(this.completeProblem(problem));
+              }
+              // TODO: Get code and test cases, then build object
             }
-            // TODO: Get code and test cases, then build object
+            resolve(result);
           }
-          resolve(result);
+          callback(err);
         }
       );
     });
@@ -157,5 +166,3 @@ class ProblemOrm {
     };
   }
 }
-
-export const Problem = new ProblemOrm();
