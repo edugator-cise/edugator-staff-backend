@@ -2,7 +2,7 @@
 import { createConnection, Connection } from 'mysql2';
 import { ProblemOrm } from './problem.orm';
 
-const INSERT_DATA = false;
+const INSERT_DATA = true;
 
 const insertModules = async (connection: Connection) => {
   console.log('Inserting into Module. . .');
