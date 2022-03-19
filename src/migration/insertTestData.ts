@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import { createConnection, Connection } from 'mysql2';
 import { ModuleInterface } from '../api/models/module.model';
+import { ProblemInterface } from '../api/models/problem.model';
 
 export const insertModules = async (
   modules: ModuleInterface[],
@@ -21,86 +22,57 @@ export const insertModules = async (
   }
 };
 
-export const insertProblems = async (connection: Connection): Promise<void> => {
+interface ProblemInsertInterface {
+  problem: ProblemInterface;
+  moduleName: string; // Used to lookup fk to Module
+}
+
+export const insertProblems = async (
+  problems: ProblemInsertInterface[],
+  connection: Connection
+): Promise<void> => {
   console.log('Inserting into Problem. . .');
-  connection.query(
-    `
-    INSERT INTO Problem 
-      (statement, title, hidden, language, due_date, file_extension,
-        template_package, time_limit, memory_limit, build_command,
-        module_id)
-    SELECT
-      'test statement 1',
-      'test title 1',
-      FALSE,
-      'cpp',
-      DATE('2022-12-31 01:00:00'),
-      '.cpp',
-      'test template_package 1',
-      1.00,
-      1.00,
-      'test build_command 1',
-      Module.id
-    FROM Module
-    WHERE name = 'Test Module One'
-    LIMIT 1
-    `,
-    function (err) {
-      if (err) throw err;
-    }
-  );
-  connection.query(
-    `
-    INSERT INTO Problem 
-      (statement, title, hidden, language, due_date, file_extension,
-        template_package, time_limit, memory_limit, build_command,
-        module_id)
-    SELECT
-      'test statement 2',
-      'test title 2',
-      FALSE,
-      'cpp',
-      DATE('2022-12-31 01:00:00'),
-      '.cpp',
-      'test template_package 2',
-      1.00,
-      1.00,
-      'test build_command 2',
-      Module.id
-    FROM Module
-    WHERE name = 'Test Module One'
-    LIMIT 1
-    `,
-    function (err) {
-      if (err) throw err;
-    }
-  );
-  connection.query(
-    `
-    INSERT INTO Problem 
-      (statement, title, hidden, language, due_date, file_extension,
-        template_package, time_limit, memory_limit, build_command,
-        module_id)
-    SELECT
-      'test statement 3',
-      'test title 3',
-      FALSE,
-      'cpp',
-      DATE('2022-12-31 01:00:00'),
-      '.cpp',
-      'test template_package 3',
-      1.00,
-      1.00,
-      'test build_command 3',
-      Module.id
-    FROM Module
-    WHERE name = 'Test Module One'
-    LIMIT 1
-    `,
-    function (err) {
-      if (err) throw err;
-    }
-  );
+  for (const val of problems) {
+    connection.query(
+      `
+      INSERT INTO Problem 
+        (statement, title, hidden, language, due_date, file_extension,
+          template_package, time_limit, memory_limit, build_command,
+          module_id)
+      SELECT
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        Module.id
+      FROM Module
+      WHERE name = ?
+      LIMIT 1
+      `,
+      [
+        val.problem.statement,
+        val.problem.title,
+        val.problem.hidden,
+        val.problem.language,
+        val.problem.dueDate,
+        val.problem.fileExtension,
+        val.problem.templatePackage,
+        val.problem.timeLimit,
+        val.problem.memoryLimit,
+        val.problem.buildCommand,
+        val.moduleName
+      ],
+      function (err) {
+        if (err) throw err;
+      }
+    );
+  }
 };
 
 interface CodeInterface {
@@ -146,7 +118,62 @@ export const insertData = async (connection: Connection): Promise<void> => {
     ],
     connection
   );
-  await insertProblems(connection);
+  await insertProblems(
+    [
+      {
+        problem: {
+          statement: 'test statement 1',
+          title: 'test title 1',
+          hidden: false,
+          language: 'cpp',
+          dueDate: new Date('2022-12-31T01:00:00'),
+          code: undefined,
+          fileExtension: '.cpp',
+          testCases: [],
+          templatePackage: 'test template_package 1',
+          timeLimit: 1.0,
+          memoryLimit: 1.0,
+          buildCommand: 'test build_command 1'
+        },
+        moduleName: 'Test Module One'
+      },
+      {
+        problem: {
+          statement: 'test statement 2',
+          title: 'test title 2',
+          hidden: false,
+          language: 'cpp',
+          dueDate: new Date('2022-12-31T01:00:00'),
+          code: undefined,
+          fileExtension: '.cpp',
+          testCases: [],
+          templatePackage: 'test template_package 2',
+          timeLimit: 1.0,
+          memoryLimit: 1.0,
+          buildCommand: 'test build_command 2'
+        },
+        moduleName: 'Test Module One'
+      },
+      {
+        problem: {
+          statement: 'test statement 3',
+          title: 'test title 3',
+          hidden: false,
+          language: 'cpp',
+          dueDate: new Date('2022-12-31T01:00:00'),
+          code: undefined,
+          fileExtension: '.cpp',
+          testCases: [],
+          templatePackage: 'test template_package 3',
+          timeLimit: 1.0,
+          memoryLimit: 1.0,
+          buildCommand: 'test build_command 3'
+        },
+        moduleName: 'Test Module One'
+      }
+    ],
+    connection
+  );
   await insertCode(
     [
       {
