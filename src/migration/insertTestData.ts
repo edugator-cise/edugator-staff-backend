@@ -111,11 +111,11 @@ interface CodeInterface {
 }
 
 export const insertCode = async (
-  code: CodeInterface[],
+  codes: CodeInterface[],
   connection: Connection
 ): Promise<void> => {
   console.log('Inserting into Code. . .');
-  for (const _code of code) {
+  for (const code of codes) {
     connection.query(
       `
       INSERT INTO Code
@@ -129,7 +129,7 @@ export const insertCode = async (
       WHERE Problem.title = ?
       LIMIT 1
       `,
-      [_code.header, _code.body, _code.footer, _code.problemTitle],
+      [code.header, code.body, code.footer, code.problemTitle],
       function (err) {
         if (err) throw err;
       }
