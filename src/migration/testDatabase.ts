@@ -26,7 +26,7 @@ const selectModules = async (connection: Connection) => {
       if (err) {
         throw err;
       } else {
-        console.log(`Module Rows:\n${JSON.stringify(rows)}`);
+        console.log(`Module Rows:\n${JSON.stringify(rows, null, 2)}`);
       }
     }
   );
@@ -122,7 +122,7 @@ const selectProblems = async (problem: ProblemOrm) => {
     console.log('Result is empty!');
   } else {
     // eslint-disable-next-line no-console
-    console.log(`ORM Result:\n${JSON.stringify(result)}`);
+    console.log(`ORM Result:\n${JSON.stringify(result, null, 2)}`);
   }
 };
 
