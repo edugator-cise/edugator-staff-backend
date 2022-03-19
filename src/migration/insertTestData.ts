@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { createConnection, Connection } from 'mysql2';
 import { ModuleInterface } from '../api/models/module.model';
-import { ProblemInterface } from '../api/models/problem.model';
+import { ProblemInterface, TestCase } from '../api/models/problem.model';
 
 export const insertModules = async (
   modules: ModuleInterface[],
@@ -109,6 +109,45 @@ export const insertCode = async (
   }
 };
 
+interface TestCaseInsertInterface {
+  testCase: TestCase;
+  problemTitle: string;
+}
+
+export const insertTestCases = async (
+  testCases: TestCaseInsertInterface[],
+  connection: Connection
+): Promise<void> => {
+  console.log('Inserting into TestCase. . .');
+  for (const val of testCases) {
+    connection.query(
+      `
+      INSERT INTO TestCase
+        (input, expected_output, hint, visibility, problem_id)
+      SELECT
+        ?,
+        ?,
+        ?,
+        ?,
+        Problem.id
+      FROM Problem
+      WHERE Problem.title = ?
+      LIMIT 1
+      `,
+      [
+        val.testCase.input,
+        val.testCase.expectedOutput,
+        val.testCase.hint,
+        val.testCase.visibility,
+        val.problemTitle
+      ],
+      function (err) {
+        if (err) throw err;
+      }
+    );
+  }
+};
+
 export const insertData = async (connection: Connection): Promise<void> => {
   await insertModules(
     [
@@ -192,6 +231,20 @@ export const insertData = async (connection: Connection): Promise<void> => {
         body: 'test body 3',
         footer: 'test footer 3',
         problemTitle: 'test title 3'
+      }
+    ],
+    connection
+  );
+  await insertTestCases(
+    [
+      {
+        testCase: {
+          input: 'test input 1',
+          expectedOutput: 'test expected output 1',
+          hint: 'test hint 1',
+          visibility: 0
+        },
+        problemTitle: 'test title 1'
       }
     ],
     connection
