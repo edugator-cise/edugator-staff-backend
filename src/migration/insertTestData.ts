@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { createConnection, Connection } from 'mysql2';
 
-const insertModules = async (connection: Connection) => {
+export const insertModules = async (connection: Connection): Promise<void> => {
   console.log('Inserting into Module. . .');
   connection.query(
     `
@@ -15,7 +15,7 @@ const insertModules = async (connection: Connection) => {
   );
 };
 
-const insertProblems = async (connection: Connection) => {
+export const insertProblems = async (connection: Connection): Promise<void> => {
   console.log('Inserting into Problem. . .');
   connection.query(
     `
@@ -117,4 +117,7 @@ const insertData = async (): Promise<void> => {
   });
 };
 
-insertData();
+if (require.main === module) {
+  console.log('Executing insert script');
+  insertData();
+}
