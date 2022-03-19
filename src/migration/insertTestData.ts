@@ -97,7 +97,7 @@ const insertProblems = async (connection: Connection) => {
   );
 };
 
-const runTest = async (): Promise<void> => {
+const insertData = async (): Promise<void> => {
   const connection: Connection = createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -117,4 +117,4 @@ const runTest = async (): Promise<void> => {
   });
 };
 
-runTest();
+insertData();
