@@ -97,7 +97,14 @@ export const insertProblems = async (connection: Connection): Promise<void> => {
   );
 };
 
-const insertData = async (): Promise<void> => {
+export const insertData = async (connection: Connection): Promise<void> => {
+  await insertModules(connection);
+  await insertProblems(connection);
+};
+
+const runScript = async (): Promise<void> => {
+  console.log('Executing insert script');
+
   const connection: Connection = createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -109,8 +116,7 @@ const insertData = async (): Promise<void> => {
     if (err) throw err;
   });
 
-  await insertModules(connection);
-  await insertProblems(connection);
+  await insertData(connection);
 
   connection.end(function (err) {
     if (err) throw err;
@@ -118,6 +124,5 @@ const insertData = async (): Promise<void> => {
 };
 
 if (require.main === module) {
-  console.log('Executing insert script');
-  insertData();
+  runScript();
 }

@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { createConnection, Connection } from 'mysql2';
 import { ProblemOrm } from './problem.orm';
-import { insertModules, insertProblems } from './insertTestData';
+import { insertData } from './insertTestData';
 
 const INSERT_DATA = true;
 
@@ -68,8 +68,7 @@ const runTest = async (): Promise<void> => {
   });
 
   if (INSERT_DATA) {
-    await insertModules(connection);
-    await insertProblems(connection);
+    await insertData(connection);
   }
   await selectModules(connection);
   const problem = new ProblemOrm(connection);
