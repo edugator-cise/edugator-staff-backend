@@ -107,7 +107,6 @@ export const insertCode = async (
       }
     );
   }
-
 };
 
 export const insertData = async (connection: Connection): Promise<void> => {
