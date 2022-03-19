@@ -97,31 +97,67 @@ export const insertProblems = async (connection: Connection): Promise<void> => {
   );
 };
 
-export const insertCode = async (connection: Connection): Promise<void> => {
+interface CodeInterface {
+  header: string;
+  body: string;
+  footer: string;
+  problemTitle: string; // Used to lookup fk to Problem
+}
+
+export const insertCode = async (
+  code: CodeInterface[],
+  connection: Connection
+): Promise<void> => {
   console.log('Inserting into Code. . .');
-  connection.query(
-    `
-    INSERT INTO Code
-      (header, body, footer, problem_id)
-    SELECT
-      'test header 1',
-      'test body 1',
-      'test footer 1',
-      Problem.id
-    FROM Problem
-    WHERE Problem.title = 'test title 1'
-    LIMIT 1
-    `,
-    function (err) {
-      if (err) throw err;
-    }
-  );
+  for (const _code of code) {
+    connection.query(
+      `
+      INSERT INTO Code
+        (header, body, footer, problem_id)
+      SELECT
+        ?,
+        ?,
+        ?,
+        Problem.id
+      FROM Problem
+      WHERE Problem.title = ?
+      LIMIT 1
+      `,
+      [_code.header, _code.body, _code.footer, _code.problemTitle],
+      function (err) {
+        if (err) throw err;
+      }
+    );
+  }
+
 };
 
 export const insertData = async (connection: Connection): Promise<void> => {
   await insertModules(connection);
   await insertProblems(connection);
-  await insertCode(connection);
+  await insertCode(
+    [
+      {
+        header: 'test header 1',
+        body: 'test body 1',
+        footer: 'test footer 1',
+        problemTitle: 'test title 1'
+      },
+      {
+        header: 'test header 2',
+        body: 'test body 2',
+        footer: 'test footer 2',
+        problemTitle: 'test title 2'
+      },
+      {
+        header: 'test header 3',
+        body: 'test body 3',
+        footer: 'test footer 3',
+        problemTitle: 'test title 3'
+      }
+    ],
+    connection
+  );
 };
 
 const runScript = async (): Promise<void> => {
