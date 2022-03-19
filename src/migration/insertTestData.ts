@@ -97,9 +97,31 @@ export const insertProblems = async (connection: Connection): Promise<void> => {
   );
 };
 
+export const insertCode = async (connection: Connection): Promise<void> => {
+  console.log('Inserting into Code. . .');
+  connection.query(
+    `
+    INSERT INTO Code
+      (header, body, footer, problem_id)
+    SELECT
+      'test header 1',
+      'test body 1',
+      'test footer 1',
+      Problem.id
+    FROM Problem
+    WHERE Problem.title = 'test title 1'
+    LIMIT 1
+    `,
+    function (err) {
+      if (err) throw err;
+    }
+  );
+};
+
 export const insertData = async (connection: Connection): Promise<void> => {
   await insertModules(connection);
   await insertProblems(connection);
+  await insertCode(connection);
 };
 
 const runScript = async (): Promise<void> => {
