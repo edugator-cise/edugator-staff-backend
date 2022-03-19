@@ -1,18 +1,24 @@
 /* eslint-disable no-console */
 import { createConnection, Connection } from 'mysql2';
+import { ModuleInterface } from '../api/models/module.model';
 
-export const insertModules = async (connection: Connection): Promise<void> => {
+export const insertModules = async (
+  modules: ModuleInterface[],
+  connection: Connection
+): Promise<void> => {
   console.log('Inserting into Module. . .');
-  connection.query(
-    `
-    INSERT INTO Module (name, number) VALUES
-      ('Test Module One', 1.0),
-      ('Test Module Two', 1.1)
-    `,
-    function (err) {
-      if (err) throw err;
-    }
-  );
+  for (const module of modules) {
+    connection.query(
+      `
+      INSERT INTO Module (name, number) VALUES
+        (?, ?)
+      `,
+      [module.name, module.number],
+      function (err) {
+        if (err) throw err;
+      }
+    );
+  }
 };
 
 export const insertProblems = async (connection: Connection): Promise<void> => {
@@ -133,7 +139,13 @@ export const insertCode = async (
 };
 
 export const insertData = async (connection: Connection): Promise<void> => {
-  await insertModules(connection);
+  await insertModules(
+    [
+      { name: 'Test Module One', number: 1.0, problems: undefined },
+      { name: 'Test Module Two', number: 1.1, problems: undefined }
+    ],
+    connection
+  );
   await insertProblems(connection);
   await insertCode(
     [
