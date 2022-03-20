@@ -75,7 +75,7 @@ export const insertProblems = async (
   }
 };
 
-interface CodeInterface {
+interface CodeInsertInterface {
   header: string;
   body: string;
   footer: string;
@@ -83,7 +83,7 @@ interface CodeInterface {
 }
 
 export const insertCode = async (
-  codes: CodeInterface[],
+  codes: CodeInsertInterface[],
   connection: Connection
 ): Promise<void> => {
   console.log('Inserting into Code. . .');
