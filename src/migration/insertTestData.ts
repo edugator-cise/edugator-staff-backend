@@ -111,7 +111,7 @@ export const insertCode = async (
 
 interface TestCaseInsertInterface {
   testCase: TestCase;
-  problemTitle: string;
+  problemTitle: string; // Used to lookup fk to Problem
 }
 
 export const insertTestCases = async (
