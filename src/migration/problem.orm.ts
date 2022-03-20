@@ -95,34 +95,18 @@ export class ProblemOrm {
       if (err) {
         callback(err, []);
       } else {
-        const problems: Partial<ProblemInterface>[] =
-          this.problemsFromRows(rows);
+        const problems: Partial<ProblemInterface>[] = this.problemsFromRows(
+          this.extractRowDataPackets(rows)
+        );
         callback(false, problems);
       }
     });
   }
 
-  private problemsFromRows(
-    rows:
-      | RowDataPacket[]
-      | RowDataPacket[][]
-      | OkPacket
-      | OkPacket[]
-      | ResultSetHeader
-  ): Partial<ProblemInterface>[] {
+  private problemsFromRows(rows: RowDataPacket[]): Partial<ProblemInterface>[] {
     const problems: Partial<ProblemInterface>[] = [];
-    if (
-      rows.constructor.name !== 'OkPacket' &&
-      rows.constructor.name !== 'ResultSetHeader'
-    ) {
-      // Drop rows not of type RowDataPacket
-      rows = rows as RowDataPacket[] | RowDataPacket[][] | OkPacket[];
-      (rows as unknown[]).filter(
-        (row) => row.constructor.name === 'RowDataPacket'
-      );
-      for (const row of rows) {
-        problems.push(this.problemFromRow(row as RowDataPacket));
-      }
+    for (const row of rows) {
+      problems.push(this.problemFromRow(row));
     }
     return problems;
   }
@@ -164,5 +148,28 @@ export class ProblemOrm {
       memoryLimit: problem.memoryLimit,
       buildCommand: problem.buildCommand
     };
+  }
+
+  private extractRowDataPackets(
+    rows:
+      | RowDataPacket[]
+      | RowDataPacket[][]
+      | OkPacket
+      | OkPacket[]
+      | ResultSetHeader
+  ): RowDataPacket[] {
+    if (
+      rows.constructor.name !== 'OkPacket' &&
+      rows.constructor.name !== 'ResultSetHeader'
+    ) {
+      // Drop rows not of type RowDataPacket
+      rows = rows as RowDataPacket[] | RowDataPacket[][] | OkPacket[];
+      (rows as unknown[]).filter(
+        (row) => row.constructor.name === 'RowDataPacket'
+      );
+      return rows as RowDataPacket[];
+    } else {
+      return [];
+    }
   }
 }
