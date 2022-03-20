@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { createConnection, Connection } from 'mysql2';
 import { ModuleInterface } from '../api/models/module.model';
 import { ProblemInterface, TestCase } from '../api/models/problem.model';
@@ -24,7 +23,6 @@ export const insertIntoModule = async (
   modules: ModuleInterface[],
   connection: Connection
 ): Promise<void> => {
-  console.log('Inserting into Module. . .');
   for (const module of modules) {
     connection.query(
       `
@@ -43,7 +41,6 @@ const insertIntoProblem = async (
   problems: ProblemInsertInterface[],
   connection: Connection
 ): Promise<void> => {
-  console.log('Inserting into Problem. . .');
   for (const val of problems) {
     connection.query(
       `
@@ -91,7 +88,6 @@ const insertIntoCode = async (
   codes: CodeInsertInterface[],
   connection: Connection
 ): Promise<void> => {
-  console.log('Inserting into Code. . .');
   for (const code of codes) {
     connection.query(
       `
@@ -118,7 +114,6 @@ const insertIntoTestCase = async (
   testCases: TestCaseInsertInterface[],
   connection: Connection
 ): Promise<void> => {
-  console.log('Inserting into TestCase. . .');
   for (const val of testCases) {
     connection.query(
       `
@@ -149,6 +144,8 @@ const insertIntoTestCase = async (
 };
 
 export const insertData = async (connection: Connection): Promise<void> => {
+  // eslint-disable-next-line no-console
+  console.log('Inserting into Module. . .');
   await insertIntoModule(
     [
       { name: 'Test Module One', number: 1.0, problems: undefined },
@@ -156,6 +153,8 @@ export const insertData = async (connection: Connection): Promise<void> => {
     ],
     connection
   );
+  // eslint-disable-next-line no-console
+  console.log('Inserting into Problem. . .');
   await insertIntoProblem(
     [
       {
@@ -212,6 +211,8 @@ export const insertData = async (connection: Connection): Promise<void> => {
     ],
     connection
   );
+  // eslint-disable-next-line no-console
+  console.log('Inserting into Code. . .');
   await insertIntoCode(
     [
       {
@@ -235,6 +236,8 @@ export const insertData = async (connection: Connection): Promise<void> => {
     ],
     connection
   );
+  // eslint-disable-next-line no-console
+  console.log('Inserting into TestCase. . .');
   await insertIntoTestCase(
     [
       {
@@ -252,6 +255,7 @@ export const insertData = async (connection: Connection): Promise<void> => {
 };
 
 const runScript = async (): Promise<void> => {
+  // eslint-disable-next-line no-console
   console.log('Executing insert script');
 
   const connection: Connection = createConnection({
