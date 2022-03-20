@@ -37,6 +37,42 @@ export const insertIntoModule = async (
   }
 };
 
+export const insertProblem = async (
+  problems: ProblemInterface[],
+  moduleName: string,
+  connection: Connection
+): Promise<void> => {
+  const _problems: ProblemInsertInterface[] = problems.map((problem) => {
+    return {
+      problem: problem,
+      moduleName: moduleName
+    };
+  });
+  const codes: CodeInsertInterface[] = problems.map((problem) => {
+    return {
+      header: problem.code.header,
+      body: problem.code.body,
+      footer: problem.code.footer,
+      problemTitle: problem.title
+    };
+  });
+  const testCases: TestCaseInsertInterface[] = [];
+  for (const problem of problems) {
+    const tests: TestCaseInsertInterface[] = problem.testCases.map(
+      (testCase) => {
+        return {
+          testCase: testCase,
+          problemTitle: problem.title
+        };
+      }
+    );
+    testCases.push(...tests);
+  }
+  await insertIntoProblem(_problems, connection);
+  await insertIntoCode(codes, connection);
+  await insertIntoTestCase(testCases, connection);
+};
+
 const insertIntoProblem = async (
   problems: ProblemInsertInterface[],
   connection: Connection
@@ -155,101 +191,71 @@ export const insertTestData = async (connection: Connection): Promise<void> => {
   );
   // eslint-disable-next-line no-console
   console.log('Inserting into Problem. . .');
-  await insertIntoProblem(
+  await insertProblem(
     [
       {
-        problem: {
-          statement: 'test statement 1',
-          title: 'test title 1',
-          hidden: false,
-          language: 'cpp',
-          dueDate: new Date('2022-12-31T01:00:00'),
-          code: undefined,
-          fileExtension: '.cpp',
-          testCases: [],
-          templatePackage: 'test template_package 1',
-          timeLimit: 1.0,
-          memoryLimit: 1.0,
-          buildCommand: 'test build_command 1'
+        statement: 'test statement 1',
+        title: 'test title 1',
+        hidden: false,
+        language: 'cpp',
+        dueDate: new Date('2022-12-31T01:00:00'),
+        code: {
+          header: 'test header 1',
+          body: 'test body 1',
+          footer: 'test footer 1'
         },
-        moduleName: 'Test Module One'
+        fileExtension: '.cpp',
+        testCases: [
+          {
+            input: 'test input 1',
+            expectedOutput: 'test expected output 1',
+            hint: 'test hint 1',
+            visibility: 0
+          }
+        ],
+        templatePackage: 'test template_package 1',
+        timeLimit: 1.0,
+        memoryLimit: 1.0,
+        buildCommand: 'test build_command 1'
       },
       {
-        problem: {
-          statement: 'test statement 2',
-          title: 'test title 2',
-          hidden: false,
-          language: 'cpp',
-          dueDate: new Date('2022-12-31T01:00:00'),
-          code: undefined,
-          fileExtension: '.cpp',
-          testCases: [],
-          templatePackage: 'test template_package 2',
-          timeLimit: 1.0,
-          memoryLimit: 1.0,
-          buildCommand: 'test build_command 2'
+        statement: 'test statement 2',
+        title: 'test title 2',
+        hidden: false,
+        language: 'cpp',
+        dueDate: new Date('2022-12-31T01:00:00'),
+        code: {
+          header: 'test header 2',
+          body: 'test body 2',
+          footer: 'test footer 2'
         },
-        moduleName: 'Test Module One'
+        fileExtension: '.cpp',
+        testCases: [],
+        templatePackage: 'test template_package 2',
+        timeLimit: 1.0,
+        memoryLimit: 1.0,
+        buildCommand: 'test build_command 2'
       },
       {
-        problem: {
-          statement: 'test statement 3',
-          title: 'test title 3',
-          hidden: false,
-          language: 'cpp',
-          dueDate: new Date('2022-12-31T01:00:00'),
-          code: undefined,
-          fileExtension: '.cpp',
-          testCases: [],
-          templatePackage: 'test template_package 3',
-          timeLimit: 1.0,
-          memoryLimit: 1.0,
-          buildCommand: 'test build_command 3'
+        statement: 'test statement 3',
+        title: 'test title 3',
+        hidden: false,
+        language: 'cpp',
+        dueDate: new Date('2022-12-31T01:00:00'),
+        code: {
+          header: 'test header 3',
+          body: 'test body 3',
+          footer: 'test footer 3'
         },
-        moduleName: 'Test Module One'
+        fileExtension: '.cpp',
+        testCases: [],
+        templatePackage: 'test template_package 3',
+        timeLimit: 1.0,
+        memoryLimit: 1.0,
+        buildCommand: 'test build_command 3'
       }
     ],
-    connection
-  );
-  // eslint-disable-next-line no-console
-  console.log('Inserting into Code. . .');
-  await insertIntoCode(
-    [
-      {
-        header: 'test header 1',
-        body: 'test body 1',
-        footer: 'test footer 1',
-        problemTitle: 'test title 1'
-      },
-      {
-        header: 'test header 2',
-        body: 'test body 2',
-        footer: 'test footer 2',
-        problemTitle: 'test title 2'
-      },
-      {
-        header: 'test header 3',
-        body: 'test body 3',
-        footer: 'test footer 3',
-        problemTitle: 'test title 3'
-      }
-    ],
-    connection
-  );
-  // eslint-disable-next-line no-console
-  console.log('Inserting into TestCase. . .');
-  await insertIntoTestCase(
-    [
-      {
-        testCase: {
-          input: 'test input 1',
-          expectedOutput: 'test expected output 1',
-          hint: 'test hint 1',
-          visibility: 0
-        },
-        problemTitle: 'test title 1'
-      }
-    ],
+    'Test Module One',
     connection
   );
 };
