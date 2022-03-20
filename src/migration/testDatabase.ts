@@ -1,9 +1,10 @@
 /* eslint-disable no-console */
 import { createConnection, Connection } from 'mysql2';
 import { ProblemOrm } from './problem.orm';
-import { insertData } from './insertTestData';
+import { insertTestData } from './insertTestData';
 
-const INSERT_DATA = true;
+const INSERT_DATA = false;
+const TEAR_DOWN = false;
 
 const selectModules = async (connection: Connection) => {
   console.log('Selecting from Module. . .');
@@ -68,13 +69,15 @@ const runTest = async (): Promise<void> => {
   });
 
   if (INSERT_DATA) {
-    await insertData(connection);
+    await insertTestData(connection);
   }
   await selectModules(connection);
   const problem = new ProblemOrm(connection);
   await selectProblems(problem);
-  await deleteProblems(connection);
-  await deleteModules(connection);
+  if (TEAR_DOWN) {
+    await deleteProblems(connection);
+    await deleteModules(connection);
+  }
 
   connection.end(function (err) {
     if (err) throw err;
