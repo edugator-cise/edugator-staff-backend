@@ -143,7 +143,7 @@ const insertIntoTestCase = async (
   }
 };
 
-export const insertData = async (connection: Connection): Promise<void> => {
+export const insertTestData = async (connection: Connection): Promise<void> => {
   // eslint-disable-next-line no-console
   console.log('Inserting into Module. . .');
   await insertIntoModule(
@@ -269,7 +269,7 @@ const runScript = async (): Promise<void> => {
     if (err) throw err;
   });
 
-  await insertData(connection);
+  await insertTestData(connection);
 
   connection.end(function (err) {
     if (err) throw err;
