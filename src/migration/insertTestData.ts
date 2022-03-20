@@ -3,7 +3,24 @@ import { createConnection, Connection } from 'mysql2';
 import { ModuleInterface } from '../api/models/module.model';
 import { ProblemInterface, TestCase } from '../api/models/problem.model';
 
-export const insertModules = async (
+interface ProblemInsertInterface {
+  problem: ProblemInterface;
+  moduleName: string; // Used to lookup fk to Module
+}
+
+interface CodeInsertInterface {
+  header: string;
+  body: string;
+  footer: string;
+  problemTitle: string; // Used to lookup fk to Problem
+}
+
+interface TestCaseInsertInterface {
+  testCase: TestCase;
+  problemTitle: string; // Used to lookup fk to Problem
+}
+
+export const insertIntoModule = async (
   modules: ModuleInterface[],
   connection: Connection
 ): Promise<void> => {
@@ -22,12 +39,7 @@ export const insertModules = async (
   }
 };
 
-interface ProblemInsertInterface {
-  problem: ProblemInterface;
-  moduleName: string; // Used to lookup fk to Module
-}
-
-export const insertProblems = async (
+const insertIntoProblem = async (
   problems: ProblemInsertInterface[],
   connection: Connection
 ): Promise<void> => {
@@ -75,14 +87,7 @@ export const insertProblems = async (
   }
 };
 
-interface CodeInsertInterface {
-  header: string;
-  body: string;
-  footer: string;
-  problemTitle: string; // Used to lookup fk to Problem
-}
-
-export const insertCode = async (
+const insertIntoCode = async (
   codes: CodeInsertInterface[],
   connection: Connection
 ): Promise<void> => {
@@ -109,12 +114,7 @@ export const insertCode = async (
   }
 };
 
-interface TestCaseInsertInterface {
-  testCase: TestCase;
-  problemTitle: string; // Used to lookup fk to Problem
-}
-
-export const insertTestCases = async (
+const insertIntoTestCase = async (
   testCases: TestCaseInsertInterface[],
   connection: Connection
 ): Promise<void> => {
@@ -149,14 +149,14 @@ export const insertTestCases = async (
 };
 
 export const insertData = async (connection: Connection): Promise<void> => {
-  await insertModules(
+  await insertIntoModule(
     [
       { name: 'Test Module One', number: 1.0, problems: undefined },
       { name: 'Test Module Two', number: 1.1, problems: undefined }
     ],
     connection
   );
-  await insertProblems(
+  await insertIntoProblem(
     [
       {
         problem: {
@@ -212,7 +212,7 @@ export const insertData = async (connection: Connection): Promise<void> => {
     ],
     connection
   );
-  await insertCode(
+  await insertIntoCode(
     [
       {
         header: 'test header 1',
@@ -235,7 +235,7 @@ export const insertData = async (connection: Connection): Promise<void> => {
     ],
     connection
   );
-  await insertTestCases(
+  await insertIntoTestCase(
     [
       {
         testCase: {
