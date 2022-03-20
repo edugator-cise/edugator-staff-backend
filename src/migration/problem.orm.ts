@@ -7,6 +7,12 @@ import { Connection, RowDataPacket, OkPacket, ResultSetHeader } from 'mysql2';
 //   hidden?: boolean;
 // }
 
+interface CodeInterface {
+  header: string;
+  body: string;
+  footer: string;
+}
+
 export class ProblemOrm {
   private _conn: Connection;
 
@@ -61,18 +67,21 @@ export class ProblemOrm {
       this.queryProblem(
         conn,
         'SELECT * FROM Problem',
-        (err, problems: Partial<ProblemInterface>[]) => {
+        async (err, problems: Partial<ProblemInterface>[]) => {
           if (err) {
             reject(err);
           } else {
             const result: ProblemInterface[] = [];
             if (problems.length != 0) {
               for (const problem of problems) {
-                problem.code = {
-                  header: '',
-                  body: '',
-                  footer: ''
-                };
+                const codes: CodeInterface[] =
+                  await this.findCodebyProblemTitle(conn, problem.title);
+                if (codes.length == 0) {
+                  problem.code = undefined;
+                } else {
+                  // Pick the first code entry found
+                  problem.code = codes[0];
+                }
                 problem.testCases = [];
                 result.push(this.completeProblem(problem));
               }
@@ -148,6 +157,46 @@ export class ProblemOrm {
       memoryLimit: problem.memoryLimit,
       buildCommand: problem.buildCommand
     };
+  }
+
+  private findCodebyProblemTitle(
+    conn: Connection,
+    problemTitle: string
+  ): Promise<CodeInterface[]> {
+    return new Promise((resolve, reject) => {
+      conn.query(
+        `
+        SELECT c.header, c.body, c.footer
+        FROM Code AS c
+        JOIN Problem AS p
+        ON c.problem_id = p.id
+        WHERE p.title = ?
+        `,
+        [problemTitle],
+        (err, rows) => {
+          if (err) {
+            reject(err);
+          } else {
+            const codes: CodeInterface[] = this.codesFromRows(
+              this.extractRowDataPackets(rows)
+            );
+            resolve(codes);
+          }
+        }
+      );
+    });
+  }
+
+  private codesFromRows(rows: RowDataPacket[]): CodeInterface[] {
+    const codes: CodeInterface[] = rows.map(
+      (row) =>
+        <CodeInterface>{
+          header: row.header,
+          body: row.body,
+          footer: row.footer
+        }
+    );
+    return codes;
   }
 
   private extractRowDataPackets(
