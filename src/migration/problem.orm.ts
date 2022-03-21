@@ -50,23 +50,28 @@ export class ProblemOrm {
 
   async findAll(): Promise<ProblemInterface[]> {
     return new Promise((resolve, reject) => {
-      const result = this._findAll(this._conn, (err) => {
-        if (err) {
-          reject(err);
+      const result = this._findProblems(
+        this._conn,
+        'SELECT * FROM Problem',
+        (err) => {
+          if (err) {
+            reject(err);
+          }
         }
-      });
+      );
       resolve(result);
     });
   }
 
-  private async _findAll(
+  private async _findProblems(
     conn: Connection,
+    query: string,
     callback: (err) => void
   ): Promise<ProblemInterface[]> {
     return new Promise((resolve, reject) => {
       this.queryProblem(
         conn,
-        'SELECT * FROM Problem',
+        query,
         async (err, problems: Partial<ProblemInterface>[]) => {
           if (err) {
             reject(err);
