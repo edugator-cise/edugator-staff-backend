@@ -1,5 +1,11 @@
 import { ProblemInterface, TestCase } from '../api/models/problem.model';
-import { Connection, RowDataPacket, OkPacket, ResultSetHeader, format } from 'mysql2';
+import {
+  Connection,
+  RowDataPacket,
+  OkPacket,
+  ResultSetHeader,
+  format
+} from 'mysql2';
 
 // All properties of ProblemInterface except code and testCases; all fields optional
 export type ProblemQueryFilter = Partial<
