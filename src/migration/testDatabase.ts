@@ -38,6 +38,35 @@ const selectProblems = async (problem: ProblemOrm) => {
   printResult('findAll()', result);
   result = await problem.find({ title: 'Test Title 1' });
   printResult("find({ title: 'Test Title 1' })", result);
+  result = await problem.find({
+    statement: 'test statement 2',
+    title: 'test title 2',
+    hidden: false,
+    language: 'cpp',
+    dueDate: new Date('2022-12-31T01:00:00'),
+    fileExtension: '.cpp',
+    templatePackage: 'test template_package 2',
+    timeLimit: 1.0,
+    memoryLimit: 1.0,
+    buildCommand: 'test build_command 2'
+  });
+  printResult(
+    `find({
+      statement: 'test statement 2',
+      title: 'test title 2',
+      hidden: false,
+      language: 'cpp',
+      dueDate: new Date('2022-12-31T01:00:00'),
+      fileExtension: '.cpp',
+      templatePackage: 'test template_package 2',
+      timeLimit: 1.0,
+      memoryLimit: 1.0,
+      buildCommand: 'test build_command 2'
+    })`,
+    result
+  );
+  result = await problem.find({ title: null });
+  printResult('find({ title: null })', result);
 };
 
 const deleteProblems = async (connection: Connection) => {
@@ -72,6 +101,25 @@ const testConstructSQLQuery = (problem: ProblemOrm) => {
   };
   console.log(problem.constructSQLQuery(filter));
   console.log(problem.constructSQLQuery({}));
+  console.log(
+    problem.constructSQLQuery({
+      statement: 'test statement 2',
+      title: 'test title 2',
+      hidden: false,
+      language: 'cpp',
+      dueDate: new Date('2022-12-31T01:00:00'),
+      fileExtension: '.cpp',
+      templatePackage: 'test template_package 2',
+      timeLimit: 1.0,
+      memoryLimit: 1.0,
+      buildCommand: 'test build_command 2'
+    })
+  );
+  console.log(
+    problem.constructSQLQuery({
+      title: null
+    })
+  );
 };
 
 const runTest = async (): Promise<void> => {
