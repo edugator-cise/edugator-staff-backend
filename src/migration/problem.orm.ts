@@ -1,4 +1,4 @@
-import { ProblemInterface } from '../api/models/problem.model';
+import { ProblemInterface, TestCase } from '../api/models/problem.model';
 import { Connection, RowDataPacket, OkPacket, ResultSetHeader } from 'mysql2';
 
 // Is this possible without code duplication from ProblemInterface?
@@ -82,7 +82,10 @@ export class ProblemOrm {
                   // Pick the first code entry found
                   problem.code = codes[0];
                 }
-                problem.testCases = [];
+                problem.testCases = await this.findTestCasesByProblemTitle(
+                  conn,
+                  problem.title
+                );
                 result.push(this.completeProblem(problem));
               }
               // TODO: Get code and test cases, then build object
@@ -187,6 +190,34 @@ export class ProblemOrm {
     });
   }
 
+  private findTestCasesByProblemTitle(
+    conn: Connection,
+    problemTitle: string
+  ): Promise<TestCase[]> {
+    return new Promise((resolve, reject) => {
+      conn.query(
+        `
+        SELECT t.input, t.expected_output AS expectedOutput, t.hint, t.visibility
+        FROM TestCase as t
+        JOIN Problem as p
+        ON t.problem_id = p.id
+        WHERE p.title = ?
+        `,
+        [problemTitle],
+        (err, rows) => {
+          if (err) {
+            reject(err);
+          } else {
+            const tests: TestCase[] = this.testCasesFromRows(
+              this.extractRowDataPackets(rows)
+            );
+            resolve(tests);
+          }
+        }
+      );
+    });
+  }
+
   private codesFromRows(rows: RowDataPacket[]): CodeInterface[] {
     const codes: CodeInterface[] = rows.map(
       (row) =>
@@ -197,6 +228,19 @@ export class ProblemOrm {
         }
     );
     return codes;
+  }
+
+  private testCasesFromRows(rows: RowDataPacket[]): TestCase[] {
+    const tests: TestCase[] = rows.map(
+      (row) =>
+        <TestCase>{
+          input: row.input,
+          expectedOutput: row.expectedOutput,
+          hint: row.hint,
+          visibility: row.visibility
+        }
+    );
+    return tests;
   }
 
   private extractRowDataPackets(
