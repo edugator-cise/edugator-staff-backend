@@ -88,7 +88,6 @@ export class ProblemOrm {
                 );
                 result.push(this.completeProblem(problem));
               }
-              // TODO: Get code and test cases, then build object
             }
             resolve(result);
           }
