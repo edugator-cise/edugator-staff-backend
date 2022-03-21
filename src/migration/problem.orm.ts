@@ -40,18 +40,6 @@ export class ProblemOrm {
     });
   }
 
-  // private findById(id: number): ProblemInterface[] {
-  //   return []; // TODO
-  // }
-
-  // private findByHidden(hidden: boolean): ProblemInterface[] {
-  //   return []; // TODO
-  // }
-
-  // private findByIdAndHidden(id: number, hidden: boolean): ProblemInterface[] {
-  //   return []; // TODO
-  // }
-
   async findAll(): Promise<ProblemInterface[]> {
     return new Promise((resolve, reject) => {
       const result = this._findProblems(
