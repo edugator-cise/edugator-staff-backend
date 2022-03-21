@@ -41,18 +41,7 @@ export class ProblemOrm {
   }
 
   async findAll(): Promise<ProblemInterface[]> {
-    return new Promise((resolve, reject) => {
-      const result = this._findProblems(
-        this._conn,
-        'SELECT * FROM Problem',
-        (err) => {
-          if (err) {
-            reject(err);
-          }
-        }
-      );
-      resolve(result);
-    });
+    return this.find({});
   }
 
   // TODO: Add a docstring explaining constraints on the query string
