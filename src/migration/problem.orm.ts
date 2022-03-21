@@ -55,6 +55,7 @@ export class ProblemOrm {
     });
   }
 
+  // TODO: Add a docstring explaining constraints on the query string
   private async _findProblems(
     conn: Connection,
     query: string,
@@ -262,6 +263,8 @@ export class ProblemOrm {
     }
   }
 
+  // TODO: Make this private
+  // TODO: Add a docstring
   constructSQLQuery(filter: ProblemQueryFilter): string {
     interface QueryArg {
       column: string;
