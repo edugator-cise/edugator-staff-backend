@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { createConnection, Connection } from 'mysql2';
-import { ProblemOrm } from './problem.orm';
+import { ProblemOrm, ProblemQueryFilter } from './problem.orm';
 import { insertTestData } from './insertTestData';
 
 const INSERT_DATA = false;
@@ -56,6 +56,17 @@ const deleteModules = async (connection: Connection) => {
   );
 };
 
+const testConstructSQLQuery = (problem: ProblemOrm) => {
+  const filter: ProblemQueryFilter = {
+    title: 'Test Title 1',
+    language: 'cpp',
+    timeLimit: 1
+  };
+  console.log(problem.constructSQLQuery(filter));
+  console.log(problem.constructSQLQuery({}));
+
+};
+
 const runTest = async (): Promise<void> => {
   const connection: Connection = createConnection({
     host: process.env.DB_HOST,
@@ -74,6 +85,7 @@ const runTest = async (): Promise<void> => {
   await selectModules(connection);
   const problem = new ProblemOrm(connection);
   await selectProblems(problem);
+  testConstructSQLQuery(problem);
   if (TEAR_DOWN) {
     await deleteProblems(connection);
     await deleteModules(connection);

@@ -1,11 +1,10 @@
 import { ProblemInterface, TestCase } from '../api/models/problem.model';
-import { Connection, RowDataPacket, OkPacket, ResultSetHeader } from 'mysql2';
+import { Connection, RowDataPacket, OkPacket, ResultSetHeader, format } from 'mysql2';
 
-// Is this possible without code duplication from ProblemInterface?
-// interface ProblemQueryFilter {
-//   id?: number;
-//   hidden?: boolean;
-// }
+// All properties of ProblemInterface except code and testCases; all fields optional
+export type ProblemQueryFilter = Partial<
+  Omit<ProblemInterface, 'code' | 'testCases'>
+>;
 
 interface CodeInterface {
   header: string;
@@ -267,6 +266,29 @@ export class ProblemOrm {
       return rows as RowDataPacket[];
     } else {
       return [];
+    }
+  }
+
+  constructSQLQuery(filter: ProblemQueryFilter): string {
+    interface QueryArg {
+      column: string;
+      value: any;
+    }
+    const camelCaseToSnakeCase = (str: string) =>
+      str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+    const args: QueryArg[] = Object.entries(filter).map(
+      ([key, value]) =>
+        <QueryArg>{ column: camelCaseToSnakeCase(key), value: value }
+    );
+    if (args.length > 0) {
+      const query: string[] = ['SELECT *', 'FROM Problem', 'WHERE'];
+      query.push(...Array(args.length - 1).fill('?? = ? AND'));
+      query.push('?? = ?');
+      const argsRaw: any[] = [];
+      args.forEach((arg) => argsRaw.push(arg.column, arg.value));
+      return format(query.join('\n'), argsRaw);
+    } else {
+      return 'SELECT * FROM Problem';
     }
   }
 }
