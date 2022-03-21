@@ -2,6 +2,7 @@
 import { createConnection, Connection } from 'mysql2';
 import { ProblemOrm, ProblemQueryFilter } from './problem.orm';
 import { insertTestData } from './insertTestData';
+import { ProblemInterface } from '../api/models/problem.model';
 
 const INSERT_DATA = false;
 const TEAR_DOWN = false;
@@ -21,15 +22,22 @@ const selectModules = async (connection: Connection) => {
 };
 
 const selectProblems = async (problem: ProblemOrm) => {
+  const printResult = (funcName: string, result: ProblemInterface[]) => {
+    if (!result) {
+      // eslint-disable-next-line no-console
+      console.log(`ProblemORM.${funcName}: Result is empty!`);
+    } else {
+      // eslint-disable-next-line no-console
+      console.log(
+        `ProblemORM.${funcName}:\n${JSON.stringify(result, null, 2)}`
+      );
+    }
+  };
   console.log('Accessing from Problem using ORM. . .');
-  const result = await problem.findAll();
-  if (!result) {
-    // eslint-disable-next-line no-console
-    console.log('Result is empty!');
-  } else {
-    // eslint-disable-next-line no-console
-    console.log(`ORM Result:\n${JSON.stringify(result, null, 2)}`);
-  }
+  let result = await problem.findAll();
+  printResult('findAll()', result);
+  result = await problem.find({ title: 'Test Title 1' });
+  printResult("find({ title: 'Test Title 1' })", result);
 };
 
 const deleteProblems = async (connection: Connection) => {
@@ -64,7 +72,6 @@ const testConstructSQLQuery = (problem: ProblemOrm) => {
   };
   console.log(problem.constructSQLQuery(filter));
   console.log(problem.constructSQLQuery({}));
-
 };
 
 const runTest = async (): Promise<void> => {

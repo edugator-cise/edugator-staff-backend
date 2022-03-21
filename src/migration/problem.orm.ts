@@ -19,21 +19,20 @@ export class ProblemOrm {
     this._conn = conn;
   }
 
-  // find(filter: ProblemQueryFilter): ProblemInterface[] {
-  //   if (!filter.id) {
-  //     if (filter.hidden === undefined) {
-  //       return this.findAll();
-  //     } else {
-  //       return this.findByHidden(filter.hidden);
-  //     }
-  //   } else {
-  //     if (filter.hidden === undefined) {
-  //       return this.findById(filter.id);
-  //     } else {
-  //       return this.findByIdAndHidden(filter.id, filter.hidden);
-  //     }
-  //   }
-  // }
+  async find(filter: ProblemQueryFilter): Promise<ProblemInterface[]> {
+    return new Promise((resolve, reject) => {
+      const result = this._findProblems(
+        this._conn,
+        this.constructSQLQuery(filter),
+        (err) => {
+          if (err) {
+            reject(err);
+          }
+        }
+      );
+      resolve(result);
+    });
+  }
 
   // private findById(id: number): ProblemInterface[] {
   //   return []; // TODO
