@@ -129,6 +129,7 @@ export class ProblemOrm {
   ): ProblemInterface {
     for (const key in problem) {
       if (problem[key] === undefined) {
+        // TODO: This will return undefined if problem.code is undefined. Is this what we want?
         return undefined;
       }
     }
