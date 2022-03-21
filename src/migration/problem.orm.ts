@@ -75,7 +75,7 @@ export class ProblemOrm {
             if (problems.length != 0) {
               for (const problem of problems) {
                 const codes: CodeInterface[] =
-                  await this.findCodebyProblemTitle(conn, problem.title);
+                  await this.findCodeByProblemTitle(conn, problem.title);
                 if (codes.length == 0) {
                   problem.code = undefined;
                 } else {
@@ -159,7 +159,7 @@ export class ProblemOrm {
     };
   }
 
-  private findCodebyProblemTitle(
+  private findCodeByProblemTitle(
     conn: Connection,
     problemTitle: string
   ): Promise<CodeInterface[]> {
