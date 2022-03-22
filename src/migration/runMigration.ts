@@ -51,7 +51,6 @@ const transformData = async () => {
   let testCounter = 1;
   let userCounter = 1;
 
-
   // will be used to map ProblemObjectID and Module(number)
   const mapModuleProblems: Map<number, Types.ObjectId[]> = new Map<
     number,
@@ -85,13 +84,16 @@ const transformData = async () => {
 
     // let's find the associated module here - reverse lookup time.
 
-    for (const [key, value] of mapModuleProblems.entries()){
+    for (const [key, value] of mapModuleProblems.entries()) {
       for (const potentialID of value) {
         const potentialProblem: ProblemInterface = await Problem.findById(
           potentialID
         );
 
-        if (potentialProblem != null && potentialProblem.title == mongoProblem.title) {
+        if (
+          potentialProblem != null &&
+          potentialProblem.title == mongoProblem.title
+        ) {
           // this is a match
           moduleMatch = key;
         }
@@ -113,7 +115,7 @@ const transformData = async () => {
       module_id: moduleMatch
     };
     mySQLProblemArray.push(mySQLProblem);
-    console.log("MYSQLProblemModuleID: " + mySQLProblem.module_id);
+    console.log('MYSQLProblemModuleID: ' + mySQLProblem.module_id);
 
     const mySQLCode: mySQLCode = {
       id: codeCounter,
@@ -142,7 +144,6 @@ const transformData = async () => {
       testCounter++;
     }
     problemCounter++;
-
   }
 
   for (const mongoUser of mongoUserArray) {
@@ -157,13 +158,12 @@ const transformData = async () => {
     mySQLUserArray.push(mySQLUser);
     userCounter++;
   }
-
 };
 
 const runMigration = async (): Promise<void> => {
   await transformData();
 
-  console.log("transform done");
+  console.log('transform done');
 
   const connection: Connection = createConnection({
     host: process.env.DB_HOST,
@@ -174,7 +174,7 @@ const runMigration = async (): Promise<void> => {
   //connect to the MySQL Database
   connection.connect();
 
-  console.log("connected");
+  console.log('connected');
 
   connection.query('USE test_db', function (err) {
     if (err) throw err;
@@ -207,13 +207,12 @@ const runMigration = async (): Promise<void> => {
         if (err) throw err;
       }
     );
-    console.log("inserted module");
+    console.log('inserted module');
   }
 
   console.log(mySQLProblemArrayValues);
 
   for (const mySQLProblemArrayValue of mySQLProblemArrayValues) {
-    
     connection.query(
       'INSERT INTO Problem (id, statement, title, hidden, language, due_date, file_extension, template_package, time_limit, memory_limit, build_command, module_id) VALUES (?)',
       [mySQLProblemArrayValue],
@@ -221,11 +220,10 @@ const runMigration = async (): Promise<void> => {
         if (err) throw err;
       }
     );
-    console.log("inserted problem");
+    console.log('inserted problem');
   }
 
   for (const mySQLCodeArrayValue of mySQLCodeArrayValues) {
-
     connection.query(
       'INSERT INTO Code (id, header, body, footer, problem_id) VALUES (?)',
       [mySQLCodeArrayValue],
@@ -233,11 +231,10 @@ const runMigration = async (): Promise<void> => {
         if (err) throw err;
       }
     );
-    console.log("inserted code");
+    console.log('inserted code');
   }
 
   for (const mySQLTestCaseArrayValue of mySQLTestCaseArrayValues) {
-
     connection.query(
       'INSERT INTO TestCase (id, input, expected_output, hint, visibility, problem_id) VALUES (?)',
       [mySQLTestCaseArrayValue],
@@ -245,7 +242,7 @@ const runMigration = async (): Promise<void> => {
         if (err) throw err;
       }
     );
-    console.log("inserted testcase");
+    console.log('inserted testcase');
   }
 
   for (const mySQLUserArrayValue of mySQLUserArrayValues) {
@@ -256,7 +253,7 @@ const runMigration = async (): Promise<void> => {
         if (err) throw err;
       }
     );
-    console.log("inserted User");
+    console.log('inserted User');
   }
 
   connection.end();
