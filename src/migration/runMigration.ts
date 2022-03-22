@@ -133,7 +133,7 @@ const transformData = async () => {
         expected_output: mongoTestCase.expectedOutput,
         hint: mongoTestCase.hint,
         visibility: mongoTestCase.visibility,
-        problem_id: problemCounter // this should be fine since it's from this problem
+        problem_id: problemCounter
       };
 
       //push here
@@ -142,8 +142,6 @@ const transformData = async () => {
     }
     problemCounter++;
 
-    // similar to before with a module containing problems, a problem now contains both
-    // test cases AND code. There is a 1:1 mapping for code but a 1:many for testcases.
   }
 
   for (const mongoUser of mongoUserArray) {
@@ -158,8 +156,6 @@ const transformData = async () => {
     mySQLUserArray.push(mySQLUser);
     userCounter++;
   }
-
-  // TODO: we should then insert all of this data into the mysql database.
 
 };
 
@@ -267,30 +263,26 @@ const runMigration = async (): Promise<void> => {
 
 runMigration();
 
-// // Insert Modules, then Problem, then TestCase, then Code
+// for logging/data exploration
+const logModules = async () => {
+  const modulesArray: ModuleInterface[] = await getModuleData();
+  for (const module of modulesArray) {
+    console.log(module);
+  }
 
-// //connection.query('INSERT INTO Module () VALUES ?');
+  console.log(modulesArray.length);
+};
 
-// // for logging/data exploration
-// const logModules = async () => {
-//   const modulesArray: ModuleInterface[] = await modulesPromise;
-//   for (const module of modulesArray) {
-//     console.log(module);
-//   }
+// for logging/data exploration
+const logProblems = async () => {
+  const problemsArray: ProblemInterface[] = await getProblemData();
+  for (const problem of problemsArray) {
+    console.log(problem);
+  }
 
-//   console.log(modulesArray.length);
-// };
+  console.log(problemsArray.length);
+};
 
-// // for logging/data exploration
-// const logProblems = async () => {
-//   const problemsArray: ProblemInterface[] = await problemsPromise;
-//   for (const problem of problemsArray) {
-//     console.log(problem);
-//   }
-
-//   console.log(problemsArray.length);
-// };
-
-// // logging
-// logModules();
-// logProblems();
+// logging
+logModules();
+logProblems();
