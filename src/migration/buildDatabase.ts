@@ -1,13 +1,23 @@
+/* eslint-disable no-console */
 import { createConnection, Connection } from 'mysql2';
 
 const connection: Connection = createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME
+  password: process.env.DB_PASSWORD
 });
 
+const db_name: string = process.env.DB_NAME;
+
 connection.connect();
+
+connection.query(`CREATE DATABASE IF NOT EXISTS ${db_name}`, function (err) {
+  if (err) throw err;
+});
+
+connection.query(`USE ${db_name}`, function (err) {
+  if (err) throw err;
+});
 
 // Drop existing tables; ordered based on foreign keys
 connection.query('DROP TABLE IF EXISTS TestCase', function (err) {
@@ -65,7 +75,7 @@ connection.query(
   CREATE TABLE IF NOT EXISTS Problem (
     id INT NOT NULL AUTO_INCREMENT,
     statement TEXT NOT NULL,
-    title VARCHAR(500) NOT NULL UNIQUE,
+    title VARCHAR(500) NOT NULL,
     hidden BOOL NOT NULL,
     language VARCHAR(500) NOT NULL,
     due_date DATETIME NOT NULL,
