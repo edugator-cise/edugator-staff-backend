@@ -28,8 +28,13 @@ export class ProblemOrm {
     return this._find(filter, 0);
   }
 
-  async findOne(filter: ProblemQueryFilter): Promise<ProblemDocument[]> {
-    return this._find(filter, 1);
+  async findOne(filter: ProblemQueryFilter): Promise<ProblemDocument> {
+    const result = await this._find(filter, 1);
+    if (result.length > 0) {
+      return result[0];
+    } else {
+      return null;
+    }
   }
 
   async findAll(): Promise<ProblemDocument[]> {
