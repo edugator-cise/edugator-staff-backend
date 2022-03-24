@@ -41,6 +41,12 @@ export class ProblemOrm {
     return this.find({});
   }
 
+  // Included for back compatability with Mongoose API
+  // Equivalent to findOne({ _id: id })
+  async findById(id: number): Promise<ProblemDocument> {
+    return this.findOne({ _id: id });
+  }
+
   private async _find(
     filter: ProblemQueryFilter,
     limit: number

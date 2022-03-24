@@ -78,6 +78,13 @@ const selectProblems = async (problem: ProblemOrm) => {
     "problem.findOne({ language: 'thisIsNotALanguage' })",
     res
   );
+  res = await problem.findOne({ title: 'Test Title 1' });
+  const resById: ProblemDocument = await problem.findById(res._id);
+  console.log(
+    `findById test: ${
+      JSON.stringify(res) === JSON.stringify(resById) ? 'success' : 'fail'
+    }`
+  );
 };
 
 const deleteProblems = async (connection: Connection) => {
