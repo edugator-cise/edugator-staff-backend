@@ -68,6 +68,8 @@ const selectProblems = async (problem: ProblemOrm) => {
   );
   result = await problem.find({ title: null });
   printResult('find({ title: null })', result);
+  result = await problem.findOne({ language: 'cpp' });
+  printResult("findOne({ language: 'cpp' })", result);
 };
 
 const deleteProblems = async (connection: Connection) => {

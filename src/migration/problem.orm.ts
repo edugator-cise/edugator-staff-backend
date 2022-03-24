@@ -25,10 +25,25 @@ export class ProblemOrm {
   }
 
   async find(filter: ProblemQueryFilter): Promise<ProblemDocument[]> {
+    return this._find(filter, 0);
+  }
+
+  async findOne(filter: ProblemQueryFilter): Promise<ProblemDocument[]> {
+    return this._find(filter, 1);
+  }
+
+  async findAll(): Promise<ProblemDocument[]> {
+    return this.find({});
+  }
+
+  private async _find(
+    filter: ProblemQueryFilter,
+    limit: number
+  ): Promise<ProblemDocument[]> {
     return new Promise((resolve, reject) => {
       const result = this._findProblems(
         this._conn,
-        this.constructSQLQuery(filter),
+        this.constructSQLQuery(filter, limit),
         (err) => {
           if (err) {
             reject(err);
@@ -38,11 +53,6 @@ export class ProblemOrm {
       resolve(result);
     });
   }
-
-  async findAll(): Promise<ProblemDocument[]> {
-    return this.find({});
-  }
-
   // TODO: Add a docstring explaining constraints on the query string
   private async _findProblems(
     conn: Connection,
@@ -252,7 +262,7 @@ export class ProblemOrm {
     }
   }
 
-  private constructSQLQuery(filter: ProblemQueryFilter): string {
-    return constructSqlSelect(Table.Problem, filter, 0);
+  private constructSQLQuery(filter: ProblemQueryFilter, limit: number): string {
+    return constructSqlSelect(Table.Problem, filter, limit);
   }
 }
