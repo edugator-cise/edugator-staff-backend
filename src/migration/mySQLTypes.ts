@@ -7,6 +7,7 @@ interface mySQLModule {
 }
 
 // is it best to omit the id from here?
+// TODO: Refactor this to use ProblemDocument from problem.orm.ts
 interface mySQLProblem {
   id: number;
   statement: string;
