@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { createConnection, Connection } from 'mysql2';
-import { ProblemOrm, ProblemQueryFilter } from './problem.orm';
+import { ProblemOrm } from './problem.orm';
 import { insertTestData } from './insertTestData';
 import { ProblemDocument } from './problem.orm';
 import { Table, constructSqlSelect } from './query';
@@ -94,33 +94,38 @@ const deleteModules = async (connection: Connection) => {
   );
 };
 
-const testConstructSQLQuery = (problem: ProblemOrm) => {
-  const filter: ProblemQueryFilter = {
-    title: 'Test Title 1',
-    language: 'cpp',
-    timeLimit: 1
-  };
-  console.log(problem.constructSQLQuery(filter));
-  console.log(problem.constructSQLQuery({}));
+const testConstructSQLQuery = () => {
   console.log(
-    problem.constructSQLQuery({
-      statement: 'test statement 2',
-      title: 'test title 2',
-      hidden: false,
-      language: 'cpp',
-      dueDate: new Date('2022-12-31T01:00:00'),
-      fileExtension: '.cpp',
-      templatePackage: 'test template_package 2',
-      timeLimit: 1.0,
-      memoryLimit: 1.0,
-      buildCommand: 'test build_command 2'
-    })
+    constructSqlSelect(
+      Table.Problem,
+      {
+        title: 'Test Title 1',
+        language: 'cpp',
+        timeLimit: 1
+      },
+      0
+    )
   );
+  console.log(constructSqlSelect(Table.Problem, {}, 0));
   console.log(
-    problem.constructSQLQuery({
-      title: null
-    })
+    constructSqlSelect(
+      Table.Problem,
+      {
+        statement: 'test statement 2',
+        title: 'test title 2',
+        hidden: false,
+        language: 'cpp',
+        dueDate: new Date('2022-12-31T01:00:00'),
+        fileExtension: '.cpp',
+        templatePackage: 'test template_package 2',
+        timeLimit: 1.0,
+        memoryLimit: 1.0,
+        buildCommand: 'test build_command 2'
+      },
+      0
+    )
   );
+  console.log(constructSqlSelect(Table.Problem, { title: null }, 0));
   console.log(constructSqlSelect(Table.Problem, { language: 'cpp' }, 5));
 };
 
@@ -136,12 +141,12 @@ const runTest = async (): Promise<void> => {
     if (err) throw err;
   });
 
+  testConstructSQLQuery();
   if (INSERT_DATA) {
     await insertTestData(connection);
   }
   await selectModules(connection);
   const problem = new ProblemOrm(connection);
-  testConstructSQLQuery(problem);
   await selectProblems(problem);
   if (TEAR_DOWN) {
     await deleteProblems(connection);

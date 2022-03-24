@@ -252,9 +252,7 @@ export class ProblemOrm {
     }
   }
 
-  // TODO: Make this private
-  // TODO: Add a docstring
-  constructSQLQuery(filter: ProblemQueryFilter): string {
+  private constructSQLQuery(filter: ProblemQueryFilter): string {
     return constructSqlSelect(Table.Problem, filter, 0);
   }
 }
