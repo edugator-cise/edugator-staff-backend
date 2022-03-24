@@ -7,9 +7,13 @@ import {
   format
 } from 'mysql2';
 
-// All properties of ProblemInterface except code and testCases; all fields optional
+export interface ProblemDocument extends ProblemInterface {
+  _id: number;
+}
+
+// All properties of ProblemDocument except code and testCases; all fields optional
 export type ProblemQueryFilter = Partial<
-  Omit<ProblemInterface, 'code' | 'testCases'>
+  Omit<ProblemDocument, 'code' | 'testCases'>
 >;
 
 interface CodeInterface {
@@ -25,7 +29,7 @@ export class ProblemOrm {
     this._conn = conn;
   }
 
-  async find(filter: ProblemQueryFilter): Promise<ProblemInterface[]> {
+  async find(filter: ProblemQueryFilter): Promise<ProblemDocument[]> {
     return new Promise((resolve, reject) => {
       const result = this._findProblems(
         this._conn,
@@ -40,7 +44,7 @@ export class ProblemOrm {
     });
   }
 
-  async findAll(): Promise<ProblemInterface[]> {
+  async findAll(): Promise<ProblemDocument[]> {
     return this.find({});
   }
 
@@ -49,16 +53,16 @@ export class ProblemOrm {
     conn: Connection,
     query: string,
     callback: (err) => void
-  ): Promise<ProblemInterface[]> {
+  ): Promise<ProblemDocument[]> {
     return new Promise((resolve, reject) => {
       this.queryProblem(
         conn,
         query,
-        async (err, problems: Partial<ProblemInterface>[]) => {
+        async (err, problems: Partial<ProblemDocument>[]) => {
           if (err) {
             reject(err);
           } else {
-            const result: ProblemInterface[] = [];
+            const result: ProblemDocument[] = [];
             if (problems.length != 0) {
               for (const problem of problems) {
                 const codes: CodeInterface[] =
@@ -87,13 +91,13 @@ export class ProblemOrm {
   private queryProblem(
     conn: Connection,
     query: string,
-    callback: (err, partial: Partial<ProblemInterface>[]) => void
+    callback: (err, partial: Partial<ProblemDocument>[]) => void
   ) {
     conn.query(query, (err, rows) => {
       if (err) {
         callback(err, []);
       } else {
-        const problems: Partial<ProblemInterface>[] = this.problemsFromRows(
+        const problems: Partial<ProblemDocument>[] = this.problemsFromRows(
           this.extractRowDataPackets(rows)
         );
         callback(false, problems);
@@ -101,16 +105,17 @@ export class ProblemOrm {
     });
   }
 
-  private problemsFromRows(rows: RowDataPacket[]): Partial<ProblemInterface>[] {
-    const problems: Partial<ProblemInterface>[] = [];
+  private problemsFromRows(rows: RowDataPacket[]): Partial<ProblemDocument>[] {
+    const problems: Partial<ProblemDocument>[] = [];
     for (const row of rows) {
       problems.push(this.problemFromRow(row));
     }
     return problems;
   }
 
-  private problemFromRow(row: RowDataPacket): Partial<ProblemInterface> {
+  private problemFromRow(row: RowDataPacket): Partial<ProblemDocument> {
     return {
+      _id: row.id,
       statement: row.statement,
       title: row.title,
       hidden: row.hidden,
@@ -124,16 +129,15 @@ export class ProblemOrm {
     };
   }
 
-  private completeProblem(
-    problem: Partial<ProblemInterface>
-  ): ProblemInterface {
+  private completeProblem(problem: Partial<ProblemDocument>): ProblemDocument {
     for (const key in problem) {
       if (problem[key] === undefined) {
         // TODO: This will return undefined if problem.code is undefined. Is this what we want?
         return undefined;
       }
     }
-    return <ProblemInterface>{
+    return <ProblemDocument>{
+      _id: problem._id,
       statement: problem.statement,
       title: problem.title,
       hidden: problem.hidden,
@@ -260,11 +264,9 @@ export class ProblemOrm {
       column: string;
       value: any;
     }
-    const camelCaseToSnakeCase = (str: string) =>
-      str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
     const args: QueryArg[] = Object.entries(filter).map(
       ([key, value]) =>
-        <QueryArg>{ column: camelCaseToSnakeCase(key), value: value }
+        <QueryArg>{ column: this.problemPropertyToSqlColumn(key), value: value }
     );
     if (args.length > 0) {
       const query: string[] = ['SELECT *', 'FROM Problem', 'WHERE'];
@@ -275,6 +277,17 @@ export class ProblemOrm {
       return format(query.join('\n'), argsRaw);
     } else {
       return 'SELECT * FROM Problem';
+    }
+  }
+
+  // Maps from ProblemDocument property names to corresponding MySQL column name
+  private problemPropertyToSqlColumn(propName: string): string {
+    const camelCaseToSnakeCase = (str: string) =>
+      str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+    if (propName === '_id') {
+      return 'id';
+    } else {
+      return camelCaseToSnakeCase(propName);
     }
   }
 }

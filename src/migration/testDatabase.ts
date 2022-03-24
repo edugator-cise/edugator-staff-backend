@@ -2,7 +2,7 @@
 import { createConnection, Connection } from 'mysql2';
 import { ProblemOrm, ProblemQueryFilter } from './problem.orm';
 import { insertTestData } from './insertTestData';
-import { ProblemInterface } from '../api/models/problem.model';
+import { ProblemDocument } from './problem.orm';
 
 const INSERT_DATA = false;
 const TEAR_DOWN = false;
@@ -22,7 +22,7 @@ const selectModules = async (connection: Connection) => {
 };
 
 const selectProblems = async (problem: ProblemOrm) => {
-  const printResult = (funcName: string, result: ProblemInterface[]) => {
+  const printResult = (funcName: string, result: ProblemDocument[]) => {
     if (!result) {
       // eslint-disable-next-line no-console
       console.log(`ProblemORM.${funcName}: Result is empty!`);
