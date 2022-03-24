@@ -3,6 +3,7 @@ import { createConnection, Connection } from 'mysql2';
 import { ProblemOrm, ProblemQueryFilter } from './problem.orm';
 import { insertTestData } from './insertTestData';
 import { ProblemDocument } from './problem.orm';
+import { Table, constructSqlSelect } from './query';
 
 const INSERT_DATA = false;
 const TEAR_DOWN = false;
@@ -120,6 +121,7 @@ const testConstructSQLQuery = (problem: ProblemOrm) => {
       title: null
     })
   );
+  console.log(constructSqlSelect(Table.Problem, { language: 'cpp' }, 5));
 };
 
 const runTest = async (): Promise<void> => {
@@ -139,8 +141,8 @@ const runTest = async (): Promise<void> => {
   }
   await selectModules(connection);
   const problem = new ProblemOrm(connection);
-  await selectProblems(problem);
   testConstructSQLQuery(problem);
+  await selectProblems(problem);
   if (TEAR_DOWN) {
     await deleteProblems(connection);
     await deleteModules(connection);

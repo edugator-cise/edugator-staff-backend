@@ -1,11 +1,6 @@
 import { ProblemInterface, TestCase } from '../api/models/problem.model';
-import {
-  Connection,
-  RowDataPacket,
-  OkPacket,
-  ResultSetHeader,
-  format
-} from 'mysql2';
+import { Connection, RowDataPacket, OkPacket, ResultSetHeader } from 'mysql2';
+import { constructSqlSelect, Table } from './query';
 
 export interface ProblemDocument extends ProblemInterface {
   _id: number;
@@ -260,34 +255,6 @@ export class ProblemOrm {
   // TODO: Make this private
   // TODO: Add a docstring
   constructSQLQuery(filter: ProblemQueryFilter): string {
-    interface QueryArg {
-      column: string;
-      value: any;
-    }
-    const args: QueryArg[] = Object.entries(filter).map(
-      ([key, value]) =>
-        <QueryArg>{ column: this.problemPropertyToSqlColumn(key), value: value }
-    );
-    if (args.length > 0) {
-      const query: string[] = ['SELECT *', 'FROM Problem', 'WHERE'];
-      query.push(...Array(args.length - 1).fill('?? = ? AND'));
-      query.push('?? = ?');
-      const argsRaw: any[] = [];
-      args.forEach((arg) => argsRaw.push(arg.column, arg.value));
-      return format(query.join('\n'), argsRaw);
-    } else {
-      return 'SELECT * FROM Problem';
-    }
-  }
-
-  // Maps from ProblemDocument property names to corresponding MySQL column name
-  private problemPropertyToSqlColumn(propName: string): string {
-    const camelCaseToSnakeCase = (str: string) =>
-      str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
-    if (propName === '_id') {
-      return 'id';
-    } else {
-      return camelCaseToSnakeCase(propName);
-    }
+    return constructSqlSelect(Table.Problem, filter, 0);
   }
 }
