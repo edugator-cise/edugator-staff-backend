@@ -28,16 +28,16 @@ interface QueryOptions {
 export function constructSqlSelect(
   table: Table,
   filter: Filter,
-  limit: number
+  options: QueryOptions
 ): string {
   const query: string[] = [];
   query.push('SELECT *');
   query.push(`FROM ${table}`);
   const [whereClause, params] = constructWhereClause(filter, table);
   query.push(...whereClause);
-  if (limit > 0) {
-    // TODO: Template this argument to prevent SQL injection
-    query.push(`LIMIT ${limit}`);
+  if (options.limit !== undefined && options.limit > 0) {
+    query.push('LIMIT ?');
+    params.push(options.limit);
   }
   return format(query.join('\n'), params);
 }

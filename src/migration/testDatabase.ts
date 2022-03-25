@@ -120,10 +120,10 @@ const testConstructSQLQuery = () => {
         language: 'cpp',
         timeLimit: 1
       },
-      0
+      {}
     )
   );
-  console.log(constructSqlSelect(Table.Problem, {}, 0));
+  console.log(constructSqlSelect(Table.Problem, {}, {}));
   console.log(
     constructSqlSelect(
       Table.Problem,
@@ -139,11 +139,13 @@ const testConstructSQLQuery = () => {
         memoryLimit: 1.0,
         buildCommand: 'test build_command 2'
       },
-      0
+      { limit: 0 }
     )
   );
-  console.log(constructSqlSelect(Table.Problem, { title: null }, 0));
-  console.log(constructSqlSelect(Table.Problem, { language: 'cpp' }, 5));
+  console.log(constructSqlSelect(Table.Problem, { title: null }, {}));
+  console.log(
+    constructSqlSelect(Table.Problem, { language: 'cpp' }, { limit: 5 })
+  );
   console.log(
     constructSqlUpdate(Table.Problem, { _id: 5 }, { language: 'java' }, {})
   );

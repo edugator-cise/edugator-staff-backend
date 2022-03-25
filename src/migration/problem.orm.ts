@@ -277,6 +277,6 @@ export class ProblemOrm {
   }
 
   private constructSQLQuery(filter: ProblemQueryFilter, limit: number): string {
-    return constructSqlSelect(Table.Problem, filter, limit);
+    return constructSqlSelect(Table.Problem, filter, { limit: limit });
   }
 }
