@@ -3,7 +3,6 @@ import { createConnection, Connection } from 'mysql2';
 import { ProblemOrm } from './problem.orm';
 import { insertTestData } from './insertTestData';
 import { ProblemDocument } from './problem.orm';
-import { Table, constructSqlSelect, constructSqlUpdate } from './query';
 
 const INSERT_DATA = false;
 const TEAR_DOWN = false;
@@ -111,62 +110,6 @@ const deleteModules = async (connection: Connection) => {
   );
 };
 
-const testConstructSQLQuery = () => {
-  console.log(
-    constructSqlSelect(
-      Table.Problem,
-      {
-        title: 'Test Title 1',
-        language: 'cpp',
-        timeLimit: 1
-      },
-      {}
-    )
-  );
-  console.log(constructSqlSelect(Table.Problem, {}, {}));
-  console.log(
-    constructSqlSelect(
-      Table.Problem,
-      {
-        statement: 'test statement 2',
-        title: 'test title 2',
-        hidden: false,
-        language: 'cpp',
-        dueDate: new Date('2022-12-31T01:00:00'),
-        fileExtension: '.cpp',
-        templatePackage: 'test template_package 2',
-        timeLimit: 1.0,
-        memoryLimit: 1.0,
-        buildCommand: 'test build_command 2'
-      },
-      { limit: 0 }
-    )
-  );
-  console.log(constructSqlSelect(Table.Problem, { title: null }, {}));
-  console.log(
-    constructSqlSelect(Table.Problem, { language: 'cpp' }, { limit: 5 })
-  );
-  console.log(
-    constructSqlUpdate(Table.Problem, { _id: 5 }, { language: 'java' }, {})
-  );
-  console.log(
-    constructSqlUpdate(
-      Table.Problem,
-      { title: 'SampleTitle', language: 'cpp' },
-      { language: 'java' },
-      { limit: 15 }
-    )
-  );
-  console.log(
-    constructSqlUpdate(
-      Table.Problem,
-      { title: 'SampleTitle', language: 'cpp' },
-      { language: 'java' },
-      { limit: null }
-    )
-  );
-};
-
 const runTest = async (): Promise<void> => {
   const connection: Connection = createConnection({
     host: process.env.DB_HOST,
@@ -179,7 +122,6 @@ const runTest = async (): Promise<void> => {
     if (err) throw err;
   });
 
-  testConstructSQLQuery();
   if (INSERT_DATA) {
     await insertTestData(connection);
   }
