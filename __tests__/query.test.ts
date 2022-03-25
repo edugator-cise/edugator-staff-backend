@@ -181,4 +181,61 @@ describe('constructSqlSelect', () => {
       )
     ).toEqual(lex(`UPDATE \`Problem\` SET \`title\` = 'Test Title'`));
   });
+
+  it('Checks construction of SQL UPDATE in Problem without filter and with limit', () => {
+    expect(
+      lex(
+        constructSqlUpdate(
+          Table.Problem,
+          {},
+          { title: 'Test Title' },
+          { limit: 5 }
+        )
+      )
+    ).toEqual(lex(`UPDATE \`Problem\` SET \`title\` = 'Test Title' LIMIT 5`));
+  });
+
+  it('Checks construction of SQL UPDATE in Problem with single-prop filter', () => {
+    expect(
+      lex(
+        constructSqlUpdate(
+          Table.Problem,
+          { _id: 5 },
+          { title: 'Test Title' },
+          {}
+        )
+      )
+    ).toEqual(
+      lex(`UPDATE \`Problem\` SET \`title\` = 'Test Title' WHERE \`id\` = 5`)
+    );
+  });
+
+  it('Checks construction of SQL UPDATE in Problem with multi-filter, multi-update, and limit', () => {
+    expect(
+      lex(
+        constructSqlUpdate(
+          Table.Problem,
+          { _id: 5, language: 'java' },
+          { title: 'Test Title', language: 'cpp' },
+          { limit: 15 }
+        )
+      )
+    ).toEqual(
+      lex(
+        `UPDATE \`Problem\`
+        SET
+        \`title\` = 'Test Title'
+        \`language\` = 'cpp'
+        WHERE
+        \`id\` = 5 AND
+        \`language\` = 'java'
+        LIMIT 15`
+      )
+    );
+  });
+
+  // TODO: This test fails, find root cause and correct
+  it('Checks error is thrown by constructSqlUpdate when update param is empty', () => {
+    expect(constructSqlUpdate(Table.Problem, {}, {}, {})).toThrow();
+  });
 });
