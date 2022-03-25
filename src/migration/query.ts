@@ -12,7 +12,7 @@ type Filter = ProblemQueryFilter;
 
 type Update = ProblemUpdate;
 
-interface QueryOptions {
+export interface QueryOptions {
   new?: boolean;
   limit?: number;
 }
@@ -103,7 +103,8 @@ export function constructSqlUpdate(
     ([key, value]) =>
       <UpdateAssignment>{ column: keyToColumn(key), value: value }
   );
-  query.push(...Array(assignments.length).fill('?? = ?'));
+  query.push(...Array(assignments.length - 1).fill('?? = ?,'));
+  query.push('?? = ?');
   assignments.forEach((assignment) =>
     params.push(assignment.column, assignment.value)
   );

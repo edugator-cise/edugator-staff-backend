@@ -224,7 +224,7 @@ describe('constructSqlSelect', () => {
       lex(
         `UPDATE \`Problem\`
         SET
-        \`title\` = 'Test Title'
+        \`title\` = 'Test Title',
         \`language\` = 'cpp'
         WHERE
         \`id\` = 5 AND
