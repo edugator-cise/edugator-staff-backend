@@ -1,4 +1,4 @@
-import { constructSqlSelect, Table } from '../src/migration/query';
+import { constructSqlSelect, constructSqlUpdate, Table } from '../src/migration/query';
 
 describe('constructSqlSelect', () => {
   const lex = (str: string) => str.split(/\s+/);
@@ -135,5 +135,50 @@ describe('constructSqlSelect', () => {
         LIMIT 5`
       )
     );
+  });
+
+  it('Checks construction of SQL UPDATE in Problem', () => {
+    expect(
+      lex(constructSqlUpdate(Table.Problem, {}, { title: 'Test Title' }, {}))
+    ).toEqual(lex(`UPDATE \`Problem\` SET \`title\` = 'Test Title'`));
+  });
+
+  it('Checks construction of SQL UPDATE in Problem with limit=0', () => {
+    expect(
+      lex(
+        constructSqlUpdate(
+          Table.Problem,
+          {},
+          { title: 'Test Title' },
+          { limit: 0 }
+        )
+      )
+    ).toEqual(lex(`UPDATE \`Problem\` SET \`title\` = 'Test Title'`));
+  });
+
+  it('Checks construction of SQL UPDATE in Problem with limit=null', () => {
+    expect(
+      lex(
+        constructSqlUpdate(
+          Table.Problem,
+          {},
+          { title: 'Test Title' },
+          { limit: null }
+        )
+      )
+    ).toEqual(lex(`UPDATE \`Problem\` SET \`title\` = 'Test Title'`));
+  });
+
+  it('Checks construction of SQL UPDATE in Problem with limit=null', () => {
+    expect(
+      lex(
+        constructSqlUpdate(
+          Table.Problem,
+          {},
+          { title: 'Test Title' },
+          { limit: undefined }
+        )
+      )
+    ).toEqual(lex(`UPDATE \`Problem\` SET \`title\` = 'Test Title'`));
   });
 });
