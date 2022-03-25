@@ -1,4 +1,8 @@
-import { constructSqlSelect, constructSqlUpdate, Table } from '../src/migration/query';
+import {
+  constructSqlSelect,
+  constructSqlUpdate,
+  Table
+} from '../src/migration/query';
 
 describe('constructSqlSelect', () => {
   const lex = (str: string) => str.split(/\s+/);
