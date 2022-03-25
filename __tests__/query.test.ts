@@ -236,6 +236,8 @@ describe('constructSqlSelect', () => {
 
   // TODO: This test fails, find root cause and correct
   it('Checks error is thrown by constructSqlUpdate when update param is empty', () => {
-    expect(constructSqlUpdate(Table.Problem, {}, {}, {})).toThrow();
+    expect(() => constructSqlUpdate(Table.Problem, {}, {}, {})).toThrow(
+      'Empty update parameter, cannot compile UPDATE'
+    );
   });
 });
