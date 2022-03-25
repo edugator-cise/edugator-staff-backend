@@ -39,7 +39,7 @@ describe('constructSqlSelect', () => {
         constructSqlSelect(
           Table.Problem,
           {
-            title: 'Test Title 1',
+            title: 'Test Title 1'
           },
           {}
         )
