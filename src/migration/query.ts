@@ -29,6 +29,7 @@ export function constructSqlSelect(
   const [whereClause, params] = constructWhereClause(filter, table);
   query.push(...whereClause);
   if (limit > 0) {
+    // TODO: Template this argument to prevent SQL injection
     query.push(`LIMIT ${limit}`);
   }
   return format(query.join('\n'), params);
