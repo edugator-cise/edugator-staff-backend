@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { createConnection, Connection } from 'mysql2';
-import { ProblemOrm } from './problem.orm';
+import { ProblemOrm, ProblemUpdate } from './problem.orm';
 import { insertTestData } from './insertTestData';
 import { ProblemDocument } from './problem.orm';
 
@@ -86,6 +86,58 @@ const selectProblems = async (problem: ProblemOrm) => {
   );
 };
 
+const updateProblem = async (problem: ProblemOrm) => {
+  const initial = await problem.findOne({ title: 'Test Title 2' });
+  const expected: ProblemUpdate = {
+    title: 'Updated Test Title 2',
+    statement: 'Updated Statement 2',
+    hidden: initial.hidden,
+    language: 'java',
+    dueDate: initial.dueDate,
+    code: {
+      header: initial.code.header,
+      body: initial.code.body,
+      footer: 'updated footer'
+    },
+    fileExtension: initial.fileExtension,
+    testCases: [
+      {
+        input: 'updated input',
+        expectedOutput: 'updated expected output',
+        hint: 'updated hint',
+        visibility: 1
+      }
+    ],
+    templatePackage: initial.templatePackage,
+    timeLimit: initial.timeLimit,
+    memoryLimit: initial.memoryLimit,
+    buildCommand: initial.buildCommand
+  };
+  const result = await problem.findByIdAndUpdate(initial._id, expected, {
+    new: true
+  });
+
+  let success = true;
+  for (const key in expected) {
+    if (JSON.stringify(result[key]) != JSON.stringify(expected[key])) {
+      success = false;
+      break;
+    }
+  }
+  console.log(
+    `ProblemOrm.findByIdAndUpdate Test: ${success ? 'success' : 'failure'}`
+  );
+  if (!success) {
+    console.log(
+      `Expected:
+      ${JSON.stringify(expected, null, 2)}
+      Received:
+      ${JSON.stringify(result, null, 2)}
+      `
+    );
+  }
+};
+
 const deleteProblems = async (connection: Connection) => {
   console.log('Deleting from Problem. . .');
   connection.query(
@@ -128,6 +180,7 @@ const runTest = async (): Promise<void> => {
   await selectModules(connection);
   const problem = new ProblemOrm(connection);
   await selectProblems(problem);
+  await updateProblem(problem);
   if (TEAR_DOWN) {
     await deleteProblems(connection);
     await deleteModules(connection);

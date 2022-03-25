@@ -1,5 +1,5 @@
 // Utilities for constructing SQL queries for use by ORMs
-import { ProblemQueryFilter, ProblemUpdate } from './problem.orm';
+import { ProblemQueryFilter, ProblemDocument } from './problem.orm';
 import { format } from 'mysql2';
 
 export enum Table {
@@ -10,7 +10,11 @@ export enum Table {
 
 type Filter = ProblemQueryFilter;
 
-type Update = ProblemUpdate;
+// Types used by this file to compile into updated values
+export type UpdateProblem = Readonly<
+  Partial<Omit<ProblemDocument, '_id' | 'code' | 'testCase'>>
+>;
+type Update = UpdateProblem;
 
 export interface QueryOptions {
   new?: boolean;

@@ -1,6 +1,12 @@
 import { ProblemInterface, TestCase } from '../api/models/problem.model';
 import { Connection, RowDataPacket, OkPacket, ResultSetHeader } from 'mysql2';
-import { constructSqlSelect, Table } from './query';
+import {
+  constructSqlSelect,
+  constructSqlUpdate,
+  Table,
+  QueryOptions,
+  UpdateProblem
+} from './query';
 
 export interface ProblemDocument extends ProblemInterface {
   _id: number;
@@ -49,6 +55,18 @@ export class ProblemOrm {
   // Equivalent to findOne({ _id: id })
   async findById(id: number): Promise<ProblemDocument> {
     return this.findOne({ _id: id });
+  }
+
+  findByIdAndUpdate(
+    id: number,
+    update: ProblemUpdate,
+    options: QueryOptions
+  ): Promise<ProblemDocument> {
+    if (options.new) {
+      return this.updateAndFindById(id, update, options);
+    } else {
+      throw new Error('Not yet implemented');
+    }
   }
 
   private async _find(
@@ -105,6 +123,124 @@ export class ProblemOrm {
           callback(err);
         }
       );
+    });
+  }
+
+  private decomposeProblemUpdate(
+    update: ProblemUpdate
+  ): [UpdateProblem, CodeInterface, TestCase[]] {
+    const { code, testCases, ..._update } = update;
+    return [_update, code, testCases];
+  }
+
+  private updateAndFindById(
+    id: number,
+    update: ProblemUpdate,
+    options: QueryOptions
+  ): Promise<ProblemDocument> {
+    return new Promise((resolve, reject) => {
+      const [updatedProblem, updatedCode, updatedTests] =
+        this.decomposeProblemUpdate(update);
+      this._conn.query(
+        constructSqlUpdate(Table.Problem, { _id: id }, updatedProblem, options),
+        async (err) => {
+          if (err) {
+            reject(err);
+          } else {
+            if (update.code != null) {
+              await this.updateCode(this._conn, id, updatedCode);
+            }
+            if (update.testCases != null) {
+              await this.deleteTestCases(this._conn, id);
+              await this.insertTestCases(this._conn, id, updatedTests);
+            }
+            resolve(this.findById(id));
+          }
+        }
+      );
+    });
+  }
+
+  private updateCode(
+    conn: Connection,
+    problemId: number,
+    code: CodeInterface
+  ): Promise<void> {
+    return new Promise((resolve, reject) => {
+      conn.query(
+        `
+        UPDATE Code
+        SET
+          header = ?,
+          body = ?,
+          footer = ?
+        WHERE problem_id = ?
+        `,
+        [code.header, code.body, code.footer, problemId],
+        (err) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve();
+          }
+        }
+      );
+    });
+  }
+
+  private deleteTestCases(conn: Connection, problemId: number): Promise<void> {
+    return new Promise((resolve, reject) => {
+      conn.query(
+        `
+        DELETE FROM TestCase
+        WHERE problem_id = ?
+        `,
+        [problemId],
+        (err) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve();
+          }
+        }
+      );
+    });
+  }
+
+  private insertTestCases(
+    conn: Connection,
+    problemId: number,
+    testCases: TestCase[]
+  ): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (testCases.length > 0) {
+        const query: string[] = [
+          'INSERT INTO TestCase',
+          '(input, expected_output, hint, visibility, problem_id)',
+          'VALUES'
+        ];
+        query.push(...Array(testCases.length - 1).fill('(?, ?, ?, ?, ?),'));
+        query.push('(?, ?, ?, ?, ?)');
+        const params: any[] = [];
+        testCases.forEach((test) =>
+          params.push(
+            test.input,
+            test.expectedOutput,
+            test.hint,
+            test.visibility,
+            problemId
+          )
+        );
+        conn.query(query.join('\n'), params, (err) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve();
+          }
+        });
+      } else {
+        resolve();
+      }
     });
   }
 
