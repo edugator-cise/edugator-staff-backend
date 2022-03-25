@@ -30,11 +30,11 @@ export function constructSqlSelect(
   filter: Filter,
   options: QueryOptions
 ): string {
-  const query: string[] = [];
-  query.push('SELECT *');
-  query.push(`FROM ${table}`);
-  const [whereClause, params] = constructWhereClause(filter, table);
+  const query: string[] = ['SELECT *', `FROM ??`];
+  const params: any[] = [table];
+  const [whereClause, whereParams] = constructWhereClause(filter, table);
   query.push(...whereClause);
+  params.push(...whereParams);
   if (options.limit !== undefined && options.limit > 0) {
     query.push('LIMIT ?');
     params.push(options.limit);
@@ -92,8 +92,8 @@ export function constructSqlUpdate(
   if (Object.entries(update).length === 0) {
     throw new Error('Empty update parameter, cannot compile UPDATE');
   }
-  const query: string[] = [`UPDATE ${table}`, 'SET'];
-  const params: any[] = [];
+  const query: string[] = [`UPDATE ??`, 'SET'];
+  const params: any[] = [table];
   interface UpdateAssignment {
     column: string;
     value: any;
