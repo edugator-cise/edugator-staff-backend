@@ -11,6 +11,7 @@ export type ProblemQueryFilter = Partial<
   Omit<ProblemDocument, 'code' | 'testCases'>
 >;
 
+// TODO: Need to move this to query.ts, and omit 'code' and 'testcase'
 // ProblemDocument._id omitted since it should not be updated
 export type ProblemUpdate = Readonly<Partial<Omit<ProblemDocument, '_id'>>>;
 
