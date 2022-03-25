@@ -1,5 +1,5 @@
 // Utilities for constructing SQL queries for use by ORMs
-import { ProblemQueryFilter } from './problem.orm';
+import { ProblemQueryFilter, ProblemUpdate } from './problem.orm';
 import { format } from 'mysql2';
 
 export enum Table {
@@ -9,6 +9,13 @@ export enum Table {
 }
 
 type Filter = ProblemQueryFilter;
+
+type Update = ProblemUpdate;
+
+interface QueryOptions {
+  new?: boolean;
+  limit?: number;
+}
 
 /**
  * Construct an SQL Select query for the database
@@ -42,7 +49,7 @@ function constructWhereClause(filter: Filter, table: Table): [string[], any[]] {
     column: string;
     value: any;
   }
-  const filterKeyToColumn = getFilterKeyToColumnTranform(table);
+  const filterKeyToColumn = getKeyToColumnTranform(table);
   const filterConditions: FilterCondition[] = Object.entries(filter).map(
     ([key, value]) =>
       <FilterCondition>{ column: filterKeyToColumn(key), value: value }
@@ -56,7 +63,7 @@ function constructWhereClause(filter: Filter, table: Table): [string[], any[]] {
   return [whereClause, params];
 }
 
-function getFilterKeyToColumnTranform(table: Table): (key: string) => string {
+function getKeyToColumnTranform(table: Table): (key: string) => string {
   const camelCaseToSnakeCase = (key: string) =>
     key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
   switch (table) {
@@ -74,4 +81,38 @@ function getFilterKeyToColumnTranform(table: Table): (key: string) => string {
       // Default to just returning the propery name
       return (str: string): string => str;
   }
+}
+
+export function constructSqlUpdate(
+  table: Table,
+  filter: Filter,
+  update: Update,
+  options: QueryOptions
+): string | never {
+  if (Object.entries(update).length === 0) {
+    throw new Error('Empty update parameter, cannot compile UPDATE');
+  }
+  const query: string[] = [`UPDATE ${table}`, 'SET'];
+  const params: any[] = [];
+  interface UpdateAssignment {
+    column: string;
+    value: any;
+  }
+  const keyToColumn = getKeyToColumnTranform(table);
+  const assignments: UpdateAssignment[] = Object.entries(update).map(
+    ([key, value]) =>
+      <UpdateAssignment>{ column: keyToColumn(key), value: value }
+  );
+  query.push(...Array(assignments.length).fill('?? = ?'));
+  assignments.forEach((assignment) =>
+    params.push(assignment.column, assignment.value)
+  );
+  const [whereClause, whereParams] = constructWhereClause(filter, table);
+  query.push(...whereClause);
+  params.push(...whereParams);
+  if (options.limit !== undefined && options.limit > 0) {
+    query.push('LIMIT ?');
+    params.push(options.limit);
+  }
+  return format(query.join('\n'), params);
 }

@@ -11,6 +11,9 @@ export type ProblemQueryFilter = Partial<
   Omit<ProblemDocument, 'code' | 'testCases'>
 >;
 
+// ProblemDocument._id omitted since it should not be updated
+export type ProblemUpdate = Readonly<Partial<Omit<ProblemDocument, '_id'>>>;
+
 interface CodeInterface {
   header: string;
   body: string;

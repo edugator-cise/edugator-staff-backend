@@ -3,7 +3,7 @@ import { createConnection, Connection } from 'mysql2';
 import { ProblemOrm } from './problem.orm';
 import { insertTestData } from './insertTestData';
 import { ProblemDocument } from './problem.orm';
-import { Table, constructSqlSelect } from './query';
+import { Table, constructSqlSelect, constructSqlUpdate } from './query';
 
 const INSERT_DATA = false;
 const TEAR_DOWN = false;
@@ -144,6 +144,25 @@ const testConstructSQLQuery = () => {
   );
   console.log(constructSqlSelect(Table.Problem, { title: null }, 0));
   console.log(constructSqlSelect(Table.Problem, { language: 'cpp' }, 5));
+  console.log(
+    constructSqlUpdate(Table.Problem, { _id: 5 }, { language: 'java' }, {})
+  );
+  console.log(
+    constructSqlUpdate(
+      Table.Problem,
+      { title: 'SampleTitle', language: 'cpp' },
+      { language: 'java' },
+      { limit: 15 }
+    )
+  );
+  console.log(
+    constructSqlUpdate(
+      Table.Problem,
+      { title: 'SampleTitle', language: 'cpp' },
+      { language: 'java' },
+      { limit: null }
+    )
+  );
 };
 
 const runTest = async (): Promise<void> => {
