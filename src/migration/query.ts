@@ -22,7 +22,7 @@ interface QueryOptions {
  * @param {Table} table - The table from which to select
  * @param {Filter} filter - A filter capturing the conditions which the
  * select tuples must match. Compiles to the WHERE clause.
- * @param limit - The number of tuples to be selected. Compiles to LIMIT clause.
+ * @param {QueryOptions} options - Options for the Query. Only options.limit is used, to produce LIMIT clause.
  * @returns A formatted SQL query with properly-escaped interpolated parameters.
  */
 export function constructSqlSelect(
