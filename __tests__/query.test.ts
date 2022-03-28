@@ -141,6 +141,19 @@ describe('Functions in query.ts', () => {
         )
       );
     });
+
+    it('checks construction of SQL SELECT when filtering by prop=NULL', () => {
+      expect(
+        lex(constructSqlSelect(Table.Problem, { title: null }, {}))
+      ).toEqual(
+        lex(
+          `SELECT *
+          FROM \`Problem\`
+          WHERE
+          \`title\` = NULL`
+        )
+      );
+    });
   });
 
   describe('constructSqlUpdate function', () => {
