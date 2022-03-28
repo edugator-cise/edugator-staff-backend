@@ -17,6 +17,11 @@ const compareProblems = (a: ProblemInterface, b: ProblemInterface) => {
   }
 };
 
+const dropIdField = (problem: ProblemDocument): ProblemInterface => {
+  delete problem._id;
+  return problem;
+};
+
 describe('ProblemORM Class', () => {
   const problems = testProblems.sort(compareProblems);
   let connection: Connection;
@@ -70,7 +75,9 @@ describe('ProblemORM Class', () => {
       } catch (err) {
         fail(err);
       }
-      expect(results.sort(compareProblems)).toEqual(problems);
+      expect(results.map((x) => dropIdField(x)).sort(compareProblems)).toEqual(
+        problems
+      );
     });
   });
 });
