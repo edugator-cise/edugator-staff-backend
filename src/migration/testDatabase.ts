@@ -1,11 +1,11 @@
 /* eslint-disable no-console */
 import { createConnection, Connection } from 'mysql2';
 import { ProblemOrm, ProblemUpdate } from './problem.orm';
-import { insertTestData } from './insertTestData';
+import { clearTestData, insertTestData } from './insertTestData';
 import { ProblemDocument } from './problem.orm';
 
-const INSERT_DATA = false;
-const TEAR_DOWN = false;
+const INSERT_DATA = true;
+const TEAR_DOWN = true;
 
 const selectModules = async (connection: Connection) => {
   console.log('Selecting from Module. . .');
@@ -138,30 +138,6 @@ const updateProblem = async (problem: ProblemOrm) => {
   }
 };
 
-const deleteProblems = async (connection: Connection) => {
-  console.log('Deleting from Problem. . .');
-  connection.query(
-    `DELETE FROM Problem WHERE 
-      title='test title 1' OR
-      title='test title 2' OR
-      title='test title 3'
-    `,
-    function (err) {
-      if (err) throw err;
-    }
-  );
-};
-
-const deleteModules = async (connection: Connection) => {
-  console.log('Deleting from Module. . .');
-  connection.query(
-    `DELETE FROM Module WHERE name='Test Module One' OR name='Test Module Two'`,
-    function (err) {
-      if (err) throw err;
-    }
-  );
-};
-
 const runTest = async (): Promise<void> => {
   const connection: Connection = createConnection({
     host: process.env.DB_HOST,
@@ -182,8 +158,7 @@ const runTest = async (): Promise<void> => {
   await selectProblems(problem);
   await updateProblem(problem);
   if (TEAR_DOWN) {
-    await deleteProblems(connection);
-    await deleteModules(connection);
+    await clearTestData(connection);
   }
 
   connection.end(function (err) {
