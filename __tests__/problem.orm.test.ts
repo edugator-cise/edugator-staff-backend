@@ -22,6 +22,13 @@ const dropIdField = (problem: ProblemDocument): ProblemInterface => {
   return problem;
 };
 
+/*
+ * TODO: These tests are unstable due to reliance on an external database.
+ * More reliable error handling and fast-failing should be implemented,
+ * particularly because database errors make the testing pipeline take
+ * much longer (10-20 sec). It might be best to omit them by default.
+ */
+
 describe('ProblemORM Class', () => {
   const problems = testProblems.sort(compareProblems);
   let connection: Connection;
@@ -39,7 +46,6 @@ describe('ProblemORM Class', () => {
         fail(err);
       }
     });
-    return clearTestData(connection);
   });
 
   afterAll(() => {
@@ -106,6 +112,16 @@ describe('ProblemORM Class', () => {
       }
       expect(results.length).toEqual(1);
       expect(results[0]).toMatchObject(problems[1]);
+    });
+
+    it('checks whether filtering by null succeeds', async () => {
+      let results: ProblemDocument[] = [];
+      try {
+        results = await problem.find({ title: null });
+      } catch (err) {
+        fail(err);
+      }
+      expect(results.length).toEqual(0);
     });
   });
 });
