@@ -2,6 +2,75 @@ import { createConnection, Connection } from 'mysql2';
 import { ModuleInterface } from '../api/models/module.model';
 import { ProblemInterface, TestCase } from '../api/models/problem.model';
 
+const testModules: ModuleInterface[] = [
+  { name: 'Test Module One', number: 1.0, problems: undefined },
+  { name: 'Test Module Two', number: 1.1, problems: undefined }
+];
+
+const testProblems: ProblemInterface[] = [
+  {
+    statement: 'test statement 1',
+    title: 'test title 1',
+    hidden: false,
+    language: 'cpp',
+    dueDate: new Date('2022-12-31T01:00:00'),
+    code: {
+      header: 'test header 1',
+      body: 'test body 1',
+      footer: 'test footer 1'
+    },
+    fileExtension: '.cpp',
+    testCases: [
+      {
+        input: 'test input 1',
+        expectedOutput: 'test expected output 1',
+        hint: 'test hint 1',
+        visibility: 0
+      }
+    ],
+    templatePackage: 'test template_package 1',
+    timeLimit: 1.0,
+    memoryLimit: 1.0,
+    buildCommand: 'test build_command 1'
+  },
+  {
+    statement: 'test statement 2',
+    title: 'test title 2',
+    hidden: false,
+    language: 'cpp',
+    dueDate: new Date('2022-12-31T01:00:00'),
+    code: {
+      header: 'test header 2',
+      body: 'test body 2',
+      footer: 'test footer 2'
+    },
+    fileExtension: '.cpp',
+    testCases: [],
+    templatePackage: 'test template_package 2',
+    timeLimit: 1.0,
+    memoryLimit: 1.0,
+    buildCommand: 'test build_command 2'
+  },
+  {
+    statement: 'test statement 3',
+    title: 'test title 3',
+    hidden: false,
+    language: 'cpp',
+    dueDate: new Date('2022-12-31T01:00:00'),
+    code: {
+      header: 'test header 3',
+      body: 'test body 3',
+      footer: 'test footer 3'
+    },
+    fileExtension: '.cpp',
+    testCases: [],
+    templatePackage: 'test template_package 3',
+    timeLimit: 1.0,
+    memoryLimit: 1.0,
+    buildCommand: 'test build_command 3'
+  }
+];
+
 interface ProblemInsertInterface {
   problem: ProblemInterface;
   moduleName: string; // Used to lookup fk to Module
@@ -182,82 +251,10 @@ const insertIntoTestCase = async (
 export const insertTestData = async (connection: Connection): Promise<void> => {
   // eslint-disable-next-line no-console
   console.log('Inserting into Module. . .');
-  await insertIntoModule(
-    [
-      { name: 'Test Module One', number: 1.0, problems: undefined },
-      { name: 'Test Module Two', number: 1.1, problems: undefined }
-    ],
-    connection
-  );
+  await insertIntoModule(testModules, connection);
   // eslint-disable-next-line no-console
   console.log('Inserting into Problem. . .');
-  await insertProblem(
-    [
-      {
-        statement: 'test statement 1',
-        title: 'test title 1',
-        hidden: false,
-        language: 'cpp',
-        dueDate: new Date('2022-12-31T01:00:00'),
-        code: {
-          header: 'test header 1',
-          body: 'test body 1',
-          footer: 'test footer 1'
-        },
-        fileExtension: '.cpp',
-        testCases: [
-          {
-            input: 'test input 1',
-            expectedOutput: 'test expected output 1',
-            hint: 'test hint 1',
-            visibility: 0
-          }
-        ],
-        templatePackage: 'test template_package 1',
-        timeLimit: 1.0,
-        memoryLimit: 1.0,
-        buildCommand: 'test build_command 1'
-      },
-      {
-        statement: 'test statement 2',
-        title: 'test title 2',
-        hidden: false,
-        language: 'cpp',
-        dueDate: new Date('2022-12-31T01:00:00'),
-        code: {
-          header: 'test header 2',
-          body: 'test body 2',
-          footer: 'test footer 2'
-        },
-        fileExtension: '.cpp',
-        testCases: [],
-        templatePackage: 'test template_package 2',
-        timeLimit: 1.0,
-        memoryLimit: 1.0,
-        buildCommand: 'test build_command 2'
-      },
-      {
-        statement: 'test statement 3',
-        title: 'test title 3',
-        hidden: false,
-        language: 'cpp',
-        dueDate: new Date('2022-12-31T01:00:00'),
-        code: {
-          header: 'test header 3',
-          body: 'test body 3',
-          footer: 'test footer 3'
-        },
-        fileExtension: '.cpp',
-        testCases: [],
-        templatePackage: 'test template_package 3',
-        timeLimit: 1.0,
-        memoryLimit: 1.0,
-        buildCommand: 'test build_command 3'
-      }
-    ],
-    'Test Module One',
-    connection
-  );
+  await insertProblem(testProblems, 'Test Module One', connection);
 };
 
 const runScript = async (): Promise<void> => {
