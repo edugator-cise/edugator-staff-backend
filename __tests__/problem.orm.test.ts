@@ -39,6 +39,7 @@ describe('ProblemORM Class', () => {
         fail(err);
       }
     });
+    return clearTestData(connection);
   });
 
   afterAll(() => {
@@ -50,21 +51,13 @@ describe('ProblemORM Class', () => {
     });
   });
 
-  beforeEach(async () => {
-    try {
-      await insertTestData(connection);
-    } catch (err) {
-      fail(err);
-    }
+  beforeEach(() => {
     problem = new ProblemOrm(connection);
+    return insertTestData(connection);
   });
 
-  afterEach(async () => {
-    try {
-      await clearTestData(connection);
-    } catch (err) {
-      fail(err);
-    }
+  afterEach(() => {
+    return clearTestData(connection);
   });
 
   describe('findAll function', () => {
