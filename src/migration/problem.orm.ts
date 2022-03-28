@@ -274,7 +274,7 @@ export class ProblemOrm {
       _id: row.id,
       statement: row.statement,
       title: row.title,
-      hidden: row.hidden,
+      hidden: Boolean(row.hidden),
       language: row.language,
       dueDate: row.due_date,
       fileExtension: row.file_extension,
