@@ -1,4 +1,4 @@
-import { createConnection, Connection } from 'mysql2';
+import { createConnection, Connection, RowDataPacket } from 'mysql2';
 import { ModuleInterface } from '../api/models/module.model';
 import { ProblemInterface, TestCase } from '../api/models/problem.model';
 
@@ -6,6 +6,8 @@ const testModules: ModuleInterface[] = [
   { name: 'Test Module One', number: 1.0, problems: undefined },
   { name: 'Test Module Two', number: 1.1, problems: undefined }
 ];
+
+let testModuleIds: number[] = [];
 
 const testProblems: ProblemInterface[] = [
   {
@@ -71,6 +73,8 @@ const testProblems: ProblemInterface[] = [
   }
 ];
 
+let testProblemIds: number[] = [];
+
 interface ProblemInsertInterface {
   problem: ProblemInterface;
   moduleName: string; // Used to lookup fk to Module
@@ -100,7 +104,17 @@ export const insertIntoModule = async (
       `,
       [module.name, module.number],
       function (err) {
-        if (err) throw err;
+        if (err) {
+          throw err;
+        } else {
+          connection.query('SELECT id FROM Module', (err, rows) => {
+            if (err) {
+              throw err;
+            } else {
+              testModuleIds = (rows as RowDataPacket[]).map((row) => row.id);
+            }
+          });
+        }
       }
     );
   }
@@ -183,7 +197,17 @@ const insertIntoProblem = async (
         val.moduleName
       ],
       function (err) {
-        if (err) throw err;
+        if (err) {
+          throw err;
+        } else {
+          connection.query('SELECT id FROM Problem', (err, rows) => {
+            if (err) {
+              throw err;
+            } else {
+              testProblemIds = (rows as RowDataPacket[]).map((row) => row.id);
+            }
+          });
+        }
       }
     );
   }
@@ -255,6 +279,105 @@ export const insertTestData = async (connection: Connection): Promise<void> => {
   // eslint-disable-next-line no-console
   console.log('Inserting into Problem. . .');
   await insertProblem(testProblems, 'Test Module One', connection);
+};
+
+const deleteCodeByProblem = async (
+  connection: Connection,
+  problemId: number
+): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    connection.query(
+      `
+      DELETE FROM Code AS c
+      WHERE c.problem_id = ?
+      `,
+      [problemId],
+      (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      }
+    );
+  });
+};
+
+const deleteTestCaseByProblem = async (
+  connection: Connection,
+  problemId: number
+): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    connection.query(
+      `
+      DELETE FROM TestCase AS t
+      WHERE t.problem_id = ?
+      `,
+      [problemId],
+      (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      }
+    );
+  });
+};
+
+const deleteProblem = async (
+  connection: Connection,
+  id: number
+): Promise<void> => {
+  await deleteCodeByProblem(connection, id);
+  await deleteTestCaseByProblem(connection, id);
+  return new Promise((resolve, reject) => {
+    connection.query(
+      `
+      DELETE FROM Problem
+      WHERE id = ?
+      `,
+      [id],
+      (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      }
+    );
+  });
+};
+
+const deleteModule = async (
+  connection: Connection,
+  id: number
+): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    connection.query(
+      `
+      DELETE FROM Module
+      WHERE id = ?
+      `,
+      [id],
+      (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      }
+    );
+  });
+};
+
+export const clearTestData = async (connection: Connection): Promise<void> => {
+  for (const problem of testProblemIds) {
+    await deleteProblem(connection, problem);
+  }
+  for (const module of testModuleIds) {
+    await deleteModule(connection, module);
+  }
 };
 
 const runScript = async (): Promise<void> => {
