@@ -2,14 +2,14 @@ import { createConnection, Connection, RowDataPacket } from 'mysql2';
 import { ModuleInterface } from '../api/models/module.model';
 import { ProblemInterface, TestCase } from '../api/models/problem.model';
 
-const testModules: ModuleInterface[] = [
+export const testModules: ModuleInterface[] = [
   { name: 'Test Module One', number: 1.0, problems: undefined },
   { name: 'Test Module Two', number: 1.1, problems: undefined }
 ];
 
 let testModuleIds: number[] = [];
 
-const testProblems: ProblemInterface[] = [
+export const testProblems: ProblemInterface[] = [
   {
     statement: 'test statement 1',
     title: 'test title 1',
@@ -273,11 +273,7 @@ const insertIntoTestCase = async (
 };
 
 export const insertTestData = async (connection: Connection): Promise<void> => {
-  // eslint-disable-next-line no-console
-  console.log('Inserting into Module. . .');
   await insertIntoModule(testModules, connection);
-  // eslint-disable-next-line no-console
-  console.log('Inserting into Problem. . .');
   await insertProblem(testProblems, 'Test Module One', connection);
 };
 
