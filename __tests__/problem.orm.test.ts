@@ -80,4 +80,17 @@ describe('ProblemORM Class', () => {
       );
     });
   });
+
+  describe('find function', () => {
+    it('checks whether filtering by title succeeds', async () => {
+      let results: ProblemDocument[] = [];
+      try {
+        results = await problem.find({ title: 'test title 1' });
+      } catch (err) {
+        fail(err);
+      }
+      expect(results.length).toEqual(1);
+      expect(results[0]).toMatchObject(problems[0]);
+    });
+  });
 });
