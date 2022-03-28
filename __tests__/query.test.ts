@@ -7,7 +7,7 @@ import {
 const lex = (str: string) => str.split(/\s+/);
 
 describe('Functions in query.ts', () => {
-  describe('constructSqlSelect', () => {
+  describe('constructSqlSelect function', () => {
     it('Checks construction of SELECT * FROM Problem Query', () => {
       const received = constructSqlSelect(Table.Problem, {}, {});
       const expected = 'SELECT * FROM `Problem`';
