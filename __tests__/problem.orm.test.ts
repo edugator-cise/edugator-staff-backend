@@ -92,5 +92,27 @@ describe('ProblemORM Class', () => {
       expect(results.length).toEqual(1);
       expect(results[0]).toMatchObject(problems[0]);
     });
+
+    it('checks whether filtering by all properties succeeds', async () => {
+      let results: ProblemDocument[] = [];
+      try {
+        results = await problem.find({
+          statement: 'test statement 2',
+          title: 'test title 2',
+          hidden: false,
+          language: 'cpp',
+          dueDate: new Date('2022-12-31T01:00:00'),
+          fileExtension: '.cpp',
+          templatePackage: 'test template_package 2',
+          timeLimit: 1.0,
+          memoryLimit: 1.0,
+          buildCommand: 'test build_command 2'
+        });
+      } catch (err) {
+        fail(err);
+      }
+      expect(results.length).toEqual(1);
+      expect(results[0]).toMatchObject(problems[1]);
+    });
   });
 });
