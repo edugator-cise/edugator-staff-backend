@@ -1,27 +1,30 @@
 import { Connection, RowDataPacket, OkPacket, ResultSetHeader } from 'mysql2';
 import { constructSqlSelect, Table } from './query';
 import { ModuleInterface } from '../api/models/module.model';
+import { ProblemDocument, ProblemOrm } from './problem.orm';
+
+// temporary - needs to be migrated out into model.ts probably
+interface moduleInterface {
+  name: string;
+  number: number;
+  problems: ProblemDocument[];
+}
 
 export interface ModuleDocument extends ModuleInterface {
   _id: number;
 }
 
 // would we want to Omit the 'problems' row here?
-export type ModuleQueryFilter = Partial<
-  Omit<ModuleDocument, 'problems'>
->;
+export type ModuleQueryFilter = Partial<Omit<ModuleDocument, 'problems'>>;
 
-// should we create an interface here like CodeInterface in problem.orm, so we can
-// grab results from finding the problems associated with a module?
-interface ProblemInterface {
-
-}
 
 export class ModuleOrm {
   private _conn: Connection;
+  private _problemOrm: ProblemOrm;
 
-  constructor(conn: Connection) {
+  constructor(conn: Connection, problemOrm: ProblemOrm) {
     this._conn = conn;
+    this._problemOrm = problemOrm;
   }
 
   async find(filter: ModuleQueryFilter): Promise<ModuleDocument[]> {
@@ -61,9 +64,9 @@ export class ModuleOrm {
             const result: ModuleDocument[] = [];
             if (modules.length != 0) {
               for (const module of modules) {
-                const problems: ProblemInterface[] =
-                //should this await query the problem ORM? will this get messy with data types - thoughts?
-                  await this.findCodeByProblemTitle(conn, problem.title); // need to switch this to find problems off module id
+                const problems: ProblemDocument[] =
+                  //should this await query the problem ORM? will this get messy with data types - thoughts?
+                  await this._problemOrm.findAll({}); // need to switch this to find problems off module id
                 if (problems.length == 0) {
                   module.problems = undefined;
                 } else {
@@ -129,8 +132,7 @@ export class ModuleOrm {
     };
   }
 
-  //TODO: something like problemsFromRows, findProblemsByModule?
-
+  //findProblemsByModule
 
   private extractRowDataPackets(
     rows:
@@ -160,5 +162,4 @@ export class ModuleOrm {
   constructSQLQuery(filter: ModuleQueryFilter): string {
     return constructSqlSelect(Table.Module, filter, 0);
   }
-
 }

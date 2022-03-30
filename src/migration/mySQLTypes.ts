@@ -14,7 +14,7 @@ interface mySQLProblem {
   title: string;
   hidden: boolean;
   language: string;
-  due_date: string; // is this fine for DATETIME in SQL?
+  due_date: Date;
   file_extension: string;
   template_package: string;
   time_limit?: number;
