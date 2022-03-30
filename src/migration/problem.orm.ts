@@ -60,15 +60,18 @@ export class ProblemOrm {
     return this.findOne({ _id: id });
   }
 
-  findByIdAndUpdate(
+  async findByIdAndUpdate(
     id: number,
     update: ProblemUpdate,
     options: QueryOptions
   ): Promise<ProblemDocument> {
     if (options.new) {
-      return this.updateAndFindById(id, update, options);
+      await this.updateById(id, update, options);
+      return this.findById(id);
     } else {
-      throw new Error('Not yet implemented');
+      const result = await this.findById(id);
+      await this.updateById(id, update, options);
+      return result;
     }
   }
 
@@ -136,11 +139,11 @@ export class ProblemOrm {
     return [_update, code, testCases];
   }
 
-  private updateAndFindById(
+  private updateById(
     id: number,
     update: ProblemUpdate,
     options: QueryOptions
-  ): Promise<ProblemDocument> {
+  ): Promise<void> {
     return new Promise((resolve, reject) => {
       const [updatedProblem, updatedCode, updatedTests] =
         this.decomposeProblemUpdate(update);
@@ -157,7 +160,7 @@ export class ProblemOrm {
               await this.deleteTestCases(this._conn, id);
               await this.insertTestCases(this._conn, id, updatedTests);
             }
-            resolve(this.findById(id));
+            resolve();
           }
         }
       );

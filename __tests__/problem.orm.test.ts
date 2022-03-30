@@ -165,5 +165,38 @@ describe('ProblemORM Class', () => {
       });
       expect(result).toMatchObject(updated);
     });
+
+    it('checks whether update with new=false works', async () => {
+      const initial = await problem.findOne({ title: 'Test Title 2' });
+      const updated: ProblemUpdate = {
+        title: 'Updated Test Title 2',
+        statement: 'Updated Statement 2',
+        hidden: initial.hidden,
+        language: 'java',
+        dueDate: initial.dueDate,
+        code: {
+          header: initial.code.header,
+          body: initial.code.body,
+          footer: 'updated footer'
+        },
+        fileExtension: initial.fileExtension,
+        testCases: [
+          {
+            input: 'updated input',
+            expectedOutput: 'updated expected output',
+            hint: 'updated hint',
+            visibility: 1
+          }
+        ],
+        templatePackage: initial.templatePackage,
+        timeLimit: initial.timeLimit,
+        memoryLimit: initial.memoryLimit,
+        buildCommand: initial.buildCommand
+      };
+      const result = await problem.findByIdAndUpdate(initial._id, updated, {
+        new: false
+      });
+      expect(result).toEqual(initial);
+    });
   });
 });
