@@ -10,6 +10,7 @@ import {
 
 export interface ProblemDocument extends ProblemInterface {
   _id: number;
+  moduleId: number;
 }
 
 // All properties of ProblemDocument except code and testCases; all fields optional
@@ -281,7 +282,8 @@ export class ProblemOrm {
       templatePackage: row.template_package,
       timeLimit: row.time_limit,
       memoryLimit: row.memory_limit,
-      buildCommand: row.build_command
+      buildCommand: row.build_command,
+      moduleId: row.module_id
     };
   }
 
@@ -305,7 +307,8 @@ export class ProblemOrm {
       templatePackage: problem.templatePackage,
       timeLimit: problem.timeLimit,
       memoryLimit: problem.memoryLimit,
-      buildCommand: problem.buildCommand
+      buildCommand: problem.buildCommand,
+      moduleId: problem.moduleId
     };
   }
 

@@ -154,6 +154,12 @@ describe('Functions in query.ts', () => {
         )
       );
     });
+
+    it('checks construction of SQL Select when filtering by Problem.module_id', () => {
+      expect(
+        lex(constructSqlSelect(Table.Problem, { moduleId: 5 }, {}))
+      ).toEqual(lex(`SELECT * FROM \`Problem\` WHERE \`module_id\` = 5`));
+    });
   });
 
   describe('constructSqlUpdate function', () => {
