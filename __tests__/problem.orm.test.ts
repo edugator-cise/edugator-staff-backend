@@ -5,7 +5,11 @@ import {
   insertTestData,
   testProblems
 } from '../src/migration/insertTestData';
-import { ProblemOrm, ProblemDocument } from '../src/migration/problem.orm';
+import {
+  ProblemOrm,
+  ProblemDocument,
+  ProblemUpdate
+} from '../src/migration/problem.orm';
 
 const compareProblems = (a: ProblemInterface, b: ProblemInterface) => {
   if (a.title < b.title) {
@@ -150,6 +154,52 @@ describe('ProblemORM Class', () => {
         fail(err);
       }
       expect(result).toBeNull();
+    });
+  });
+
+  describe('findByIdAndUpdate function', () => {
+    // Need to clear and add fresh test data before update tests
+    beforeEach(async () => {
+      await clearTestData(connection);
+      return insertTestData(connection);
+    });
+
+    it('checks whether update with new=true works', async () => {
+      const initial = await problem.findOne({ title: 'Test Title 2' });
+      const updated: ProblemUpdate = {
+        title: 'Updated Test Title 2',
+        statement: 'Updated Statement 2',
+        hidden: initial.hidden,
+        language: 'java',
+        dueDate: initial.dueDate,
+        code: {
+          header: initial.code.header,
+          body: initial.code.body,
+          footer: 'updated footer'
+        },
+        fileExtension: initial.fileExtension,
+        testCases: [
+          {
+            input: 'updated input',
+            expectedOutput: 'updated expected output',
+            hint: 'updated hint',
+            visibility: 1
+          }
+        ],
+        templatePackage: initial.templatePackage,
+        timeLimit: initial.timeLimit,
+        memoryLimit: initial.memoryLimit,
+        buildCommand: initial.buildCommand
+      };
+      let result: ProblemDocument;
+      try {
+        result = await problem.findByIdAndUpdate(initial._id, updated, {
+          new: true
+        });
+      } catch (err) {
+        fail(err);
+      }
+      expect(result).toMatchObject(updated);
     });
   });
 });
