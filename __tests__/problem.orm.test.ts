@@ -34,7 +34,7 @@ describe('ProblemORM Class', () => {
   let connection: Connection;
   let problem: ProblemOrm;
 
-  beforeAll(() => {
+  beforeAll(async () => {
     connection = createConnection({
       host: process.env.DB_HOST,
       user: process.env.DB_USER,
@@ -46,24 +46,19 @@ describe('ProblemORM Class', () => {
         fail(err);
       }
     });
+    problem = new ProblemOrm(connection);
+    await clearTestData(connection);
+    return insertTestData(connection);
   });
 
-  afterAll(() => {
+  afterAll(async () => {
+    await clearTestData(connection);
     connection.end(function (err) {
       if (err) {
         connection.destroy();
         fail(err);
       }
     });
-  });
-
-  beforeEach(() => {
-    problem = new ProblemOrm(connection);
-    return insertTestData(connection);
-  });
-
-  afterEach(() => {
-    return clearTestData(connection);
   });
 
   describe('findAll function', () => {
