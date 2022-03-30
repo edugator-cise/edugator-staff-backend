@@ -17,8 +17,9 @@ const compareProblems = (a: ProblemInterface, b: ProblemInterface) => {
   }
 };
 
-const dropIdField = (problem: ProblemDocument): ProblemInterface => {
+const toProblemInterface = (problem: ProblemDocument): ProblemInterface => {
   delete problem._id;
+  delete problem.moduleId;
   return problem;
 };
 
@@ -69,9 +70,9 @@ describe('ProblemORM Class', () => {
       } catch (err) {
         fail(err);
       }
-      expect(results.map((x) => dropIdField(x)).sort(compareProblems)).toEqual(
-        problems
-      );
+      expect(
+        results.map((x) => toProblemInterface(x)).sort(compareProblems)
+      ).toEqual(problems);
     });
   });
 
@@ -120,7 +121,7 @@ describe('ProblemORM Class', () => {
     });
   });
 
-  describe.only('findOne function', () => {
+  describe('findOne function', () => {
     it('checks whether filter by language succeeds', async () => {
       let result: ProblemDocument;
       try {
