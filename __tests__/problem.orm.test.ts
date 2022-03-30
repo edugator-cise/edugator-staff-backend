@@ -48,7 +48,7 @@ describe('ProblemORM Class', () => {
     });
     connection.connect(function (err) {
       if (err) {
-        fail(err);
+        throw err;
       }
     });
     problem = new ProblemOrm(connection);
@@ -61,7 +61,7 @@ describe('ProblemORM Class', () => {
     connection.end(function (err) {
       if (err) {
         connection.destroy();
-        fail(err);
+        throw err;
       }
     });
   });
@@ -69,11 +69,7 @@ describe('ProblemORM Class', () => {
   describe('findAll function', () => {
     it('checks whether all items are returned', async () => {
       let results: ProblemDocument[] = [];
-      try {
-        results = await problem.findAll();
-      } catch (err) {
-        fail(err);
-      }
+      results = await problem.findAll();
       expect(
         results.map((x) => toProblemInterface(x)).sort(compareProblems)
       ).toEqual(problems);
@@ -83,76 +79,49 @@ describe('ProblemORM Class', () => {
   describe('find function', () => {
     it('checks whether filtering by title succeeds', async () => {
       let results: ProblemDocument[] = [];
-      try {
-        results = await problem.find({ title: 'test title 1' });
-      } catch (err) {
-        fail(err);
-      }
+      results = await problem.find({ title: 'test title 1' });
       expect(results.length).toEqual(1);
       expect(results[0]).toMatchObject(problems[0]);
     });
 
     it('checks whether filtering by all properties succeeds', async () => {
       let results: ProblemDocument[] = [];
-      try {
-        results = await problem.find({
-          statement: 'test statement 2',
-          title: 'test title 2',
-          hidden: false,
-          language: 'cpp',
-          dueDate: new Date('2022-12-31T01:00:00'),
-          fileExtension: '.cpp',
-          templatePackage: 'test template_package 2',
-          timeLimit: 1.0,
-          memoryLimit: 1.0,
-          buildCommand: 'test build_command 2'
-        });
-      } catch (err) {
-        fail(err);
-      }
+      results = await problem.find({
+        statement: 'test statement 2',
+        title: 'test title 2',
+        hidden: false,
+        language: 'cpp',
+        dueDate: new Date('2022-12-31T01:00:00'),
+        fileExtension: '.cpp',
+        templatePackage: 'test template_package 2',
+        timeLimit: 1.0,
+        memoryLimit: 1.0,
+        buildCommand: 'test build_command 2'
+      });
       expect(results.length).toEqual(1);
       expect(results[0]).toMatchObject(problems[1]);
     });
 
     it('checks whether filtering by null succeeds', async () => {
       let results: ProblemDocument[] = [];
-      try {
-        results = await problem.find({ title: null });
-      } catch (err) {
-        fail(err);
-      }
+      results = await problem.find({ title: null });
       expect(results.length).toEqual(0);
     });
   });
 
   describe('findOne function', () => {
     it('checks whether filter by language succeeds', async () => {
-      let result: ProblemDocument;
-      try {
-        result = await problem.findOne({ language: 'cpp' });
-      } catch (err) {
-        fail(err);
-      }
+      const result = await problem.findOne({ language: 'cpp' });
       expect(result.language).toBe('cpp');
     });
 
     it('checks whether filter by non-existent language succeeds', async () => {
-      let result: ProblemDocument;
-      try {
-        result = await problem.findOne({ language: 'thisIsNotALanguage' });
-      } catch (err) {
-        fail(err);
-      }
+      const result = await problem.findOne({ language: 'thisIsNotALanguage' });
       expect(result).toBeNull();
     });
 
     it('checks whether filter by title succeeds', async () => {
-      let result: ProblemDocument;
-      try {
-        result = await problem.findOne({ language: 'thisIsNotALanguage' });
-      } catch (err) {
-        fail(err);
-      }
+      const result = await problem.findOne({ language: 'thisIsNotALanguage' });
       expect(result).toBeNull();
     });
   });
@@ -191,14 +160,9 @@ describe('ProblemORM Class', () => {
         memoryLimit: initial.memoryLimit,
         buildCommand: initial.buildCommand
       };
-      let result: ProblemDocument;
-      try {
-        result = await problem.findByIdAndUpdate(initial._id, updated, {
-          new: true
-        });
-      } catch (err) {
-        fail(err);
-      }
+      const result = await problem.findByIdAndUpdate(initial._id, updated, {
+        new: true
+      });
       expect(result).toMatchObject(updated);
     });
   });
