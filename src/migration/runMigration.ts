@@ -106,7 +106,7 @@ const transformData = async () => {
       title: mongoProblem.title,
       hidden: mongoProblem.hidden,
       language: mongoProblem.language,
-      due_date: mongoProblem.dueDate.toDateString(), // is this format fine?
+      due_date: mongoProblem.dueDate,
       file_extension: mongoProblem.fileExtension,
       template_package: mongoProblem.templatePackage,
       time_limit: mongoProblem.timeLimit,
