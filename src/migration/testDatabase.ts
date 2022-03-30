@@ -2,7 +2,6 @@
 import { createConnection, Connection } from 'mysql2';
 import { ProblemOrm, ProblemUpdate } from './problem.orm';
 import { clearTestData, insertTestData } from './insertTestData';
-import { ProblemDocument } from './problem.orm';
 
 const INSERT_DATA = true;
 const TEAR_DOWN = true;
@@ -18,71 +17,6 @@ const selectModules = async (connection: Connection) => {
         console.log(`Module Rows:\n${JSON.stringify(rows, null, 2)}`);
       }
     }
-  );
-};
-
-const selectProblems = async (problem: ProblemOrm) => {
-  const printResult = (funcName: string, result: ProblemDocument[]) => {
-    if (!result) {
-      // eslint-disable-next-line no-console
-      console.log(`ProblemORM.${funcName}: Result is empty!`);
-    } else {
-      // eslint-disable-next-line no-console
-      console.log(
-        `ProblemORM.${funcName}:\n${JSON.stringify(result, null, 2)}`
-      );
-    }
-  };
-  console.log('Accessing from Problem using ORM. . .');
-  let result = await problem.findAll();
-  printResult('findAll()', result);
-  result = await problem.find({ title: 'Test Title 1' });
-  printResult("find({ title: 'Test Title 1' })", result);
-  result = await problem.find({
-    statement: 'test statement 2',
-    title: 'test title 2',
-    hidden: false,
-    language: 'cpp',
-    dueDate: new Date('2022-12-31T01:00:00'),
-    fileExtension: '.cpp',
-    templatePackage: 'test template_package 2',
-    timeLimit: 1.0,
-    memoryLimit: 1.0,
-    buildCommand: 'test build_command 2'
-  });
-  printResult(
-    `find({
-      statement: 'test statement 2',
-      title: 'test title 2',
-      hidden: false,
-      language: 'cpp',
-      dueDate: new Date('2022-12-31T01:00:00'),
-      fileExtension: '.cpp',
-      templatePackage: 'test template_package 2',
-      timeLimit: 1.0,
-      memoryLimit: 1.0,
-      buildCommand: 'test build_command 2'
-    })`,
-    result
-  );
-  result = await problem.find({ title: null });
-  printResult('find({ title: null })', result);
-  const printSingleDocument = (func: string, doc: ProblemDocument) => {
-    console.log(`${func}:\n${JSON.stringify(doc, null, 2)}`);
-  };
-  let res: ProblemDocument = await problem.findOne({ language: 'cpp' });
-  printSingleDocument("problem.findOne({ language: 'cpp' })", res);
-  res = await problem.findOne({ language: 'thisIsNotALanguage' });
-  printSingleDocument(
-    "problem.findOne({ language: 'thisIsNotALanguage' })",
-    res
-  );
-  res = await problem.findOne({ title: 'Test Title 1' });
-  const resById: ProblemDocument = await problem.findById(res._id);
-  console.log(
-    `findById test: ${
-      JSON.stringify(res) === JSON.stringify(resById) ? 'success' : 'fail'
-    }`
   );
 };
 
@@ -155,7 +89,6 @@ const runTest = async (): Promise<void> => {
   }
   await selectModules(connection);
   const problem = new ProblemOrm(connection);
-  await selectProblems(problem);
   await updateProblem(problem);
   if (TEAR_DOWN) {
     await clearTestData(connection);
