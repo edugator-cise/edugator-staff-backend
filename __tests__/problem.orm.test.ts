@@ -119,4 +119,36 @@ describe('ProblemORM Class', () => {
       expect(results.length).toEqual(0);
     });
   });
+
+  describe.only('findOne function', () => {
+    it('checks whether filter by language succeeds', async () => {
+      let result: ProblemDocument;
+      try {
+        result = await problem.findOne({ language: 'cpp' });
+      } catch (err) {
+        fail(err);
+      }
+      expect(result.language).toBe('cpp');
+    });
+
+    it('checks whether filter by non-existent language succeeds', async () => {
+      let result: ProblemDocument;
+      try {
+        result = await problem.findOne({ language: 'thisIsNotALanguage' });
+      } catch (err) {
+        fail(err);
+      }
+      expect(result).toBeNull();
+    });
+
+    it('checks whether filter by title succeeds', async () => {
+      let result: ProblemDocument;
+      try {
+        result = await problem.findOne({ language: 'thisIsNotALanguage' });
+      } catch (err) {
+        fail(err);
+      }
+      expect(result).toBeNull();
+    });
+  });
 });
