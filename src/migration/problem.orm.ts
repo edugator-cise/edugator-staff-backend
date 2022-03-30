@@ -20,7 +20,9 @@ export type ProblemQueryFilter = Partial<
 
 // TODO: Need to move this to query.ts, and omit 'code' and 'testcase'
 // ProblemDocument._id omitted since it should not be updated
-export type ProblemUpdate = Readonly<Partial<Omit<ProblemDocument, '_id'>>>;
+export type ProblemUpdate = Readonly<
+  Partial<Omit<ProblemDocument, '_id' | 'moduleId'>>
+>;
 
 interface CodeInterface {
   header: string;
