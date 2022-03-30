@@ -10,7 +10,7 @@ interface moduleInterface {
   problems: ProblemDocument[];
 }
 
-export interface ModuleDocument extends ModuleInterface {
+export interface ModuleDocument extends moduleInterface {
   _id: number;
 }
 
@@ -64,14 +64,14 @@ export class ModuleOrm {
             const result: ModuleDocument[] = [];
             if (modules.length != 0) {
               for (const module of modules) {
-                const problems: ProblemDocument[] =
-                  //should this await query the problem ORM? will this get messy with data types - thoughts?
-                  await this._problemOrm.findAll({}); // need to switch this to find problems off module id
+                const problems: ProblemDocument[] = await this._problemOrm.find(
+                  { moduleId: module._id }
+                );
                 if (problems.length == 0) {
                   module.problems = undefined;
                 } else {
                   // Pick the first code entry found
-                  module.problems = problems[0];
+                  module.problems = problems;
                 }
                 result.push(this.completeModule(module));
               }
@@ -113,14 +113,14 @@ export class ModuleOrm {
     return {
       _id: row.id,
       name: row.name,
-      number: row.number // need there be any mention of problems here?
+      number: row.number,
+      problems: row.problems // need there be any mention of problems here?
     };
   }
 
   private completeModule(module: Partial<ModuleDocument>): ModuleDocument {
     for (const key in module) {
       if (module[key] === undefined) {
-        // TODO: This will return undefined if problem.code is undefined. Is this what we want?
         return undefined;
       }
     }
