@@ -120,10 +120,9 @@ describe('ProblemORM Class', () => {
       expect(result).toBeNull();
     });
 
-    // TODO: Test does not do what it says
     it('checks whether filter by title succeeds', async () => {
-      const result = await problem.findOne({ language: 'thisIsNotALanguage' });
-      expect(result).toBeNull();
+      const result = await problem.findOne({ title: 'test title 1' });
+      expect(result).toMatchObject(problems[0]);
     });
 
     it('checks whether filter by invalid id is null', async () => {
