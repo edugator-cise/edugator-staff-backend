@@ -5,7 +5,8 @@ import {
   constructSqlUpdate,
   Table,
   QueryOptions,
-  UpdateProblem
+  UpdateProblem,
+  constructSqlDelete
 } from './query';
 
 export interface ProblemDocument extends ProblemInterface {
@@ -76,6 +77,14 @@ export class ProblemOrm {
       } else {
         await this.updateById(id, update, options);
       }
+    }
+    return problem;
+  }
+
+  async findOneAndDelete(filter: ProblemQueryFilter): Promise<ProblemDocument> {
+    const problem: ProblemDocument = await this.findOne(filter);
+    if (problem != null) {
+      await this.deleteById(problem._id);
     }
     return problem;
   }
@@ -165,6 +174,42 @@ export class ProblemOrm {
               await this.deleteTestCases(this._conn, id);
               await this.insertTestCases(this._conn, id, updatedTests);
             }
+            resolve();
+          }
+        }
+      );
+    });
+  }
+
+  private async deleteById(id: number): Promise<void> {
+    await this.deleteCode(this._conn, id);
+    await this.deleteTestCases(this._conn, id);
+    return new Promise((resolve, reject) => {
+      this._conn.query(
+        constructSqlDelete(Table.Problem, { _id: id }, { limit: 1 }),
+        async (err) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve();
+          }
+        }
+      );
+    });
+  }
+
+  private deleteCode(conn: Connection, problemId: number): Promise<void> {
+    return new Promise((resolve, reject) => {
+      conn.query(
+        `
+        DELETE FROM Code
+        WHERE problem_id = ?
+        `,
+        [problemId],
+        (err) => {
+          if (err) {
+            reject(err);
+          } else {
             resolve();
           }
         }

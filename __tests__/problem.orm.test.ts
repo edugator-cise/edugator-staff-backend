@@ -8,7 +8,8 @@ import {
 import {
   ProblemOrm,
   ProblemDocument,
-  ProblemUpdate
+  ProblemUpdate,
+  ProblemQueryFilter
 } from '../src/migration/problem.orm';
 
 const compareProblems = (a: ProblemInterface, b: ProblemInterface) => {
@@ -233,6 +234,48 @@ describe('ProblemORM Class', () => {
           }
         }
       );
+    });
+  });
+
+  describe('findOneAndDelete function', () => {
+    it('checks deleting by id succeeds', async () => {
+      const original = await problem.findOne({ title: 'test title 1' });
+      const retrieved = await problem.findOneAndDelete({ _id: original._id });
+      expect(retrieved).toEqual(original);
+      const retrievedAfterDelete = await problem.findOne({
+        _id: retrieved._id
+      });
+      expect(retrievedAfterDelete).toBeNull();
+    });
+
+    it('checks deleting by multiple properties succeeds', async () => {
+      const filter: ProblemQueryFilter = {
+        title: 'test title 1',
+        language: 'cpp'
+      };
+      const original = await problem.findOne(filter);
+      const retrieved = await problem.findOneAndDelete(filter);
+      expect(retrieved).toEqual(original);
+      const retrievedAfterDelete = await problem.findOne(filter);
+      expect(retrievedAfterDelete).toBeNull();
+    });
+
+    it('checks deleting by multiple properties succeeds', async () => {
+      const initialCount = (await problem.findAll()).length;
+      const retrieved = await problem.findOneAndDelete({
+        title: 'not a title in the test data'
+      });
+      expect(retrieved).toBeNull();
+      const count = (await problem.findAll()).length;
+      expect(count).toBe(initialCount);
+    });
+
+    it('checks deleting with no filter succeeds',async () => {
+      const initialCount = (await problem.findAll()).length;
+      const retrieved = await problem.findOneAndDelete({});
+      expect(retrieved).toBeTruthy();
+      const count = (await problem.findAll()).length;
+      expect(count).toBe(initialCount - 1);
     });
   });
 });
