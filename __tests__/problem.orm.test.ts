@@ -125,6 +125,11 @@ describe('ProblemORM Class', () => {
       const result = await problem.findOne({ language: 'thisIsNotALanguage' });
       expect(result).toBeNull();
     });
+
+    it('checks whether filter by invalid id is null', async () => {
+      const result = await problem.findOne({ _id: -1 });
+      expect(result).toBeNull();
+    });
   });
 
   describe('findByIdAndUpdate function', () => {
