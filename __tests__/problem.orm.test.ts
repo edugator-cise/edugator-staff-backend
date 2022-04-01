@@ -120,6 +120,7 @@ describe('ProblemORM Class', () => {
       expect(result).toBeNull();
     });
 
+    // TODO: Test does not do what it says
     it('checks whether filter by title succeeds', async () => {
       const result = await problem.findOne({ language: 'thisIsNotALanguage' });
       expect(result).toBeNull();
