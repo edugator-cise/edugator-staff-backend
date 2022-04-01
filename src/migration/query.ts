@@ -18,6 +18,12 @@ export type UpdateProblem = Readonly<
 export type UpdateModule = Readonly<Partial<ModuleInterface>>;
 type Update = UpdateProblem | UpdateModule;
 
+/*
+ * TODO: Implement a 'sort' property which is used to create
+ * ORDER BY clauses in SQL queries. This is useful for findOne
+ * functions when the passed filter may apply to multiple
+ * rows.
+ */
 export interface QueryOptions {
   new?: boolean;
   limit?: number;
