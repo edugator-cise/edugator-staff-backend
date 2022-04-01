@@ -65,14 +65,19 @@ export class ProblemOrm {
     update: ProblemUpdate,
     options: QueryOptions
   ): Promise<ProblemDocument> {
-    if (options.new) {
-      await this.updateById(id, update, options);
-      return this.findById(id);
-    } else {
-      const result = await this.findById(id);
-      await this.updateById(id, update, options);
-      return result;
+    // Allow Promise<ProblemDocument> or ProblemDocument to avoid forcing caller
+    // waiting on second query if not needed
+    let problem: Promise<ProblemDocument> | ProblemDocument =
+      await this.findById(id);
+    if (problem != null) {
+      if (options.new) {
+        await this.updateById(id, update, options);
+        problem = this.findById(id);
+      } else {
+        await this.updateById(id, update, options);
+      }
     }
+    return problem;
   }
 
   private async _find(
