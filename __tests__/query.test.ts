@@ -1,9 +1,11 @@
 import {
   constructSqlDelete,
+  constructSqlInsert,
   constructSqlSelect,
   constructSqlUpdate,
   Table
 } from '../src/migration/query';
+import { format } from 'mysql2';
 
 const lex = (str: string) => str.split(/\s+/);
 
@@ -319,6 +321,35 @@ describe('Functions in query.ts', () => {
             \`memory_limit\` = 1 AND
             \`build_command\` = 'test build_command 2'
           LIMIT 5`
+        )
+      );
+    });
+  });
+
+  describe('constructSqlInsert function', () => {
+    it('checks INSERT construction with ProblemDocument succeeds', () => {
+      const object = {
+        statement: 'test statement 1',
+        title: 'test title 1',
+        hidden: false,
+        language: 'cpp',
+        dueDate: new Date('2022-12-31T01:00:00'),
+        fileExtension: '.cpp',
+        templatePackage: 'test template_package 1',
+        timeLimit: 1.0,
+        memoryLimit: 1.0,
+        buildCommand: 'test build_command 1',
+        moduleId: 0
+      };
+      expect(lex(constructSqlInsert(Table.Problem, object))).toEqual(
+        lex(
+          format(
+            `INSERT INTO \`Problem\`
+            (\`statement\`, \`title\`, \`hidden\`, \`language\`, \`dueDate\`, \`fileExtension\`, \`templatePackage\`,
+              \`timeLimit\`, \`memoryLimit\`, \`buildCommand\`, \`moduleId\`)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            Object.entries(object).map((pair) => pair[1])
+          )
         )
       );
     });

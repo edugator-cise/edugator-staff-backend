@@ -18,6 +18,8 @@ export type UpdateProblem = Readonly<
 export type UpdateModule = Readonly<Partial<ModuleInterface>>;
 type Update = UpdateProblem | UpdateModule;
 
+type Row = Omit<ProblemDocument, '_id' | 'code' | 'testCases'>;
+
 /*
  * TODO: Implement a 'sort' property which is used to create
  * ORDER BY clauses in SQL queries. This is useful for findOne
@@ -144,5 +146,20 @@ export function constructSqlDelete(
     query.push('LIMIT ?');
     params.push(options.limit);
   }
+  return format(query.join('\n'), params);
+}
+
+// TODO: Make 'value' param a type without _id member
+export function constructSqlInsert(table: Table, row: Row): string {
+  if (!row) {
+    throw new Error('Empty value object cannot be inserted');
+  }
+  const query: string[] = ['INSERT INTO ??'];
+  const params: any[] = [table];
+  const entries: [string, any][] = Object.entries(row);
+  query.push(`(${Array(entries.length).fill('??').join(', ')})`);
+  query.push(`VALUES (${Array(entries.length).fill('?').join(', ')})`);
+  params.push(...entries.map((pair) => pair[0])); // keys
+  params.push(...entries.map((pair) => pair[1])); // values
   return format(query.join('\n'), params);
 }
