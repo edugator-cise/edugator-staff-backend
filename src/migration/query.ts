@@ -123,3 +123,20 @@ export function constructSqlUpdate(
   }
   return format(query.join('\n'), params);
 }
+
+export function constructSqlDelete(
+  table: Table,
+  filter: Filter,
+  options: QueryOptions
+): string {
+  const query: string[] = ['DELETE FROM ??'];
+  const params: any[] = [table];
+  const [whereClause, whereParams] = constructWhereClause(filter, table);
+  query.push(...whereClause);
+  params.push(...whereParams);
+  if (options.limit != null && options.limit > 0) {
+    query.push('LIMIT ?');
+    params.push(options.limit);
+  }
+  return format(query.join('\n'), params);
+}

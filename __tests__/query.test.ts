@@ -1,4 +1,5 @@
 import {
+  constructSqlDelete,
   constructSqlSelect,
   constructSqlUpdate,
   Table
@@ -264,6 +265,61 @@ describe('Functions in query.ts', () => {
     it('Checks error is thrown by constructSqlUpdate when update param is empty', () => {
       expect(() => constructSqlUpdate(Table.Problem, {}, {}, {})).toThrow(
         'Empty update parameter, cannot compile UPDATE'
+      );
+    });
+  });
+
+  describe('constructSqlDelete function', () => {
+    it('checks DELETE with empty filter and no limit', () => {
+      expect(lex(constructSqlDelete(Table.Problem, {}, {}))).toEqual(
+        lex(`DELETE FROM \`Problem\``)
+      );
+    });
+
+    it('checks DELETE with 1-prop filter and no limit', () => {
+      expect(
+        lex(constructSqlDelete(Table.Problem, { title: 'test title' }, {}))
+      ).toEqual(lex(`DELETE FROM \`Problem\` WHERE \`title\` = 'test title'`));
+    });
+
+    it('checks DELETE with multi-prop filter and limit', () => {
+      expect(
+        lex(
+          constructSqlDelete(
+            Table.Problem,
+            {
+              _id: 1,
+              statement: 'test statement 2',
+              title: 'test title 2',
+              hidden: false,
+              language: 'cpp',
+              dueDate: new Date('2022-12-31T01:00:00'),
+              fileExtension: '.cpp',
+              templatePackage: 'test template_package 2',
+              timeLimit: 1.0,
+              memoryLimit: 1.0,
+              buildCommand: 'test build_command 2'
+            },
+            { limit: 5 }
+          )
+        )
+      ).toEqual(
+        lex(
+          `DELETE FROM \`Problem\`
+          WHERE
+            \`id\` = 1 AND
+            \`statement\` = 'test statement 2' AND
+            \`title\` = 'test title 2' AND
+            \`hidden\` = false AND
+            \`language\` = 'cpp' AND
+            \`due_date\` = '2022-12-31 01:00:00.000' AND
+            \`file_extension\` = '.cpp' AND
+            \`template_package\` = 'test template_package 2' AND
+            \`time_limit\` = 1 AND
+            \`memory_limit\` = 1 AND
+            \`build_command\` = 'test build_command 2'
+          LIMIT 5`
+        )
       );
     });
   });
