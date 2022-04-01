@@ -1,13 +1,7 @@
 import { createConnection, Connection, RowDataPacket } from 'mysql2';
-import { ModuleInterface } from '../api/models/module.model';
 import { ProblemInterface, TestCase } from '../api/models/problem.model';
+import { ModuleInterface } from './module.orm';
 
-export const testModules: ModuleInterface[] = [
-  { name: 'Test Module One', number: 1.0, problems: undefined },
-  { name: 'Test Module Two', number: 1.1, problems: undefined }
-];
-
-let testModuleIds: number[] = [];
 
 export const testProblems: ProblemInterface[] = [
   {
@@ -72,6 +66,14 @@ export const testProblems: ProblemInterface[] = [
     buildCommand: 'test build_command 3'
   }
 ];
+
+export const testModules: ModuleInterface[] = [
+  { name: 'Test Module One', number: 1.0, problems: undefined },
+  { name: 'Test Module Two', number: 1.1, problems: undefined },
+  { name: 'Test Module Three', number: 1.2, problems: testProblems } // need to fix the typing on problems
+];
+
+let testModuleIds: number[] = [];
 
 let testProblemIds: number[] = [];
 

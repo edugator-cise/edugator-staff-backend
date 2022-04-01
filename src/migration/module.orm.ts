@@ -1,22 +1,29 @@
 import { Connection, RowDataPacket, OkPacket, ResultSetHeader } from 'mysql2';
-import { constructSqlSelect, Table } from './query';
-import { ModuleInterface } from '../api/models/module.model';
-import { ProblemDocument, ProblemOrm } from './problem.orm';
+import {
+  constructSqlSelect,
+  Table,
+  QueryOptions,
+  UpdateModule,
+  ModuleUpdate,
+  constructSqlUpdate
+} from './query';
+import { ProblemDocument, ProblemOrm, ProblemQueryFilter } from './problem.orm';
+import { ProblemInterface } from '../api/models/problem.model';
 
 // temporary - needs to be migrated out into model.ts probably
-interface moduleInterface {
+// fixed to use problemDocument[] as opposed to [Types.ObjectId]
+export interface ModuleInterface {
   name: string;
   number: number;
   problems: ProblemDocument[];
 }
 
-export interface ModuleDocument extends moduleInterface {
+export interface ModuleDocument extends ModuleInterface {
   _id: number;
 }
 
 // would we want to Omit the 'problems' row here?
 export type ModuleQueryFilter = Partial<Omit<ModuleDocument, 'problems'>>;
-
 
 export class ModuleOrm {
   private _conn: Connection;
@@ -28,10 +35,49 @@ export class ModuleOrm {
   }
 
   async find(filter: ModuleQueryFilter): Promise<ModuleDocument[]> {
+    return this._find(filter, 0);
+  }
+
+  async findOne(filter: ModuleQueryFilter): Promise<ModuleDocument> {
+    const result = await this._find(filter, 1);
+    if (result.length > 0) {
+      return result[0];
+    } else {
+      return null;
+    }
+  }
+
+  async findAll(): Promise<ModuleDocument[]> {
+    return this.find({});
+  }
+
+  async findById(id: number): Promise<ModuleDocument> {
+    return this.findOne({ _id: id });
+  }
+
+  async findByIdAndUpdate(
+    id: number,
+    update: ModuleUpdate,
+    options: QueryOptions
+  ): Promise<ModuleDocument> {
+    if (options.new) {
+      this.updateById(id, update, options);
+      return this.findById(id);
+    } else {
+      const result = await this.findById(id);
+      await this.updateById(id, update, options);
+      return result;
+    }
+  }
+
+  private async _find(
+    filter: ModuleQueryFilter,
+    limit: number
+  ): Promise<ModuleDocument[]> {
     return new Promise((resolve, reject) => {
       const result = this._findModules(
         this._conn,
-        this.constructSQLQuery(filter),
+        this.constructSQLQuery(filter, limit),
         (err) => {
           if (err) {
             reject(err);
@@ -40,10 +86,6 @@ export class ModuleOrm {
       );
       resolve(result);
     });
-  }
-
-  async findAll(): Promise<ModuleDocument[]> {
-    return this.find({});
   }
 
   // TODO: Convert over
@@ -70,7 +112,6 @@ export class ModuleOrm {
                 if (problems.length == 0) {
                   module.problems = undefined;
                 } else {
-                  // Pick the first code entry found
                   module.problems = problems;
                 }
                 result.push(this.completeModule(module));
@@ -83,6 +124,73 @@ export class ModuleOrm {
       );
     });
   }
+
+  private decomposeModuleUpdate(
+    update: ModuleUpdate
+  ): [UpdateModule, ProblemInterface[]] {
+    const { problems, ..._update } = update;
+    return [_update, problems];
+  }
+
+  private updateById(
+    id: number,
+    update: ModuleUpdate,
+    options: QueryOptions
+  ): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const [updatedModule, updatedProblems] =
+        this.decomposeModuleUpdate(update);
+      this._conn.query(
+        constructSqlUpdate(Table.Module, { _id: id }, updatedModule, options),
+        async (err) => {
+          if (err) {
+            reject(err);
+          } else {
+            if (update.problems != null) {
+              // update all problems 1 by 1
+              for (const problem of update.problems) {
+                await this._problemOrm.findByIdAndUpdate(
+                  problem._id,
+                  problem,
+                  {}
+                );
+              }
+            }
+            resolve();
+          }
+        }
+      );
+    });
+  }
+
+  // // fix this to mimic problem ORM
+  // private updateAndFindById(
+  //   id: number,
+  //   update: ModuleUpdate,
+  //   options: QueryOptions
+  // ): Promise<ModuleDocument> {
+  //   return new Promise((resolve, reject) => {
+  //     const [updatedModule, updatedProblems] =
+  //       this.decomposeModuleUpdate(update);
+
+  //     this._conn.query(
+  //       constructSqlUpdate(Table.Module, { _id: id }, updatedModule, options),
+  //       async (err) => {
+  //         if (err) {
+  //           reject(err);
+  //         } else {
+  //           if (update.problems != null) {
+  //             // use the problem ORM
+  //             // need to delete problems here
+  //             // need to insert problems here now
+  //           }
+
+  //           resolve(this.findByIdAndUpdate(id));
+  //         }
+  //       }
+  //     );
+  //   });
+  // }
 
   private queryModule(
     conn: Connection,
@@ -113,8 +221,7 @@ export class ModuleOrm {
     return {
       _id: row.id,
       name: row.name,
-      number: row.number,
-      problems: row.problems // need there be any mention of problems here?
+      number: row.number
     };
   }
 
@@ -157,9 +264,7 @@ export class ModuleOrm {
     }
   }
 
-  // TODO: Make this private
-  // TODO: Add a docstring
-  constructSQLQuery(filter: ModuleQueryFilter): string {
-    return constructSqlSelect(Table.Module, filter, 0);
+  private constructSQLQuery(filter: ProblemQueryFilter, limit: number): string {
+    return constructSqlSelect(Table.Problem, filter, { limit: limit });
   }
 }

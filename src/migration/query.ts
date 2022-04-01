@@ -1,7 +1,7 @@
 // Utilities for constructing SQL queries for use by ORMs
 import { ProblemQueryFilter, ProblemDocument } from './problem.orm';
 import { format } from 'mysql2';
-import { ModuleInterface } from '../api/models/module.model';
+import { ModuleDocument } from '../migration/module.orm';
 
 export enum Table {
   Module = 'Module',
@@ -11,11 +11,17 @@ export enum Table {
 
 type Filter = ProblemQueryFilter;
 
+export type ModuleUpdate = Readonly<Partial<Omit<ModuleDocument, '_id'>>>;
+
 // Types used by this file to compile into updated values
 export type UpdateProblem = Readonly<
   Partial<Omit<ProblemDocument, '_id' | 'code' | 'testCase'>>
 >;
-export type UpdateModule = Readonly<Partial<ModuleInterface>>;
+
+export type UpdateModule = Readonly<
+  Partial<Omit<ModuleDocument, '_id' | 'problems'>>
+>;
+
 type Update = UpdateProblem | UpdateModule;
 
 export interface QueryOptions {
