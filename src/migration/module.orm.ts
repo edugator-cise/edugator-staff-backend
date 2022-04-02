@@ -146,16 +146,20 @@ export class ModuleOrm {
           if (err) {
             reject(err);
           } else {
-            if (update.problems != null) {
-              // update all problems 1 by 1
-              for (const problem of update.problems) {
-                await this._problemOrm.findByIdAndUpdate(
-                  problem._id,
-                  problem,
-                  {}
-                );
-              }
-            }
+            // TODO: Delete all the problems associated with this moduleID
+
+            // TODO: Re-add all the problems associated with this moduleID, using updatedProblems
+
+            // if (update.problems != null) {
+            //   // update all problems 1 by 1
+            //   // for (const problem of update.problems) {
+            //   //   await this._problemOrm.findByIdAndUpdate(
+            //   //     problem._id,
+            //   //     problem,
+            //   //     {}
+            //   //   );
+            //   // }
+            // }
             resolve();
           }
         }
