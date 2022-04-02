@@ -2,7 +2,78 @@ import { createConnection, Connection, RowDataPacket } from 'mysql2';
 import { ProblemInterface, TestCase } from '../api/models/problem.model';
 import { ModuleInterface } from './module.orm';
 
+// // used to test module.orm, as this requires ProblemDocuments, not ProblemInterfaces.
+// export const moduleORMTestProblems: ProblemDocument[] = [
+//   {
+//     _id: 1,
+//     statement: 'test statement 1',
+//     title: 'test title 1',
+//     hidden: false,
+//     language: 'cpp',
+//     dueDate: new Date('2022-12-31T01:00:00'),
+//     code: {
+//       header: 'test header 1',
+//       body: 'test body 1',
+//       footer: 'test footer 1'
+//     },
+//     fileExtension: '.cpp',
+//     testCases: [
+//       {
+//         input: 'test input 1',
+//         expectedOutput: 'test expected output 1',
+//         hint: 'test hint 1',
+//         visibility: 0
+//       }
+//     ],
+//     templatePackage: 'test template_package 1',
+//     timeLimit: 1.0,
+//     memoryLimit: 1.0,
+//     buildCommand: 'test build_command 1',
+//     moduleId: 1
+//   },
+//   {
+//     _id: 2,
+//     statement: 'test statement 2',
+//     title: 'test title 2',
+//     hidden: false,
+//     language: 'cpp',
+//     dueDate: new Date('2022-12-31T01:00:00'),
+//     code: {
+//       header: 'test header 2',
+//       body: 'test body 2',
+//       footer: 'test footer 2'
+//     },
+//     fileExtension: '.cpp',
+//     testCases: [],
+//     templatePackage: 'test template_package 2',
+//     timeLimit: 1.0,
+//     memoryLimit: 1.0,
+//     buildCommand: 'test build_command 2',
+//     moduleId: 1
+//   },
+//   {
+//     _id: 3,
+//     statement: 'test statement 3',
+//     title: 'test title 3',
+//     hidden: false,
+//     language: 'cpp',
+//     dueDate: new Date('2022-12-31T01:00:00'),
+//     code: {
+//       header: 'test header 3',
+//       body: 'test body 3',
+//       footer: 'test footer 3'
+//     },
+//     fileExtension: '.cpp',
+//     testCases: [],
+//     templatePackage: 'test template_package 3',
+//     timeLimit: 1.0,
+//     memoryLimit: 1.0,
+//     buildCommand: 'test build_command 3',
+//     moduleId: 1
+//   }
+// ];
 
+// these are used to test the ProblemORM
 export const testProblems: ProblemInterface[] = [
   {
     statement: 'test statement 1',
@@ -69,8 +140,7 @@ export const testProblems: ProblemInterface[] = [
 
 export const testModules: ModuleInterface[] = [
   { name: 'Test Module One', number: 1.0, problems: undefined },
-  { name: 'Test Module Two', number: 1.1, problems: undefined },
-  { name: 'Test Module Three', number: 1.2, problems: testProblems } // need to fix the typing on problems
+  { name: 'Test Module Two', number: 1.1, problems: undefined }
 ];
 
 let testModuleIds: number[] = [];
@@ -94,7 +164,7 @@ interface TestCaseInsertInterface {
   problemTitle: string; // Used to lookup fk to Problem
 }
 
-export const insertIntoModule = async (
+export const insertIntoModule = async ( 
   modules: ModuleInterface[],
   connection: Connection
 ): Promise<void> => {
