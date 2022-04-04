@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import { Sequelize } from 'sequelize/types';
+import { Sequelize } from 'sequelize';
 
 const globalAny: any = global;
 
@@ -11,21 +11,6 @@ const connect = async () => {
         : process.env.DB_URI
     );
   }
-};
-
-const mySqlConnect = async (): Promise<Sequelize> => {
-  const sequelize = new Sequelize(
-    process.env.DB_NAME,
-    process.env.DB_USER,
-    process.env.DB_PASSWORD,
-    {
-      host: process.env.host,
-      dialect: 'mysql',
-      logging: false // disable logging of queries
-    }
-  );
-  await sequelize.authenticate();
-  return sequelize;
 };
 
 const truncate = async () => {
@@ -46,4 +31,19 @@ const disconnect = async () => {
   }
 };
 
-export { disconnect, truncate, connect };
+const mySqlConnect = (): Sequelize => {
+  return new Sequelize(
+    process.env.DB_NAME,
+    process.env.DB_USER,
+    process.env.DB_PASSWORD,
+    {
+      host: process.env.DB_HOST,
+      dialect: 'mysql',
+      logging: false // disable logging of queries
+    }
+  );
+};
+
+const sequelize = mySqlConnect();
+
+export { disconnect, truncate, connect, sequelize };

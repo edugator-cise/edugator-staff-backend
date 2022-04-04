@@ -5,6 +5,7 @@ import * as cors from 'cors';
 import * as passport from 'passport';
 import { jwtStrategy } from './passport';
 import * as database from './database';
+
 class Server {
   public app: express.Application;
 
@@ -32,8 +33,11 @@ class Server {
     database.connect();
   }
   public start(): void {
-    //eslint-disable-next-line
-    this.app.listen(8080, () => console.log(`server started on port 8080`));
+    const server = this.app.listen(8080, () => {
+      //eslint-disable-next-line
+      console.log(`server started on port 8080`);
+      server.close(() => database.sequelize.close());
+    });
   }
 }
 
