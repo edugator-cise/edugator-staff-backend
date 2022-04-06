@@ -126,8 +126,6 @@ const buildTestCaseTable = async () => {
       underscored: true
     }
   );
-
-  TestCaseTable.belongsTo(ProblemTable, { foreignKey: 'problem_id' });
 };
 
 let CodeTable: any = null;
@@ -173,14 +171,25 @@ const buildCodeTable = async () => {
       underscored: true
     }
   );
+};
+
+const buildTables = async () => {
+  await buildProblemTable();
+  await buildCodeTable();
+  await buildTestCaseTable();
+};
+
+const relateTables = () => {
+  ProblemTable.hasMany(TestCaseTable, { foreignKey: 'problem_id' });
+  TestCaseTable.belongsTo(ProblemTable, { foreignKey: 'problem_id' });
+  ProblemTable.hasMany(CodeTable, { foreignKey: 'problem_id' });
   CodeTable.belongsTo(ProblemTable, { foreignKey: 'problem_id' });
 };
 
 // Other files should call this function to build the tables
 const buildProblem = async () => {
-  await buildProblemTable();
-  await buildCodeTable();
-  await buildTestCaseTable();
+  await buildTables();
+  relateTables();
 };
 
 export { buildProblem, ProblemTable, CodeTable, TestCaseTable };
