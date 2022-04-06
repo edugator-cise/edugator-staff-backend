@@ -1,4 +1,4 @@
-import { DataTypes, TINYINT } from 'sequelize';
+import { DataTypes } from 'sequelize';
 import { sequelize } from '../../config/database';
 import { buildModuleTable, ModuleTable } from './module.mysql.model';
 
@@ -107,7 +107,7 @@ const buildTestCaseTable = async () => {
         allowNull: false
       },
       visibility: {
-        type: TINYINT,
+        type: DataTypes.TINYINT,
         allowNull: false,
         validate: {
           isIn: [[0, 1, 2]]
