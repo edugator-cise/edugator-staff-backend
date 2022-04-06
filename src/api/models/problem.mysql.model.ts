@@ -72,6 +72,8 @@ const buildProblemTable = async () => {
       underscored: true
     }
   );
+  // TODO: Move this to relateTables function?
+  ModuleTable.hasMany(ProblemTable, { foreignKey: 'module_id' });
   ProblemTable.belongsTo(ModuleTable, { foreignKey: 'module_id' });
 };
 
