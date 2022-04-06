@@ -182,7 +182,7 @@ const buildTables = async () => {
 const relateTables = () => {
   ProblemTable.hasMany(TestCaseTable, { foreignKey: 'problem_id' });
   TestCaseTable.belongsTo(ProblemTable, { foreignKey: 'problem_id' });
-  ProblemTable.hasMany(CodeTable, { foreignKey: 'problem_id' });
+  ProblemTable.hasMany(CodeTable, { foreignKey: 'problem_id' }); // TODO: hasOne or hasMany?
   CodeTable.belongsTo(ProblemTable, { foreignKey: 'problem_id' });
 };
 
