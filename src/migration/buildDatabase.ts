@@ -7,7 +7,10 @@ const connection: Connection = createConnection({
   password: process.env.DB_PASSWORD
 });
 
-const db_name: string = process.env.DB_NAME;
+const db_name: string =
+  process.env.NODE_ENV === 'test'
+    ? process.env.TEST_DB_NAME
+    : process.env.DB_NAME;
 
 connection.connect();
 

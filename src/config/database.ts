@@ -33,7 +33,9 @@ const disconnect = async () => {
 
 const buildSequelize = (): Sequelize => {
   return new Sequelize(
-    process.env.DB_NAME,
+    process.env.NODE_ENV === 'test'
+      ? process.env.TEST_DB_NAME
+      : process.env.DB_NAME,
     process.env.DB_USER,
     process.env.DB_PASSWORD,
     {
