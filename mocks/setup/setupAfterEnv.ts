@@ -8,6 +8,7 @@ require('mysql2/node_modules/iconv-lite').encodingExists('cesu8');
 process.env.NODE_ENV = 'test';
 //eslint-disable-next-line
 beforeAll(async () => {
+  databaseHelper.mySqlConnect();
   await buildModuleTable();
   await buildUserTable();
   await buildProblem();

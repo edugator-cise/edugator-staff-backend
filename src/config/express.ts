@@ -31,12 +31,15 @@ class Server {
 
   private connectDatabase(): void {
     database.connect();
+    database.mySqlConnect();
   }
   public start(): void {
-    const server = this.app.listen(8080, () => {
-      //eslint-disable-next-line
-      console.log(`server started on port 8080`);
-      server.close(() => database.sequelize.close());
+    database.sequelize.authenticate().then(() => {
+      const server = this.app.listen(8080, () => {
+        //eslint-disable-next-line
+        console.log(`server started on port 8080`);
+        server.close(() => database.sequelize.close());
+      });
     });
   }
 }
