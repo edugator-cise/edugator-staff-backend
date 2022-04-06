@@ -19,6 +19,7 @@ beforeEach(() => {
   return databaseHelper.truncate();
 });
 //eslint-disable-next-line
-afterAll(() => {
+afterAll(async () => {
+  await databaseHelper.mySqlDisconnect();
   return databaseHelper.disconnect();
 });

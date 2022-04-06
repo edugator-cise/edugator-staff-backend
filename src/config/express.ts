@@ -37,7 +37,7 @@ class Server {
       const server = this.app.listen(8080, () => {
         //eslint-disable-next-line
         console.log(`server started on port 8080`);
-        server.close(() => database.sequelize.close());
+        server.close(() => database.mySqlDisconnect());
       });
     });
   }

@@ -50,6 +50,17 @@ const mySqlConnect = async () => {
   await sequelize.authenticate();
 };
 
+const mySqlDisconnect = async () => {
+  sequelize.close();
+};
+
 const sequelize: Sequelize = buildSequelize(); // TODO: How should we initialize this?
 
-export { disconnect, truncate, connect, mySqlConnect, sequelize };
+export {
+  disconnect,
+  truncate,
+  connect,
+  mySqlConnect,
+  mySqlDisconnect,
+  sequelize
+};
