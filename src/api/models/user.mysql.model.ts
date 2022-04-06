@@ -8,7 +8,6 @@ const buildUserTable = async () => {
   if (UserTable != null) {
     return; // already built
   }
-  await sequelize.authenticate();
   UserTable = sequelize.define(
     'User',
     {

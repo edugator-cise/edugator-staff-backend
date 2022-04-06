@@ -11,7 +11,6 @@ class Server {
 
   constructor() {
     this.app = express();
-    this.connectDatabase();
     this.config();
     this.routes();
   }
@@ -29,12 +28,12 @@ class Server {
     passport.use('jwt', jwtStrategy);
   }
 
-  private connectDatabase(): void {
+  private async connectDatabase(): Promise<void> {
     database.connect();
-    database.mySqlConnect();
+    await database.mySqlConnect();
   }
   public start(): void {
-    database.sequelize.authenticate().then(() => {
+    this.connectDatabase().then(() => {
       const server = this.app.listen(8080, () => {
         //eslint-disable-next-line
         console.log(`server started on port 8080`);

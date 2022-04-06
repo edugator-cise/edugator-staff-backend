@@ -31,21 +31,23 @@ const disconnect = async () => {
   }
 };
 
-const mySqlConnect = () => {
-  if (sequelize == null) {
-    sequelize = new Sequelize(
-      process.env.DB_NAME,
-      process.env.DB_USER,
-      process.env.DB_PASSWORD,
-      {
-        host: process.env.DB_HOST,
-        dialect: 'mysql',
-        logging: false // disable logging of queries
-      }
-    );
-  }
+const buildSequelize = (): Sequelize => {
+  return new Sequelize(
+    process.env.DB_NAME,
+    process.env.DB_USER,
+    process.env.DB_PASSWORD,
+    {
+      host: process.env.DB_HOST,
+      dialect: 'mysql',
+      logging: false // disable logging of queries
+    }
+  );
 };
 
-let sequelize: Sequelize = null; // TODO: How should we initialize this?
+const mySqlConnect = async () => {
+  await sequelize.authenticate();
+};
+
+const sequelize: Sequelize = buildSequelize(); // TODO: How should we initialize this?
 
 export { disconnect, truncate, connect, mySqlConnect, sequelize };

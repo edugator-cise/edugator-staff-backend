@@ -8,7 +8,6 @@ const buildProblemTable = async () => {
   if (ProblemTable != null) {
     return; // already built
   }
-  await sequelize.authenticate();
   await buildModuleTable();
   ProblemTable = sequelize.define(
     'Problem',
@@ -83,7 +82,6 @@ const buildTestCaseTable = async () => {
   if (TestCaseTable != null) {
     return; // already built
   }
-  await sequelize.authenticate();
   await buildProblemTable();
   TestCaseTable = sequelize.define(
     'TestCase',
@@ -136,7 +134,6 @@ const buildCodeTable = async () => {
   if (CodeTable != null) {
     return; // already built
   }
-  await sequelize.authenticate();
   await buildProblemTable();
   CodeTable = sequelize.define(
     'Code',

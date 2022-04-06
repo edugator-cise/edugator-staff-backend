@@ -8,7 +8,6 @@ const buildModuleTable = async () => {
   if (ModuleTable != null) {
     return; // already built
   }
-  await sequelize.authenticate();
   ModuleTable = sequelize.define(
     'Module',
     {
