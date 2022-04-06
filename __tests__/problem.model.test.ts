@@ -4,7 +4,7 @@ import {
   TestCaseTable
 } from '../src/api/models/problem.mysql.model';
 
-describe('User Sequelize Model', () => {
+describe('Problem Sequelize Model', () => {
   it('checks whether querying works', async () => {
     let problems = null;
     try {
