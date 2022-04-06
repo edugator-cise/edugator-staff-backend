@@ -31,8 +31,10 @@ const disconnect = async () => {
   }
 };
 
-const buildSequelize = (): Sequelize => {
-  return new Sequelize(
+let sequelize: Sequelize = null;
+
+const mySqlConnect = async () => {
+  sequelize = new Sequelize(
     process.env.NODE_ENV === 'test'
       ? process.env.TEST_DB_NAME
       : process.env.DB_NAME,
@@ -44,17 +46,12 @@ const buildSequelize = (): Sequelize => {
       logging: false // disable logging of queries
     }
   );
-};
-
-const mySqlConnect = async () => {
   await sequelize.authenticate();
 };
 
 const mySqlDisconnect = async () => {
   sequelize.close();
 };
-
-const sequelize: Sequelize = buildSequelize(); // TODO: How should we initialize this?
 
 export {
   disconnect,
