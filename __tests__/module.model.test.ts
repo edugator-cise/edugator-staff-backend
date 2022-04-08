@@ -1,20 +1,16 @@
+import { createSampleModule } from '../mocks/module';
 import { ModuleTable } from '../src/api/models/module.mysql.model';
-import { ProblemTable } from '../src/api/models/problem.mysql.model';
 
 describe('Module Sequelize Model', () => {
+  beforeEach(() => {
+    return ModuleTable.create(createSampleModule());
+  });
+
   it('checks whether querying works', async () => {
-    let modules = null;
-    try {
-      modules = await ModuleTable.findAll({
-        include: { model: ProblemTable }
-      });
-    } catch (err) {
-      //eslint-disable-next-line
-      console.log(err);
-    }
+    const modules = await ModuleTable.findAll();
     expect(modules).toBeTruthy();
     expect(modules.length).toBeGreaterThan(0);
+    expect(modules[0]).toMatchObject(createSampleModule());
     //eslint-disable-next-line
-    console.log(JSON.stringify(modules, null, 2));
   });
 });
