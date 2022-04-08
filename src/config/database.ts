@@ -1,5 +1,8 @@
 import * as mongoose from 'mongoose';
 import { Sequelize } from 'sequelize';
+import { buildModuleTable } from '../api/models/module.mysql.model';
+import { buildProblem } from '../api/models/problem.mysql.model';
+import { buildUserTable } from '../api/models/user.mysql.model';
 
 const globalAny: any = global;
 
@@ -47,10 +50,18 @@ const mySqlConnect = async () => {
     }
   );
   await sequelize.authenticate();
+  await buildModuleTable();
+  await buildUserTable();
+  await buildProblem();
 };
 
 const mySqlDisconnect = async () => {
-  sequelize.close();
+  await sequelize.close();
+};
+
+const mySqlTruncate = async () => {
+  await sequelize.query('SET FOREIGN_KEY_CHECKS = 0', { raw: true });
+  await sequelize.truncate({ cascade: true });
 };
 
 export {
@@ -59,5 +70,6 @@ export {
   connect,
   mySqlConnect,
   mySqlDisconnect,
+  mySqlTruncate,
   sequelize
 };

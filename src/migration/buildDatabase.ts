@@ -90,6 +90,8 @@ connection.query(
     module_id INT NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (module_id) REFERENCES Module(id)
+      ON DELETE CASCADE
+      ON UPDATE CASCADE
   )
   `,
   function (err) {
@@ -112,8 +114,8 @@ connection.query(
     problem_id INT NOT NULL UNIQUE,
     PRIMARY KEY (id),
     FOREIGN KEY (problem_id) REFERENCES Problem(id)
+      ON DELETE CASCADE
     	ON UPDATE CASCADE
-	    ON DELETE CASCADE
   )
   `,
   function (err) {
@@ -131,7 +133,9 @@ connection.query(
     visibility TINYINT NOT NULL,
     problem_id INT NOT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (problem_id) REFERENCES Problem(id),
+    FOREIGN KEY (problem_id) REFERENCES Problem(id)
+      ON DELETE CASCADE
+      ON UPDATE CASCADE,
     CONSTRAINT visibility_enumeration
       CHECK (visibility = 0 OR visibility = 1 OR visibility = 2)
   )

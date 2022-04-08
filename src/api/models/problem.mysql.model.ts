@@ -61,8 +61,9 @@ const buildProblemTable = async () => {
         references: {
           model: 'Module',
           key: 'id'
-        }
-        // TODO: specify onDelete behavior
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
       }
     },
     {
@@ -117,7 +118,9 @@ const buildTestCaseTable = async () => {
         references: {
           model: 'Problem',
           key: 'id'
-        }
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
       }
     },
     {
