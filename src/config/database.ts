@@ -46,6 +46,9 @@ const mySqlConnect = async () => {
     {
       host: process.env.DB_HOST,
       dialect: 'mysql',
+      dialectOptions: {
+        decimalNumbers: true // return DECIMAL as number, not string
+      },
       logging: false // disable logging of queries
     }
   );
