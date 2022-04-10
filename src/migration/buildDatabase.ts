@@ -39,6 +39,10 @@ connection.query('DROP TABLE IF EXISTS Module', function (err) {
   if (err) throw err;
 });
 
+connection.query('DROP TABLE IF EXISTS User', function (err) {
+  if (err) throw err;
+});
+
 // Create tables in reverse referential order
 
 /*
