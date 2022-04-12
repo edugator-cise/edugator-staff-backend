@@ -34,4 +34,29 @@ describe('Problem Sequelize Model', () => {
     expect(problems.length).toBeGreaterThan(0);
     expect(problems[0]).toMatchObject(createSamplePayloadMySql());
   });
+
+  it('checks whether updating Problem fields works', async () => {
+    const original = createSamplePayloadMySql();
+    const updatedTitle = 'Updated title';
+    await ProblemTable.update(
+      { title: updatedTitle },
+      {
+        where: {
+          title: original.title
+        }
+      }
+    );
+    const expected = original;
+    expected.title = updatedTitle;
+    const received = await ProblemTable.findOne({
+      where: {
+        title: updatedTitle
+      },
+      include: [
+        { model: TestCaseTable, as: 'testCases' },
+        { model: CodeTable, as: 'code' }
+      ]
+    });
+    expect(received).toMatchObject(expected);
+  });
 });
