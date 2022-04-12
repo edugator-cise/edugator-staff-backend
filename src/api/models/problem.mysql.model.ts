@@ -73,8 +73,8 @@ const buildProblemTable = async () => {
     }
   );
   // TODO: Move this to relateTables function?
-  ModuleTable.hasMany(ProblemTable, { foreignKey: 'module_id' });
-  ProblemTable.belongsTo(ModuleTable, { foreignKey: 'module_id' });
+  ModuleTable.hasMany(ProblemTable, { foreignKey: 'moduleId' });
+  ProblemTable.belongsTo(ModuleTable, { foreignKey: 'moduleId' });
 };
 
 let TestCaseTable: any = null;
@@ -183,17 +183,13 @@ const buildTables = async () => {
 
 const relateTables = () => {
   ProblemTable.TestCases = ProblemTable.hasMany(TestCaseTable, {
-    foreignKey: 'problem_id',
-    as: 'testCases'
+    foreignKey: 'problemId',
+    as: 'testCases' // not 'TestCases'
   });
-  TestCaseTable.belongsTo(ProblemTable, {
-    foreignKey: 'problem_id'
+  ProblemTable.Codes = ProblemTable.hasOne(CodeTable, {
+    foreignKey: 'problemId',
+    as: 'code'
   });
-  ProblemTable.Codes = ProblemTable.hasMany(CodeTable, {
-    foreignKey: 'problem_id',
-    as: 'codes'
-  }); // TODO: hasOne or hasMany?
-  CodeTable.belongsTo(ProblemTable, { foreignKey: 'problem_id' });
 };
 
 // Other files should call this function to build the tables
