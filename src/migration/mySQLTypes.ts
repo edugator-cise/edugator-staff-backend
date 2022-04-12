@@ -46,6 +46,7 @@ interface mySQLUser {
   id: number;
   username: string;
   password: string;
+  name: string;
   salt: number;
   role: string;
 }

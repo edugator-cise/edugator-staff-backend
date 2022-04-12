@@ -26,6 +26,10 @@ const buildUserTable = async () => {
         type: DataTypes.STRING,
         allowNull: false
       },
+      name: {
+        type: DataTypes.STRING(500),
+        allowNull: false
+      },
       salt: {
         type: DataTypes.INTEGER,
         allowNull: false

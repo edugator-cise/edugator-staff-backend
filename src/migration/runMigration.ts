@@ -151,6 +151,7 @@ const transformData = async () => {
       id: userCounter,
       username: mongoUser.username,
       password: mongoUser.password,
+      name: mongoUser.name,
       salt: 1, // need to correct this
       role: mongoUser.role
     };
@@ -247,7 +248,7 @@ const runMigration = async (): Promise<void> => {
 
   for (const mySQLUserArrayValue of mySQLUserArrayValues) {
     connection.query(
-      'INSERT INTO User (id, username, password, salt, role) VALUES (?)',
+      'INSERT INTO User (id, username, password, name, salt, role) VALUES (?)',
       [mySQLUserArrayValue],
       function (err) {
         if (err) throw err;
