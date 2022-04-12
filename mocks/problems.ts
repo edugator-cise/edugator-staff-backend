@@ -79,6 +79,7 @@ const addOrEditField = (samplePayload, field, value) => {
 };
 export {
   createSampleProblem,
+  createSampleProblemMySql,
   createSamplePayload,
   createSamplePayloadMySql,
   addOrEditField
