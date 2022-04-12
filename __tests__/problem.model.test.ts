@@ -59,4 +59,39 @@ describe('Problem Sequelize Model', () => {
     });
     expect(received).toMatchObject(expected);
   });
+
+  it('checks whether updating Problem nested data works', async () => {
+    const original = createSamplePayloadMySql();
+    const newTestInput = '456';
+    await ProblemTable.findOne({
+      where: {
+        title: original.title
+      },
+      include: [
+        { model: TestCaseTable, as: 'testCases' },
+        { model: CodeTable, as: 'code' }
+      ]
+    }).then(async (problem) => {
+      await TestCaseTable.update(
+        { input: newTestInput },
+        {
+          where: {
+            id: problem.testCases[0].id
+          }
+        }
+      );
+    });
+    const expected = original;
+    expected.testCases[0].input = newTestInput;
+    const received = await ProblemTable.findOne({
+      where: {
+        title: original.title
+      },
+      include: [
+        { model: TestCaseTable, as: 'testCases' },
+        { model: CodeTable, as: 'code' }
+      ]
+    });
+    expect(received).toMatchObject(expected);
+  });
 });
