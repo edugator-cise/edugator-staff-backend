@@ -16,7 +16,7 @@ describe('User Sequelize Model', () => {
     username: 'a new username',
     role: 'TA',
     salt: 1
-  }
+  };
 
   beforeEach(async () => {
     const pass = 'password';
