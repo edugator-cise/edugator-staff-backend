@@ -99,7 +99,7 @@ describe('User Sequelize Model', () => {
       expect(originalUsers.length).toBeGreaterThan(0);
       expect(originalUsers[0]).toMatchObject(sampleUser);
       await UserTable.update(
-        { username: 'a new username' },
+        { username: updatedUser.username },
         { where: { username: originalUsers[0].username } }
       );
       updatedUsers = await UserTable.findAll();
