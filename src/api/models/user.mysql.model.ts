@@ -1,6 +1,17 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../../config/database';
 
+interface User {
+  name: string;
+  username: string;
+  password: string;
+  role: string;
+}
+
+interface IUser extends User {
+  id: number;
+}
+
 // Remains null until buildUserTable is called
 let UserTable: any = null;
 
@@ -46,4 +57,4 @@ const buildUserTable = async () => {
   );
 };
 
-export { UserTable, buildUserTable };
+export { IUser, UserTable, buildUserTable };
