@@ -94,4 +94,40 @@ describe('Problem Sequelize Model', () => {
     });
     expect(received).toMatchObject(expected);
   });
+
+  it('checks whether deleting Problem works', async () => {
+    const original = await ProblemTable.findOne({
+      where: {
+        title: createSamplePayloadMySql().title
+      },
+      include: [
+        { model: TestCaseTable, as: 'testCases' },
+        { model: CodeTable, as: 'code' }
+      ]
+    });
+    await ProblemTable.destroy({
+      where: {
+        title: original.title
+      }
+    });
+    let response = null;
+    response = await ProblemTable.findAndCountAll({
+      where: {
+        title: original.title
+      }
+    });
+    expect(response.count).toBe(0);
+    response = await TestCaseTable.findAndCountAll({
+      where: {
+        problemId: original.id
+      }
+    });
+    expect(response.count).toBe(0);
+    response = await CodeTable.findAndCountAll({
+      where: {
+        problemId: original.id
+      }
+    });
+    expect(response.count).toBe(0);
+  });
 });
