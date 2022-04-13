@@ -107,7 +107,17 @@ describe('Problem Sequelize Model', () => {
     });
     await ProblemTable.destroy({
       where: {
-        title: original.title
+        id: original.id
+      }
+    });
+    await CodeTable.destroy({
+      where: {
+        problemId: original.id
+      }
+    });
+    await TestCaseTable.destroy({
+      where: {
+        problemId: original.id
       }
     });
     let response = null;
