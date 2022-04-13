@@ -1,4 +1,4 @@
-import { createSampleModule } from '../mocks/module';
+import { createSampleModule, createSampleModulePayloadMySql } from '../mocks/module';
 import { createSampleProblemMySql } from '../mocks/problems';
 import { ModuleTable } from '../src/api/models/module.mysql.model';
 import {
@@ -6,6 +6,8 @@ import {
   TestCaseTable,
   CodeTable
 } from '../src/api/models/problem.mysql.model';
+
+jest.setTimeout(10000);
 
 describe('Module Sequelize Model', () => {
   beforeEach(() => {
@@ -73,9 +75,22 @@ describe('Module Sequelize Model', () => {
     expect(modules[0].problems[0]).toMatchObject(createSampleProblemMySql());
   });
 
-  it('checks whether deleting all works', async () => {
-    await ModuleTable.destroy({ where: {} });
-    const modules = await ModuleTable.findAll({
+  it('checks whether updating Module field works', async () => {
+    const original = createSampleModulePayloadMySql();
+    await ModuleTable.update(
+      { number: 5.2 },
+      {
+        where: {
+          number: original.number
+        }
+      }
+    );
+    const expected = original;
+    expected.number = 5.2;
+    const received = await ModuleTable.findOne({
+      where: {
+        number: 5.2
+      },
       include: [
         {
           model: ProblemTable,
@@ -87,7 +102,55 @@ describe('Module Sequelize Model', () => {
         }
       ]
     });
+    expect(received).toMatchObject(expected);
+  });
 
-
-  })
+  it('checks whether deleting all works', async () => {
+    const original = await ModuleTable.findOne({
+      where: { number: 5.1 },
+      include: [
+        {
+          model: ProblemTable,
+          as: 'problems',
+          include: [
+            { model: TestCaseTable, as: 'testCases' },
+            { model: CodeTable, as: 'code' }
+          ]
+        }
+      ]
+    });
+    await ModuleTable.destroy({
+      where: { id: original.id }
+    });
+    await ProblemTable.destroy({
+      where: { moduleId: original.id }
+    });
+    for (const problem of original.problems) {
+      await CodeTable.destroy({
+        where: { problemId: problem.id }
+      });
+      await TestCaseTable.destroy({
+        where: { problemId: problem.id }
+      });
+    }
+    let response = null;
+    response = await ModuleTable.findAndCountAll({
+      where: { number: 5.1 }
+    });
+    expect(response.count).toBe(0);
+    response = await ProblemTable.findAndCountAll({
+      where: { moduleId: original.id }
+    });
+    expect(response.count).toBe(0);
+    for (const problem of original.problems) {
+      response = await CodeTable.findAndCountAll({
+        where: { problemId: problem.id }
+      });
+      expect(response.count).toBe(0);
+      response = await TestCaseTable.findAndCountAll({
+        where: { problemId: problem.id }
+      });
+      expect(response.count).toBe(0);
+    }
+  });
 });
