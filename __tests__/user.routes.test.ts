@@ -1,14 +1,12 @@
 import { expressApp } from '../src/config/express';
 import * as request from 'supertest';
-import { UserModel, IUser } from '../src/api/models/user.model';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { jwtSecret } from '../src/config/vars';
+import { UserTable, IUser } from '../src/api/models/user.mysql.model';
 
 describe('GET /user/*', () => {
-  let user: IUser;
   let user1: IUser;
-  let superUser: IUser;
 
   // Auth token for the routess
   const professorToken = jwt.sign(
@@ -41,30 +39,29 @@ describe('GET /user/*', () => {
     });
 
     if (result) {
-      user = await UserModel.create({
+      await UserTable.create({
         name: 'Test TA',
         username: 'testTA@gmail.com',
         password: hashedPassword,
-        role: 'TA'
+        role: 'TA',
+        salt: 10
       });
 
-      user1 = await UserModel.create({
+      user1 = await UserTable.create({
         name: 'Test TA 1',
         username: 'testTA1@gmail.com',
         password: hashedPassword,
-        role: 'TA'
+        role: 'TA',
+        salt: 10
       });
 
-      superUser = await UserModel.create({
+      await UserTable.create({
         name: 'Test Professor',
         username: 'testProfessor@gmail.com',
         password: hashedPassword,
-        role: 'Professor'
+        role: 'Professor',
+        salt: 10
       });
-
-      await user.save();
-      await user1.save();
-      await superUser.save();
     } else {
       throw { message: 'Hash method not working properly' };
     }
@@ -245,7 +242,23 @@ describe('GET /user/*', () => {
         role: 'TA'
       });
     expect(result4.statusCode).toEqual(400);
-    expect(result4.text).toEqual('This route requires a valid user ID');
+    expect(result4.text).toEqual(
+      JSON.stringify({
+        message: '_id must be a number'
+      })
+    );
+
+    const result5: request.Response = await request(expressApp)
+      .put('/v1/user/updateUser')
+      .set('Authorization', 'bearer ' + professorToken)
+      .send({
+        _id: user1.id + 0.01,
+        name: 'testTA1',
+        username: 'testTA1@gmail.com',
+        role: 'TA'
+      });
+    expect(result5.statusCode).toEqual(400);
+    expect(result5.text).toEqual('This route requires a valid user ID');
   });
 
   // updateUser
@@ -322,7 +335,7 @@ describe('GET /user/*', () => {
       .set('Authorization', 'bearer ' + professorToken)
       .send({
         // username not in DB
-        _id: '123456789012345678901234',
+        _id: 10000000,
         name: 'testTA',
         username: 'testta@gmail.com',
         role: 'Professor'

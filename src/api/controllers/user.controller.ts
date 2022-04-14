@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { UserModel, IUser } from '../models/user.model';
 import * as bcrypt from 'bcrypt';
-import * as validator from 'validator';
+import validator from 'validator';
 import userValidation from '../validation/user.validation';
+import { UserTable, IUser } from '../models/user.mysql.model';
 
 const getUsers = async (_req: Request, res: Response): Promise<void> => {
   if (res.locals.role !== 'Professor') {
@@ -16,7 +16,11 @@ const getUsers = async (_req: Request, res: Response): Promise<void> => {
   let users: IUser[];
   try {
     //Find All modules
-    users = await UserModel.find().select('-password').sort({ role: 1 });
+    // users = await UserModel.find().select('-password').sort({ role: 1 });
+    users = await UserTable.findAll({
+      attributes: { exclude: ['password'] },
+      order: [['role', 'ASC']]
+    });
     const responseObject = {
       users: users,
       currentUser: res.locals.username
@@ -49,8 +53,8 @@ const updateUser = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    // Check to make sure ID is a valid mongoID
-    if (!validator.isMongoId(req.body._id)) {
+    // Check to make sure ID is an integer
+    if (!validator.isInt(req.body._id + '')) {
       res.status(400).send('This route requires a valid user ID');
       return;
     }
@@ -58,16 +62,17 @@ const updateUser = async (req: Request, res: Response): Promise<void> => {
     // let user: IUser;
     let tempUser: IUser;
     // Find the user by ID
-    const user = await UserModel.findOne({
-      _id: req.body._id
-    }).select('-password');
+    const user = await UserTable.findOne({
+      attributes: { exclude: ['password'] },
+      where: { id: req.body._id }
+    });
 
     // Confirm they are modifying the username
     if (user) {
       if (user.username !== req.body.username) {
         // If modifying, make sure the username is not taken by anyone else
-        tempUser = await UserModel.findOne({
-          username: req.body.username
+        tempUser = await UserTable.findOne({
+          where: { username: req.body.username }
         });
 
         // If taken, then send an error
@@ -132,30 +137,29 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
         //Add into collection, if the password hashed properly
         try {
           if (result) {
-            const user = new UserModel({
-              name: req.body.name,
-              username: req.body.username,
-              password: hash,
-              role: req.body.role
-            });
-            await user.save(function (err) {
-              if (err) {
-                // Monogo DB error
-                if (err.code === 11000) {
-                  // Duplicate username
-                  return res.status(403).send({
-                    message: 'This username is already taken'
-                  });
-                }
-                return res.status(422).send(err);
-              }
-
-              return res.status(200).send(
+            try {
+              const user = await UserTable.create({
+                name: req.body.name,
+                username: req.body.username,
+                password: hash,
+                role: req.body.role,
+                salt: saltRounds
+              });
+              res.status(200).send(
                 JSON.stringify({
                   id: user._id
                 })
               );
-            });
+            } catch (err) {
+              if (err.name == 'SequelizeUniqueConstraintError') {
+                // Duplicate username
+                res.status(403).send({
+                  message: 'This username is already taken'
+                });
+              } else {
+                throw err;
+              }
+            }
           } else {
             throw { message: 'Password hashing failed' };
           }
@@ -178,10 +182,9 @@ const deleteUser = async (req: Request, res: Response): Promise<void> => {
     return;
   }
 
-  let user: IUser;
   try {
-    user = await UserModel.findOneAndDelete({
-      username: req.body.username
+    const user = await UserTable.findOne({
+      where: { username: req.body.username }
     });
 
     if (!user) {
@@ -191,7 +194,7 @@ const deleteUser = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    await user.delete();
+    await user.destroy();
     res.status(200).type('json').send({ message: 'User successfully deleted' });
     return;
   } catch (err) {
