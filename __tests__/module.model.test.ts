@@ -1,4 +1,7 @@
-import { createSampleModule, createSampleModulePayloadMySql } from '../mocks/module';
+import {
+  createSampleModule,
+  createSampleModulePayloadMySql
+} from '../mocks/module';
 import { createSampleProblemMySql } from '../mocks/problems';
 import { ModuleTable } from '../src/api/models/module.mysql.model';
 import {
