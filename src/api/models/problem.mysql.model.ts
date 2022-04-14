@@ -12,6 +12,7 @@ const buildProblemTable = async () => {
   ProblemTable = sequelize.define(
     'Problem',
     {
+      // TODO: This needs to be renamed to _id to be compatible with frontend
       id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -84,6 +85,7 @@ const buildTestCaseTable = async () => {
   TestCaseTable = sequelize.define(
     'TestCase',
     {
+      // TODO: This needs to be renamed to _id to be compatible with frontend
       id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -138,6 +140,7 @@ const buildCodeTable = async () => {
   CodeTable = sequelize.define(
     'Code',
     {
+      // TODO: This needs to be renamed to _id to be compatible with frontend
       id: {
         type: DataTypes.INTEGER,
         allowNull: false,

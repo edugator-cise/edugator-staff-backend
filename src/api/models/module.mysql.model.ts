@@ -11,6 +11,7 @@ const buildModuleTable = async () => {
   ModuleTable = sequelize.define(
     'Module',
     {
+      // TODO: This needs to be renamed to _id to be compatible with frontend
       id: {
         type: DataTypes.INTEGER,
         allowNull: false,
