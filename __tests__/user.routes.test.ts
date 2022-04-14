@@ -118,7 +118,7 @@ describe('GET /user/*', () => {
       .put('/v1/user/updateUser')
       .set('Authorization', 'bearer ' + professorToken)
       .send({
-        _id: user1.id,
+        _id: user1._id,
         name: 'testTA1',
         username: 'testTA1@gmail.com',
         role: 'Professor'
@@ -134,7 +134,7 @@ describe('GET /user/*', () => {
       .put('/v1/user/updateUser')
       .set('Authorization', 'bearer ' + taToken)
       .send({
-        _id: user1.id,
+        _id: user1._id,
         name: 'testTA1',
         username: 'testTA1@gmail.com',
         role: 'Professor'
@@ -155,7 +155,7 @@ describe('GET /user/*', () => {
       .put('/v1/user/updateUser')
       .set('Authorization', 'bearer ' + 'invalidToken')
       .send({
-        _id: user1.id,
+        _id: user1._id,
         name: 'testTA1',
         username: 'testTA1@gmail.com',
         role: 'Invalid Role'
@@ -172,7 +172,7 @@ describe('GET /user/*', () => {
       .put('/v1/user/updateUser')
       .set('Authorization', 'bearer ' + professorToken)
       .send({
-        _id: user1.id,
+        _id: user1._id,
         name: 'testTA1',
         username: 'testTA1@gmail.com',
         role: 'Invalid Role'
@@ -188,7 +188,7 @@ describe('GET /user/*', () => {
       .put('/v1/user/updateUser')
       .set('Authorization', 'bearer ' + professorToken)
       .send({
-        _id: user1.id,
+        _id: user1._id,
         name: 12,
         username: 'testTA1@gmail.com',
         role: 'Invalid Role'
@@ -204,7 +204,7 @@ describe('GET /user/*', () => {
       .put('/v1/user/updateUser')
       .set('Authorization', 'bearer ' + professorToken)
       .send({
-        _id: user1.id,
+        _id: user1._id,
         name: 'testTA1',
         username: 10,
         role: 'Invalid Role'
@@ -220,7 +220,7 @@ describe('GET /user/*', () => {
       .put('/v1/user/updateUser')
       .set('Authorization', 'bearer ' + professorToken)
       .send({
-        _id: user1.id,
+        _id: user1._id,
         name: 'testTA1',
         username: 'testTA1@gmail.com',
         role: 12
@@ -236,7 +236,7 @@ describe('GET /user/*', () => {
       .put('/v1/user/updateUser')
       .set('Authorization', 'bearer ' + professorToken)
       .send({
-        _id: user1.id + 'dhruv',
+        _id: user1._id + 'dhruv',
         name: 'testTA1',
         username: 'testTA1@gmail.com',
         role: 'TA'
@@ -252,7 +252,7 @@ describe('GET /user/*', () => {
       .put('/v1/user/updateUser')
       .set('Authorization', 'bearer ' + professorToken)
       .send({
-        _id: user1.id + 0.01,
+        _id: user1._id + 0.01,
         name: 'testTA1',
         username: 'testTA1@gmail.com',
         role: 'TA'
@@ -269,7 +269,7 @@ describe('GET /user/*', () => {
       .put('/v1/user/updateUser')
       .set('Authorization', 'bearer ' + professorToken)
       .send({
-        _id: user1.id,
+        _id: user1._id,
         username: 'testTA1@gmail.com',
         role: 'TA'
       });
@@ -284,7 +284,7 @@ describe('GET /user/*', () => {
       .put('/v1/user/updateUser')
       .set('Authorization', 'bearer ' + professorToken)
       .send({
-        _id: user1.id,
+        _id: user1._id,
         name: 'Test TA 1',
         role: 'TA'
       });
@@ -299,7 +299,7 @@ describe('GET /user/*', () => {
       .put('/v1/user/updateUser')
       .set('Authorization', 'bearer ' + professorToken)
       .send({
-        _id: user1.id,
+        _id: user1._id,
         name: 'Test TA 1',
         username: 'testTA1@gmail.com'
       });
@@ -355,7 +355,7 @@ describe('GET /user/*', () => {
       .set('Authorization', 'bearer ' + professorToken)
       .send({
         // username not in DB
-        _id: user1.id,
+        _id: user1._id,
         name: 'testTA1',
         username: 'testTA@gmail.com',
         role: 'Professor'

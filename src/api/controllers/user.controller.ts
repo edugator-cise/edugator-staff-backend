@@ -64,7 +64,7 @@ const updateUser = async (req: Request, res: Response): Promise<void> => {
     // Find the user by ID
     const user = await UserTable.findOne({
       attributes: { exclude: ['password'] },
-      where: { id: req.body._id }
+      where: { _id: req.body._id }
     });
 
     // Confirm they are modifying the username

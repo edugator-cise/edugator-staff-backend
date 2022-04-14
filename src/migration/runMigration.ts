@@ -248,7 +248,7 @@ const runMigration = async (): Promise<void> => {
 
   for (const mySQLUserArrayValue of mySQLUserArrayValues) {
     connection.query(
-      'INSERT INTO User (id, username, password, name, salt, role) VALUES (?)',
+      'INSERT INTO User (_id, username, password, name, salt, role) VALUES (?)',
       [mySQLUserArrayValue],
       function (err) {
         if (err) throw err;
