@@ -108,6 +108,59 @@ describe('Module Sequelize Model', () => {
     expect(received).toMatchObject(expected);
   });
 
+  it('checks whether updating nested Module data works', async () => {
+    const original = createSampleModulePayloadMySql();
+    const newTestInput = '456';
+    await ModuleTable.findOne({
+      where: {
+        number: original.number
+      },
+      include: [
+        {
+          model: ProblemTable,
+          as: 'problems',
+          include: [
+            { model: TestCaseTable, as: 'testCases' },
+            { model: CodeTable, as: 'code' }
+          ]
+        }
+      ]
+    }).then(async (module) => {
+      for (const problem of module.problems) {
+        await TestCaseTable.update(
+          { input: newTestInput },
+          {
+            where: {
+              id: problem.testCases[0].id
+            }
+          }
+        );
+      }
+    });
+    const expected = original;
+    for (let i = 0; i < expected.problems.length; i++) {
+      for (let j = 0; j < expected.problems[i].testCases.length; j++) {
+        expected.problems[i].testCases[j].input = newTestInput;
+      }
+    }
+    const received = await ModuleTable.findOne({
+      where: {
+        number: original.number
+      },
+      include: [
+        {
+          model: ProblemTable,
+          as: 'problems',
+          include: [
+            { model: TestCaseTable, as: 'testCases' },
+            { model: CodeTable, as: 'code' }
+          ]
+        }
+      ]
+    });
+    expect(received).toMatchObject(expected);
+  });
+
   it('checks whether deleting all works', async () => {
     const original = await ModuleTable.findOne({
       where: { number: 5.1 },
