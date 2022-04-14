@@ -14,7 +14,7 @@ const userValidation = (
     return schema.validate(data);
   } else {
     const schema = Joi.object({
-      _id: Joi.string().required(),
+      _id: Joi.number().required(),
       name: Joi.string().required(),
       username: Joi.string().email().required(),
       role: Joi.string().valid('Professor', 'TA').required()

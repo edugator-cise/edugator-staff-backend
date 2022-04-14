@@ -152,13 +152,13 @@ connection.query(
 connection.query(
   `
   CREATE TABLE IF NOT EXISTS User (
-    id INT NOT NULL AUTO_INCREMENT,
+    _id INT NOT NULL AUTO_INCREMENT,
     username VARCHAR(500) NOT NULL UNIQUE,
     password VARCHAR(500) NOT NULL,
     name VARCHAR(500) NOT NULL,
     salt INT NOT NULL,
     role ENUM('Professor', 'TA') NOT NULL,
-    PRIMARY KEY (id)
+    PRIMARY KEY (_id)
   )
   `,
   function (err) {

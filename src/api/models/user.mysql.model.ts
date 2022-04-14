@@ -9,7 +9,7 @@ interface User {
 }
 
 interface IUser extends User {
-  id: number;
+  _id: number;
 }
 
 // Remains null until buildUserTable is called
@@ -22,7 +22,7 @@ const buildUserTable = async () => {
   UserTable = sequelize.define(
     'User',
     {
-      id: {
+      _id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         primaryKey: true,
