@@ -11,7 +11,7 @@ import {
 import { ModuleTable, IModule } from '../models/module.mysql.model';
 import {
   problemValidation,
-  problemValidationWithoutModuleId,
+  problemValidationWithoutIdsRequired,
   validateTestCases,
   TestCaseVisibility
 } from '../validation/problem.validation';
@@ -213,7 +213,7 @@ const createProblem = async (
       return res.status(404).send('Module not found!');
     }
 
-    const savedProblem = ProblemTable.create(
+    const savedProblem = await ProblemTable.create(
       {
         statement: req.body.statement,
         title: req.body.title,
@@ -255,7 +255,7 @@ const updateProblem = async (
   req: Request,
   res: Response
 ): Promise<Response<any, Record<string, any>>> => {
-  const { error } = problemValidationWithoutModuleId(req.body);
+  const { error } = problemValidationWithoutIdsRequired(req.body);
   if (error) {
     return res.status(400).send(error.details[0].message);
   }

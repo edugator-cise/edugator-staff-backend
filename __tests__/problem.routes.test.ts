@@ -294,7 +294,7 @@ describe('GET /', () => {
     expect(result.statusCode).toEqual(200);
 
     // Ensure 200 status code and two (unhidden) problems
-    result = await request(expressApp).get(
+    result = await request(expressApp).get( 
       `/v1/student/problem/findByModule/${moduleId}`
     );
     expect(result.statusCode).toEqual(200);

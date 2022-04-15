@@ -26,7 +26,7 @@ const validateTestCases = (testCases: any) => {
 //Joi does not allow empty strings by default (Reason why 'min(1)' is not in the validation for strings)
 const problemValidation = (data: any): ValidationResult => {
   const schema = object({
-    moduleId: string().min(24).max(24).required(),
+    moduleId: number().required(),
     statement: string().required(),
     title: string().required(),
     hidden: boolean().required(),
@@ -35,14 +35,16 @@ const problemValidation = (data: any): ValidationResult => {
     code: {
       header: string().allow('').required(),
       body: string().allow('').required(),
-      footer: string().allow('').required()
+      footer: string().allow('').required(),
+      problemId: number()
     },
     fileExtension: string().valid('.java', '.cpp', '.h').min(1).required(),
     testCases: array().items({
       input: string().required(),
       expectedOutput: string().allow('').required(),
       hint: string().allow('').required(),
-      visibility: number().valid(0, 1, 2).required()
+      visibility: number().valid(0, 1, 2).required(),
+      problemId: number()
     }),
     templatePackage: string().uri().required(),
     timeLimit: number(),
@@ -53,9 +55,9 @@ const problemValidation = (data: any): ValidationResult => {
   return schema.validate(data);
 };
 
-const problemValidationWithoutModuleId = (data: any): ValidationResult => {
+const problemValidationWithoutIdsRequired = (data: any): ValidationResult => {
   const schema = object({
-    moduleId: string().min(24).max(24),
+    moduleId: number(),
     statement: string().required(),
     title: string().required(),
     hidden: boolean().required(),
@@ -64,14 +66,16 @@ const problemValidationWithoutModuleId = (data: any): ValidationResult => {
     code: {
       header: string().allow('').required(),
       body: string().allow('').required(),
-      footer: string().allow('').required()
+      footer: string().allow('').required(),
+      problemId: number()
     },
     fileExtension: string().valid('.java', '.cpp', '.h').min(1).required(),
     testCases: array().items({
       input: string().required(),
       expectedOutput: string().allow('').required(),
       hint: string().allow('').required(),
-      visibility: number().valid(0, 1, 2).required()
+      visibility: number().valid(0, 1, 2).required(),
+      problem: number()
     }),
     templatePackage: string().uri().required(),
     timeLimit: number(),
@@ -84,7 +88,7 @@ const problemValidationWithoutModuleId = (data: any): ValidationResult => {
 
 export {
   problemValidation,
-  problemValidationWithoutModuleId,
+  problemValidationWithoutIdsRequired,
   validateTestCases,
   TestCaseVisibility
 };

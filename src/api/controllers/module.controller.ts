@@ -126,7 +126,7 @@ export const getModulesWithProblems = async (
   _req: Request,
   res: Response
 ): Promise<void> => {
-  let modules: ModuleInterface[];
+  let modules: IModule[];
   try {
     //Find All modules
     // modules = await Module.find()
