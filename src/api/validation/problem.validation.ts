@@ -75,7 +75,7 @@ const problemValidationWithoutIdsRequired = (data: any): ValidationResult => {
       expectedOutput: string().allow('').required(),
       hint: string().allow('').required(),
       visibility: number().valid(0, 1, 2).required(),
-      problem: number().integer()
+      problemId: number().integer()
     }),
     templatePackage: string().uri().required(),
     timeLimit: number(),

@@ -16,7 +16,6 @@ import {
   TestCaseVisibility
 } from '../validation/problem.validation';
 import validator from 'validator';
-import { Problem } from '../models/problem.model';
 
 const filterOpenTestCases = (testCases: TestCase[]): TestCase[] => {
   return testCases.filter(
@@ -94,7 +93,7 @@ const readStudentProblems = async (
     // studentProblems = await Problem.find({
     //   hidden: false
     // });
-    studentProblems = await ProblemTable.find({
+    studentProblems = await ProblemTable.findAll({
       where: { hidden: false },
       include: [
         { model: TestCaseTable, as: 'testCases' },
@@ -281,7 +280,7 @@ const updateProblem = async (
     //   },
     //   { new: true }
     // );
-    const problem = await Problem.findOne({
+    const problem = await ProblemTable.findOne({
       where: { id: req.params.problemId }
     });
     if (!problem) {

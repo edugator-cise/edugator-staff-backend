@@ -9,6 +9,8 @@ import { ModuleTable } from '../src/api/models/module.mysql.model';
 import { ProblemTable } from '../src/api/models/problem.mysql.model';
 import { createSamplePayloadMySql, addOrEditField } from '../mocks/problems';
 
+jest.setTimeout(10000);
+
 describe('GET /', () => {
   const token = jwt.sign(
     { username: 'dhruv2000patel@gmail.com', role: 'TA' },
