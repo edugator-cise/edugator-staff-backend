@@ -137,8 +137,8 @@ describe('GET /', () => {
     expect(result.statusCode).toEqual(400);
   });
 
-  it('attempts to create a problem with a nonexistent moduleId', async () => {
-    const sampleProblem = createSamplePayloadMySql(10101010101010101010101);
+  it.only('attempts to create a problem with a nonexistent moduleId', async () => {
+    const sampleProblem = createSamplePayloadMySql(100000);
     const result = await request(expressApp)
       .post('/v1/admin/problem')
       .set('Authorization', 'bearer ' + token)
