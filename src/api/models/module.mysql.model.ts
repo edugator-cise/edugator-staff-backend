@@ -9,7 +9,7 @@ interface Module {
 }
 
 interface IModule extends Module {
-  _id: number;
+  id: number; // TODO: Convert to _id
 }
 
 // Remains null until buildModuleTable is called

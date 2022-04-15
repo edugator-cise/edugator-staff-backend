@@ -4,17 +4,17 @@ import { buildModuleTable, ModuleTable } from './module.mysql.model';
 
 interface TestCase {
   input: string;
-  expected_output: string;
+  expectedOutput: string;
   hint: string;
   visibility: number;
-  problem_id: number;
+  problemId: number;
 }
 
 interface Code {
   header?: string;
   body?: string;
   footer?: string;
-  problem_id: number;
+  problemId: number;
 }
 
 interface Problem {
@@ -22,19 +22,19 @@ interface Problem {
   title: string;
   hidden: boolean;
   language: string;
-  due_date: Date;
-  file_extension: string;
-  template_package: string;
-  time_limit?: number;
-  memory_limit?: number;
-  build_command?: string;
-  module_id: number;
+  dueDate: Date;
+  fileExtension: string;
+  templatePackage: string;
+  timeLimit?: number;
+  memoryLimit?: number;
+  buildCommand?: string;
+  moduleId: number;
   code: Code;
-  test_cases: TestCase[];
+  testCases: TestCase[];
 }
 
 interface IProblem extends Problem {
-  _id: number;
+  id: number;
 }
 
 let ProblemTable: any = null;
@@ -243,5 +243,6 @@ export {
   CodeTable,
   TestCaseTable,
   Problem,
-  IProblem
+  IProblem,
+  TestCase
 };
