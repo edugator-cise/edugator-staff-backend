@@ -1,22 +1,22 @@
 import { Request, Response } from 'express';
 import { Types } from 'mongoose';
-import {
-  Module,
-  ModuleDocument,
-  ModuleInterface
-} from '../models/module.model';
+import { Module, IModule, ModuleTable } from '../models/module.mysql.model';
 import { Problem } from '../models/problem.model';
-import * as validator from 'validator';
+import validator from 'validator';
 import moduleValidation from '../validation/module.validation';
 
 export const getModules = async (
   _req: Request,
   res: Response
 ): Promise<void> => {
-  let modules: ModuleInterface[];
+  let modules: IModule[];
   try {
     //Find All modules
-    modules = await Module.find().select('-problems').sort({ number: 1 });
+    // modules = await Module.find().select('-problems').sort({ number: 1 });
+    modules = await ModuleTable.findAll({
+      attributes: { exclude: ['problems'] },
+      order: [['number', 'ASC']]
+    });
     res.status(200).send(modules);
   } catch (err) {
     res.status(400).type('json').send(err);
@@ -28,13 +28,14 @@ export const getModulesWithNonHiddenProblemsAndTestCases = async (
   res: Response
 ): Promise<void> => {
   try {
-    const modules = await Module.find()
-      .populate({
-        path: 'problems',
-        select: 'id title',
-        match: { hidden: false }
-      })
-      .sort({ number: 1 });
+    // const modules = await Module.find()
+    //   .populate({
+    //     path: 'problems',
+    //     select: 'id title',
+    //     match: { hidden: false }
+    //   })
+    //   .sort({ number: 1 });
+    const modules = await ModuleTable.find()
     res.status(200).send(modules);
   } catch (err) {
     res.status(400).send(err);
@@ -47,7 +48,7 @@ export const getModuleByID = async (
 ): Promise<void> => {
   let modules: ModuleDocument;
   try {
-    if (!validator.isMongoId(req.params.moduleId)) {
+    if (!validator.isInt(req.params.moduleId + '')) {
       throw { message: 'This route requires a valid module ID' };
     }
 
@@ -70,7 +71,7 @@ export const getModuleByProblemId = async (
   req: Request,
   res: Response
 ): Promise<Response<any, Record<string, any>>> => {
-  if (!validator.isMongoId(req.params.problemId)) {
+  if (!validator.isInt(req.params.moduleId + '')) {
     return res.status(400).send('This route requires a valid problem ID');
   }
   // Get all modules
@@ -150,7 +151,7 @@ export const postModules = async (
 export const putModule = async (req: Request, res: Response): Promise<void> => {
   // makes sure there is a moduleId given in the params
   try {
-    if (!validator.isMongoId(req.params.moduleId)) {
+    if (!validator.isInt(req.params.moduleId + '')) {
       throw { message: 'This route requires a valid module ID' };
     }
 

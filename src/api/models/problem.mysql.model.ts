@@ -2,6 +2,41 @@ import { DataTypes } from 'sequelize';
 import { sequelize } from '../../config/database';
 import { buildModuleTable, ModuleTable } from './module.mysql.model';
 
+interface TestCase {
+  input: string;
+  expected_output: string;
+  hint: string;
+  visibility: number;
+  problem_id: number;
+}
+
+interface Code {
+  header?: string;
+  body?: string;
+  footer?: string;
+  problem_id: number;
+}
+
+interface Problem {
+  statement: string;
+  title: string;
+  hidden: boolean;
+  language: string;
+  due_date: Date;
+  file_extension: string;
+  template_package: string;
+  time_limit?: number;
+  memory_limit?: number;
+  build_command?: string;
+  module_id: number;
+  code: Code;
+  test_cases: TestCase[];
+}
+
+interface IProblem extends Problem {
+  _id: number;
+}
+
 let ProblemTable: any = null;
 
 const buildProblemTable = async () => {
@@ -202,4 +237,11 @@ const buildProblem = async () => {
   relateTables();
 };
 
-export { buildProblem, ProblemTable, CodeTable, TestCaseTable };
+export {
+  buildProblem,
+  ProblemTable,
+  CodeTable,
+  TestCaseTable,
+  Problem,
+  IProblem
+};

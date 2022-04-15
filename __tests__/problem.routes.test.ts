@@ -1,11 +1,13 @@
 import { expressApp } from '../src/config/express';
 import * as request from 'supertest';
-import { UserModel } from '../src/api/models/user.model';
-import { createSamplePayload, addOrEditField } from '../mocks/problems';
-import { Module, ModuleInterface } from '../src/api/models/module.model';
+import { Module } from '../src/api/models/module.mysql.model';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { jwtSecret } from '../src/config/vars';
+import { UserTable } from '../src/api/models/user.mysql.model';
+import { ModuleTable } from '../src/api/models/module.mysql.model';
+import { ProblemTable } from '../src/api/models/problem.mysql.model';
+import { createSamplePayloadMySql, addOrEditField } from '../mocks/problems';
 
 describe('GET /', () => {
   const token = jwt.sign(
@@ -33,23 +35,45 @@ describe('GET /', () => {
 
     if (result) {
       //User creation for token
-      await UserModel.create({
+
+      await UserTable.create({
         name: 'Test TA',
-        username: 'dhruv2000patel@gmail.com',
+        username: 'testTA@gmail.com',
         password: hashedPassword,
-        role: 'TA'
+        role: 'TA',
+        salt: 10
       });
     } else {
       throw { message: 'Hash method not working properly' };
     }
 
-    const module = await Module.create({
-      name: 'Stacks/Lists/Queues',
-      number: 1,
-      problems: []
-    });
+    const module = await ModuleTable.create(
+      {
+        name: 'Stacks/Lists/Queues',
+        number: 1,
+        problems: []
+      },
+      {
+        include: [
+          {
+            association: ModuleTable.Problems,
+            as: 'problems',
+            include: [
+              {
+                association: ProblemTable.TestCases,
+                as: 'testCases'
+              },
+              {
+                association: ProblemTable.Codes,
+                as: 'code'
+              }
+            ]
+          }
+        ]
+      }
+    );
 
-    moduleId = module._id;
+    moduleId = module.id;
   });
 
   afterEach((done: jest.DoneCallback) => {
@@ -57,10 +81,10 @@ describe('GET /', () => {
   });
 
   // Saved id for the module
-  let moduleId = '';
+  let moduleId = 1;
 
   it('creates a problem and gets a 200 response', async () => {
-    const sampleProblem = createSamplePayload(moduleId);
+    const sampleProblem = createSamplePayloadMySql(moduleId);
     const result = await request(expressApp)
       .post('/v1/admin/problem')
       .set('Authorization', 'bearer ' + token)
@@ -69,7 +93,7 @@ describe('GET /', () => {
   });
 
   it('creates a problem with some empty fields and gets a 200 response', async () => {
-    const sampleProblem = createSamplePayload(moduleId);
+    const sampleProblem = createSamplePayloadMySql(moduleId);
     sampleProblem.code.header = '';
     sampleProblem.code.body = '';
     sampleProblem.code.footer = '';
@@ -93,7 +117,7 @@ describe('GET /', () => {
       }
     ];
     const sampleProblem = addOrEditField(
-      createSamplePayload(moduleId),
+      createSamplePayloadMySql(moduleId),
       'testCases',
       invalidTestCases
     );
@@ -105,7 +129,7 @@ describe('GET /', () => {
   });
 
   it('attempts to create a problem with an invalid moduleId', async () => {
-    const sampleProblem = createSamplePayload('invalidModuleId');
+    const sampleProblem = createSamplePayloadMySql(-1);
     const result = await request(expressApp)
       .post('/v1/admin/problem')
       .set('Authorization', 'bearer ' + token)
@@ -114,7 +138,7 @@ describe('GET /', () => {
   });
 
   it('attempts to create a problem with a nonexistent moduleId', async () => {
-    const sampleProblem = createSamplePayload('010101010101010101010101');
+    const sampleProblem = createSamplePayloadMySql(10101010101010101010101);
     const result = await request(expressApp)
       .post('/v1/admin/problem')
       .set('Authorization', 'bearer ' + token)
@@ -130,7 +154,7 @@ describe('GET /', () => {
   });
 
   it('checks POST /admin/problem gives 401 response on unauthorized requests', async () => {
-    const sampleProblem = createSamplePayload(moduleId);
+    const sampleProblem = createSamplePayloadMySql(moduleId);
     const result: request.Response = await request(expressApp)
       .post('/v1/admin/problem')
       .send(sampleProblem);
@@ -138,7 +162,7 @@ describe('GET /', () => {
   });
 
   it('checks GET /admin/problem gives 401 response on unauthorized requests', async () => {
-    const sampleProblem = createSamplePayload(moduleId);
+    const sampleProblem = createSamplePayloadMySql(moduleId);
     const result: request.Response = await request(expressApp)
       .get('/v1/admin/problem')
       .send(sampleProblem);
@@ -146,8 +170,8 @@ describe('GET /', () => {
   });
 
   it('tests GET /admin/problem and GET /student/problem', async () => {
-    const sampleProblem = createSamplePayload(moduleId);
-    const sampleHiddenProblem = createSamplePayload(moduleId);
+    const sampleProblem = createSamplePayloadMySql(moduleId);
+    const sampleHiddenProblem = createSamplePayloadMySql(moduleId);
     sampleHiddenProblem.hidden = true;
 
     // Add problems to the database
@@ -178,8 +202,8 @@ describe('GET /', () => {
   });
 
   it('GETs /admin/problem/{problemId} and /student/problem/{problemId}', async () => {
-    const sampleProblem = createSamplePayload(moduleId);
-    const sampleHiddenProblem = createSamplePayload(moduleId);
+    const sampleProblem = createSamplePayloadMySql(moduleId);
+    const sampleHiddenProblem = createSamplePayloadMySql(moduleId);
     sampleHiddenProblem.hidden = true;
 
     // Add problems to the database
@@ -245,8 +269,8 @@ describe('GET /', () => {
 
   it('checks GET /student/problem/findByModule/moduleId', async () => {
     // Add two unhidden problems and one hidden problem to DB
-    const sampleProblem = createSamplePayload(moduleId);
-    const sampleHiddenProblem = createSamplePayload(moduleId);
+    const sampleProblem = createSamplePayloadMySql(moduleId);
+    const sampleHiddenProblem = createSamplePayloadMySql(moduleId);
     sampleHiddenProblem.hidden = true;
 
     // Send unhidden problem twice
@@ -291,8 +315,8 @@ describe('GET /', () => {
 
   it('checks GET /admin/problem/findByModule/moduleId', async () => {
     // Add two unhidden problems and one hidden problem to DB
-    const sampleProblem = createSamplePayload(moduleId);
-    const sampleHiddenProblem = createSamplePayload(moduleId);
+    const sampleProblem = createSamplePayloadMySql(moduleId);
+    const sampleHiddenProblem = createSamplePayloadMySql(moduleId);
     sampleHiddenProblem.hidden = true;
 
     // Send unhidden problem twice
@@ -342,14 +366,14 @@ describe('GET /', () => {
   });
 
   it('creates a problem then updates the problem', async () => {
-    const sampleProblem = createSamplePayload(moduleId);
+    const sampleProblem = createSamplePayloadMySql(moduleId);
     const postResult = await request(expressApp)
       .post('/v1/admin/problem')
       .set('Authorization', 'bearer ' + token)
       .send(sampleProblem);
     expect(postResult.statusCode).toEqual(200);
 
-    const modifiedSampleProblem = createSamplePayload(moduleId);
+    const modifiedSampleProblem = createSamplePayloadMySql(moduleId);
     modifiedSampleProblem.title = 'Updated title!';
 
     const updateResult = await request(expressApp)
@@ -366,7 +390,7 @@ describe('GET /', () => {
   });
 
   it('creates a problem then DELETEs the problem', async () => {
-    const sampleProblem = createSamplePayload(moduleId);
+    const sampleProblem = createSamplePayloadMySql(moduleId);
     const postResult = await request(expressApp)
       .post('/v1/admin/problem')
       .set('Authorization', 'bearer ' + token)
@@ -377,8 +401,7 @@ describe('GET /', () => {
     const moduleAfterProblemAddedResult = await request(expressApp)
       .get('/v1/module/WithProblems')
       .set('Authorization', 'bearer ' + token);
-    let module: ModuleInterface = moduleAfterProblemAddedResult
-      .body[0] as ModuleInterface;
+    let module: Module = moduleAfterProblemAddedResult.body[0] as Module;
     expect(module.problems.length).toEqual(1);
 
     let result = await request(expressApp)
@@ -423,7 +446,7 @@ describe('GET /', () => {
     const moduleAfterProblemDeletedResult = await request(expressApp)
       .get('/v1/module/WithProblems')
       .set('Authorization', 'bearer ' + token);
-    module = moduleAfterProblemDeletedResult.body[0] as ModuleInterface;
+    module = moduleAfterProblemDeletedResult.body[0] as Module;
     expect(module.problems.length).toEqual(0);
   });
 });
