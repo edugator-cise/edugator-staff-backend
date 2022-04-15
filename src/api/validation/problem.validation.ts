@@ -26,7 +26,7 @@ const validateTestCases = (testCases: any) => {
 //Joi does not allow empty strings by default (Reason why 'min(1)' is not in the validation for strings)
 const problemValidation = (data: any): ValidationResult => {
   const schema = object({
-    moduleId: number().required(),
+    moduleId: number().integer().required(),
     statement: string().required(),
     title: string().required(),
     hidden: boolean().required(),
@@ -36,7 +36,7 @@ const problemValidation = (data: any): ValidationResult => {
       header: string().allow('').required(),
       body: string().allow('').required(),
       footer: string().allow('').required(),
-      problemId: number()
+      problemId: number().integer()
     },
     fileExtension: string().valid('.java', '.cpp', '.h').min(1).required(),
     testCases: array().items({
@@ -44,7 +44,7 @@ const problemValidation = (data: any): ValidationResult => {
       expectedOutput: string().allow('').required(),
       hint: string().allow('').required(),
       visibility: number().valid(0, 1, 2).required(),
-      problemId: number()
+      problemId: number().integer()
     }),
     templatePackage: string().uri().required(),
     timeLimit: number(),
@@ -57,7 +57,7 @@ const problemValidation = (data: any): ValidationResult => {
 
 const problemValidationWithoutIdsRequired = (data: any): ValidationResult => {
   const schema = object({
-    moduleId: number(),
+    moduleId: number().integer(),
     statement: string().required(),
     title: string().required(),
     hidden: boolean().required(),
@@ -67,7 +67,7 @@ const problemValidationWithoutIdsRequired = (data: any): ValidationResult => {
       header: string().allow('').required(),
       body: string().allow('').required(),
       footer: string().allow('').required(),
-      problemId: number()
+      problemId: number().integer()
     },
     fileExtension: string().valid('.java', '.cpp', '.h').min(1).required(),
     testCases: array().items({
@@ -75,7 +75,7 @@ const problemValidationWithoutIdsRequired = (data: any): ValidationResult => {
       expectedOutput: string().allow('').required(),
       hint: string().allow('').required(),
       visibility: number().valid(0, 1, 2).required(),
-      problem: number()
+      problem: number().integer()
     }),
     templatePackage: string().uri().required(),
     timeLimit: number(),
