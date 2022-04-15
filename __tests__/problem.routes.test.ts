@@ -129,11 +129,12 @@ describe('GET /', () => {
   });
 
   it('attempts to create a problem with an invalid moduleId', async () => {
-    const sampleProblem = createSamplePayloadMySql(-1);
+    const sampleProblem = (createSamplePayloadMySql(-1) as unknown);
+    sampleProblem['moduleId'] = 'not a number'; // Force TS to permit bad type
     const result = await request(expressApp)
       .post('/v1/admin/problem')
       .set('Authorization', 'bearer ' + token)
-      .send(sampleProblem);
+      .send(sampleProblem as object);
     expect(result.statusCode).toEqual(400);
   });
 
