@@ -23,11 +23,14 @@ export const getModules = async (
   }
 };
 
+// TODO
 export const getModulesWithNonHiddenProblemsAndTestCases = async (
   _req: Request,
   res: Response
 ): Promise<void> => {
   try {
+    // populate is a way of resolving the "objectId" FK in mongo
+    // so, this returns the id and title of the problems of a module where hidden is false for those problems.
     // const modules = await Module.find()
     //   .populate({
     //     path: 'problems',
@@ -46,16 +49,21 @@ export const getModuleByID = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  let modules: ModuleDocument;
+  // let modules: ModuleDocument;
+  let modules: Module;
   try {
     if (!validator.isInt(req.params.moduleId + '')) {
       throw { message: 'This route requires a valid module ID' };
     }
 
     // Find One Module
-    modules = await Module.findOne({
-      _id: req.params.moduleId
-    }).select('-problems');
+    // modules = await Module.findOne({
+    //   _id: req.params.moduleId
+    // }).select('-problems');
+    modules = ModuleTable.findOne({
+      where: { id: req.params.moduleId },
+      attributes: { exclude: ['problems'] }
+    });
 
     if (modules != null) {
       res.status(200).send(modules);
@@ -131,7 +139,13 @@ export const postModules = async (
       return;
     }
 
-    const module = await Module.create({
+    // const module = await Module.create({
+    //   name: req.body.name,
+    //   number: req.body.number
+    // });
+
+    // do we need to initialize problems and other associations here???
+    const module = await ModuleTable.create({
       name: req.body.name,
       number: req.body.number
     });
