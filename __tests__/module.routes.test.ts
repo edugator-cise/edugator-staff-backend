@@ -1,20 +1,23 @@
 import { expressApp } from '../src/config/express';
 import * as request from 'supertest';
-import { UserModel } from '../src/api/models/user.model';
-import { Module, ModuleDocument } from '../src/api/models/module.model';
-import { Problem, ProblemDocument } from '../src/api/models/problem.model';
+// import { UserModel } from '../src/api/models/user.model';
+// import { Module, ModuleDocument } from '../src/api/models/module.model';
+// import { Problem, ProblemDocument } from '../src/api/models/problem.model';
+import { UserTable } from '../src/api/models/user.mysql.model';
+import { ModuleTable, IModule } from '../src/api/models/module.mysql.model';
+import { ProblemTable, IProblem } from '../src/api/models/problem.mysql.model';
 import { createSampleModule } from '../mocks/module';
-import { createSampleProblem } from '../mocks/problems';
+import { createSamplePayloadMySql } from '../mocks/problems';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { jwtSecret } from '../src/config/vars';
 
 describe('GET /', () => {
-  let module1: ModuleDocument;
-  let module2: ModuleDocument;
-  let module3: ModuleDocument;
-  let problem1: ProblemDocument;
-  let problem2: ProblemDocument;
+  let module1: IModule;
+  let module2: IModule;
+  let module3: IModule;
+  let problem1: IProblem;
+  let problem2: IProblem;
 
   const token = jwt.sign(
     { username: 'dhruv2000patel@gmail.com', role: 'TA' },
@@ -42,7 +45,7 @@ describe('GET /', () => {
 
     if (result) {
       //User creation for token
-      await UserModel.create({
+      await UserTable.create({
         name: 'Test TA',
         username: 'dhruv2000patel@gmail.com',
         password: hashedPassword,
@@ -52,28 +55,26 @@ describe('GET /', () => {
       throw { message: 'Hash method not working properly' };
     }
 
-    // Problem creation for routes
-    problem1 = await Problem.create(createSampleProblem());
-    problem2 = await Problem.create(createSampleProblem());
-
-    //Module with Problems array popualated correctly
-    module1 = await Module.create({
+    module1 = await ModuleTable.create({
       name: 'Trees',
       number: 3.1
     });
-    module1.problems.push(problem1.id);
-    module1.problems.push(problem2.id);
-    await module1.save();
+
+    // Problem creation for routes
+    problem1 = await ProblemTable.create(createSamplePayloadMySql(module1.id));
+    problem2 = await ProblemTable.create(createSamplePayloadMySql(module1.id));
 
     //Sample module creation
-    module2 = await Module.create(createSampleModule());
+    module2 = await ModuleTable.create(createSampleModule());
 
-    module3 = await Module.create({
+    module3 = await ModuleTable.create({
       name: 'Heaps',
       number: 7.1
     });
     //Put in the incorrect wrong id into the problems array
     module3.problems.push(module3.id);
+
+
     await module3.save();
   });
 
@@ -518,17 +519,17 @@ describe('GET /', () => {
 
   // deleteModule
   //400 Error Test
-  it('checks /module/moduleId DELETE route FAILS for Problem ID NOT in database', async () => {
-    const result: request.Response = await request(expressApp)
-      .delete('/v1/module/' + module3.id)
-      .set('Authorization', 'bearer ' + token)
-      .send();
+  // it('checks /module/moduleId DELETE route FAILS for Problem ID NOT in database', async () => {
+  //   const result: request.Response = await request(expressApp)
+  //     .delete('/v1/module/' + module3.id)
+  //     .set('Authorization', 'bearer ' + token)
+  //     .send();
 
-    expect(result.statusCode).toEqual(400);
-    expect(result.text).toEqual(
-      JSON.stringify({
-        message: 'Problem with given id is not found in database'
-      })
-    );
-  });
+  //   expect(result.statusCode).toEqual(400);
+  //   expect(result.text).toEqual(
+  //     JSON.stringify({
+  //       message: 'Problem with given id is not found in database'
+  //     })
+  //   );
+  // });
 });
