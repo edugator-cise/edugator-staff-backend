@@ -137,7 +137,7 @@ describe('GET /', () => {
     expect(result.statusCode).toEqual(400);
   });
 
-  it.only('attempts to create a problem with a nonexistent moduleId', async () => {
+  it('attempts to create a problem with a nonexistent moduleId', async () => {
     const sampleProblem = createSamplePayloadMySql(100000);
     const result = await request(expressApp)
       .post('/v1/admin/problem')
