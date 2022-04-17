@@ -196,7 +196,7 @@ describe('GET /', () => {
     const result: request.Response = await request(expressApp)
       .get('/v1/module/' + module2.id)
       .send();
-    expect(result.body.id).toEqual(module2.id);
+    expect(result.body._id).toEqual(module2.id);
     expect(result.body.name).toEqual(module2.name);
     expect(result.body.problems).toBeUndefined();
     expect(result.statusCode).toEqual(200);
@@ -321,7 +321,7 @@ describe('GET /', () => {
         name: nameUpdate,
         number: numberUpdate
       });
-    expect(result.body.id).toEqual(module2.id);
+    expect(result.body._id).toEqual(module2.id);
     expect(result.body.name).toEqual(nameUpdate);
     expect(result.body.number).toEqual(numberUpdate);
     expect(result.body.problems).toBeUndefined();

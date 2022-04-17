@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 // import { Types } from 'mongoose';
-import { Module, IModule, ModuleTable } from '../models/module.mysql.model';
+import { IModule, ModuleTable } from '../models/module.mysql.model';
 // import { Problem } from '../models/problem.model';
 import {
   IProblem,
@@ -10,6 +10,7 @@ import {
 } from '../models/problem.mysql.model';
 import validator from 'validator';
 import moduleValidation from '../validation/module.validation';
+import { translateIdOnModule } from './util';
 
 export const getModules = async (
   _req: Request,
@@ -72,7 +73,7 @@ export const getModuleByID = async (
   res: Response
 ): Promise<void> => {
   // let modules: ModuleDocument;
-  let modules: Module;
+  let module: any; // TODO: don't make this any type
   try {
     if (!validator.isInt(req.params.moduleId + '')) {
       throw { message: 'This route requires a valid module ID' };
@@ -82,12 +83,12 @@ export const getModuleByID = async (
     // modules = await Module.findOne({
     //   _id: req.params.moduleId
     // }).select('-problems');
-    modules = await ModuleTable.findOne({
+    module = await ModuleTable.findOne({
       where: { id: req.params.moduleId }
     });
 
-    if (modules != null) {
-      res.status(200).send(modules);
+    if (module != null) {
+      res.status(200).send(translateIdOnModule(module));
     } else {
       res.status(400).send({ message: 'Module not found in database' });
     }
@@ -247,7 +248,7 @@ export const putModule = async (req: Request, res: Response): Promise<void> => {
       const module = await ModuleTable.findOne({
         where: { id: req.params.moduleId }
       });
-      res.status(200).type('json').send(module);
+      res.status(200).type('json').send(translateIdOnModule(module));
     } else {
       res
         .status(400)
