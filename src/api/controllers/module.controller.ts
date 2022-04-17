@@ -43,7 +43,7 @@ export const getModulesWithNonHiddenProblemsAndTestCases = async (
     //     match: { hidden: false }
     //   })
     //   .sort({ number: 1 });
-    const modules: IModule[] = ModuleTable.findAll({
+    const modules: IModule[] = await ModuleTable.findAll({
       include: [
         {
           model: ProblemTable,
@@ -82,7 +82,7 @@ export const getModuleByID = async (
     // modules = await Module.findOne({
     //   _id: req.params.moduleId
     // }).select('-problems');
-    modules = ModuleTable.findOne({
+    modules = await ModuleTable.findOne({
       where: { id: req.params.moduleId }
     });
 
@@ -100,15 +100,22 @@ export const getModuleByProblemId = async (
   req: Request,
   res: Response
 ): Promise<Response<any, Record<string, any>>> => {
-  if (!validator.isInt(req.params.moduleId + '')) {
+  if (!validator.isInt(req.params.problemId + '')) {
     return res.status(400).send('This route requires a valid problem ID');
   }
   // Get all modules
-  const problem: IProblem = ProblemTable.findAll({
+  const problem: IProblem = await ProblemTable.findOne({
     where: {
       id: req.params.problemId
     }
   });
+
+  if (problem == null) {
+    return res
+    .status(404)
+    .send('No module associated with this problemId was found');
+  }
+
   let modules: IModule[] = await ModuleTable.findAll();
   modules = modules.filter((module) => module.id == problem.moduleId);
   if (modules.length === 0) {
@@ -232,12 +239,12 @@ export const putModule = async (req: Request, res: Response): Promise<void> => {
     //   req.body,
     //   { new: true }
     // ).select('-problems');
-    const module = await ModuleTable.findOne({
+    const numUpdated = await ModuleTable.update(req.body, {
       where: { id: req.params.moduleId }
     });
 
-    if (module) {
-      await ModuleTable.update(req.body, {
+    if (numUpdated > 0) {
+      const module = await ModuleTable.findOne({
         where: { id: req.params.moduleId }
       });
       res.status(200).type('json').send(module);
