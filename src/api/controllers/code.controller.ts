@@ -2,7 +2,8 @@ import * as httpStatus from 'http-status';
 import { Request, Response } from 'express';
 import runValidation from '../validation/run.validation';
 import submissionValidation from '../validation/submission.validation';
-import { Problem } from '../models/problem.model';
+// import { Problem } from '../models/problem.model';
+import { ProblemTable, TestCaseTable, CodeTable } from '../models/problem.mysql.model';
 import { tokenValidation } from '../validation/tokenPayload.validation';
 import { ValidationResult } from 'joi';
 import { TestCaseVisibility } from '../validation/problem.validation';
@@ -170,8 +171,12 @@ const runCode = async (req: Request, response: Response): Promise<Response> => {
   } = req.body;
 
   // find the problem
-  const problem = await Problem.findOne({
-    _id: problemId
+  const problem = await ProblemTable.findOne({
+    where: { id: problemId },
+    include: [
+      { model: TestCaseTable, as: 'testCases' },
+      { model: CodeTable, as: 'code' }
+    ]
   });
   if (!problem) {
     return response.status(404).send();
@@ -276,8 +281,12 @@ const submitCode = async (
   } = req.body;
   try {
     // find the problem
-    const problem = await Problem.findOne({
-      _id: problemId
+    const problem = await ProblemTable.findOne({
+      where: { id: problemId },
+      include: [
+        { model: TestCaseTable, as: 'testCases' },
+        { model: CodeTable, as: 'code' }
+      ]
     });
     if (!problem) {
       return response.status(404).send();
