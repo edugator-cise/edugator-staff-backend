@@ -244,5 +244,6 @@ export {
   TestCaseTable,
   Problem,
   IProblem,
-  TestCase
+  TestCase,
+  Code
 };

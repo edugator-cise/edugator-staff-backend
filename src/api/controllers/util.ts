@@ -1,4 +1,4 @@
-import { IModule } from "../models/module.mysql.model";
+import { IModule } from '../models/module.mysql.model';
 
 function translateIdOnModule(module: IModule) {
   return {
@@ -11,7 +11,7 @@ function translateIdOnModule(module: IModule) {
 }
 
 function translateIdOnModuleArray(modules: IModule[]) {
-  let newModules: any[] = []
+  const newModules: any[] = [];
   for (const module of modules) {
     newModules.push(translateIdOnModule(module));
   }
