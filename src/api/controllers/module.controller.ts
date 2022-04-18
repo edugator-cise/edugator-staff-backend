@@ -113,8 +113,8 @@ export const getModuleByProblemId = async (
 
   if (problem == null) {
     return res
-    .status(404)
-    .send('No module associated with this problemId was found');
+      .status(404)
+      .send('No module associated with this problemId was found');
   }
 
   let modules: IModule[] = await ModuleTable.findAll();

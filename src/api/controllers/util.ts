@@ -1,5 +1,5 @@
 import { IModule } from '../models/module.mysql.model';
-import { IProblem, TestCase, Code } from '../models/problem.mysql.model';
+// import { IProblem } from '../models/problem.mysql.model';
 
 function translateIdOnModule(module: IModule) {
   return {
@@ -19,34 +19,34 @@ function translateIdOnModuleArray(modules: IModule[]) {
   return newModules;
 }
 
-function translateIdOnProblem(problem: IProblem) {
-  // how to do naming? camel or underscores?
-  return {
-    id: problem.id,
-    _id: problem.id,
-    statement: problem.statement,
-    title: problem.title,
-    hidden: problem.hidden,
-    language: problem.language,
-    due_date: problem.dueDate,
-    file_extension: problem.fileExtension,
-    template_package: problem.templatePackage,
-    time_limit: problem.timeLimit,
-    memory_limit: problem.memoryLimit,
-    build_command: problem.buildCommand,
-    module_id: problem.moduleId,
-    code: problem.code,
-    test_cases: problem.testCases
-  };
-}
+// function translateIdOnProblem(problem: IProblem) {
+//   // how to do naming? camel or underscores?
+//   return {
+//     id: problem.id,
+//     _id: problem.id,
+//     statement: problem.statement,
+//     title: problem.title,
+//     hidden: problem.hidden,
+//     language: problem.language,
+//     due_date: problem.dueDate,
+//     file_extension: problem.fileExtension,
+//     template_package: problem.templatePackage,
+//     time_limit: problem.timeLimit,
+//     memory_limit: problem.memoryLimit,
+//     build_command: problem.buildCommand,
+//     module_id: problem.moduleId,
+//     code: problem.code,
+//     test_cases: problem.testCases
+//   };
+// }
 
-function translateIdOnProblemArray(problems: IProblem[]) {
-  const newProblems: any[] = [];
-  for (const problem of problems) {
-    newProblems.push(translateIdOnProblem(problem));
-  }
-  return newProblems;
-}
+// function translateIdOnProblemArray(problems: IProblem[]) {
+//   const newProblems: any[] = [];
+//   for (const problem of problems) {
+//     newProblems.push(translateIdOnProblem(problem));
+//   }
+//   return newProblems;
+// }
 
 // started working on this, but we don't even need it I guess? since _id works for user? sorta?
 // leaving untill we see more clearly on testing

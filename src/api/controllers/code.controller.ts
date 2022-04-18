@@ -3,7 +3,11 @@ import { Request, Response } from 'express';
 import runValidation from '../validation/run.validation';
 import submissionValidation from '../validation/submission.validation';
 // import { Problem } from '../models/problem.model';
-import { ProblemTable, TestCaseTable, CodeTable } from '../models/problem.mysql.model';
+import {
+  ProblemTable,
+  TestCaseTable,
+  CodeTable
+} from '../models/problem.mysql.model';
 import { tokenValidation } from '../validation/tokenPayload.validation';
 import { ValidationResult } from 'joi';
 import { TestCaseVisibility } from '../validation/problem.validation';

@@ -31,13 +31,19 @@ class Server {
   private async connectDatabase(): Promise<void> {
     database.connect();
     await database.mySqlConnect();
+    //eslint-disable-next-line no-console
+    console.log('mySQL connected.');
   }
   public start(): void {
     this.connectDatabase().then(() => {
-      const server = this.app.listen(8080, () => {
+      // eslint-disable-next-line
+      // const server = 
+      this.app.listen(8080, () => {
         //eslint-disable-next-line
         console.log(`server started on port 8080`);
-        server.close(() => database.mySqlDisconnect());
+        // server.close(() => database.mySqlDisconnect());
+        // //eslint-disable-next-line no-console
+        // console.log('mySQL closed.');
       });
     });
   }

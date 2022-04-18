@@ -75,7 +75,6 @@ describe('GET /', () => {
     // //Put in the incorrect wrong id into the problems array
     // module3.problems.push(module3.id);
 
-
     // await module3.save();
   });
 
@@ -488,7 +487,7 @@ describe('GET /', () => {
     });
     for (let i = 0; i < problems.length; i++) {
       const uniqueProblem = await ProblemTable.findOne({
-        where : {
+        where: {
           id: module1.problems[i]
         }
       });
