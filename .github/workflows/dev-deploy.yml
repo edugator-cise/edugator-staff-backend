@@ -1,4 +1,4 @@
-name: Deploy
+name: Development-Deploy
 
 env:
   APP_NAME: edugator-service-api
@@ -30,45 +30,6 @@ on:
       - main
 
 jobs:
-  create_file:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-      - name: Create .env file
-        run: |
-          cat << EOF >> .env
-          NODE_ENV=production
-          DB_URI=${{secrets.DB_URI}}
-          JWT_SECRET=${{secrets.JWT_SECRET}}
-          APP_PASSWORD=${{secrets.APP_PASSWORD}}
-          ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY_ID }}
-          BETA_JUDGE_URI=${{secrets.BETA_JUDGE_URI}}
-          EDUGATOR_API_PASS=${{secrets.EDUGATOR_API_PASS}}
-          EDUGATOR_API_URL=${{secrets.EDUGATOR_API_URL}}
-          EDUGATOR_API_USER=${{secrets.EDUGATOR_API_USER}}
-          EDUGATOR_AUTH_TOKEN=${{secrets.EDUGATOR_AUTH_TOKEN}}
-          JOB_DEFINITION=${{secrets.JOB_DEFINITION}}
-          JOB_QUEUE=${{secrets.JOB_QUEUE}}
-          JUDGE_URL=${{secrets.JUDGE_URL}}
-          PROD_JUDGE_URI=${{secrets.PROD_JUDGE_URI}}
-          REGION_AWS=${{secrets.REGION_AWS}}
-          SENDER_EMAIL=${{secrets.SENDER_EMAIL}}
-          UPLOAD_SUBMISSIONS_BUCKET=${{secrets.UPLOAD_SUBMISSIONS_BUCKET}}
-          SECRET_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          EOF
-      - name: Install Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: '16.x'
-      - name: Install npm dependencies
-        run: npm install
-
   ssh-and-run:
     runs-on: ubuntu-latest
     steps:
