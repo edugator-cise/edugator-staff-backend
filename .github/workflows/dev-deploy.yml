@@ -27,7 +27,7 @@ env:
 on:
   pull_request:
     branches:
-      - test-my-branch
+      - main
 
 jobs:
   create_file:
