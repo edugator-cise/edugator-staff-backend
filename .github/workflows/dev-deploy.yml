@@ -71,8 +71,8 @@ jobs:
         run: |
           tar czf backend.tar.gz src/ package.json package-lock.json tsconfig.json .eslintrc .prettierrc tsconfig.release.json .env package.json package-lock.json
           echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
-          scp -i private_key ${USER_NAME}@${HOSTNAME}:~/
-          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
+          scp -o StrictHostKeyChecking=no -i "private_key" ${USER_NAME}@${HOSTNAME}:~/
+          ssh -o StrictHostKeyChecking=no -i "private_key" ${USER_NAME}@${HOSTNAME} '
 
             #Now we have got the access of EC2 and we will start the deploy .
             cd ~/ &&
