@@ -96,12 +96,18 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
             #Now we have got the access of EC2 and we will start the deploy .
-            cd ~/ &&
-            mkdir -p source-code &&
-            rm -rf source-code/* &&
-            tar -xvf backend.tar.gz -C source-code/ &&
-            cd source-code &&
-            source .env &&
+            cd ~/;
+            echo "making directory";
+            mkdir -p source-code;
+            echo " removing in source code";
+            rm -rf source-code/*;
+            echo " untaring file";
+            tar -xvf backend.tar.gz -C source-code/;
+            echo " cd into source code";
+            cd source-code;
+            echo " source env";
+            source .env;
+            echo " install and build";
             npm install &&
             npm run build &&
             pm2 stop index &&
