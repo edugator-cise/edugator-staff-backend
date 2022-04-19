@@ -80,13 +80,21 @@ jobs:
         run: |
           tar czf backend.tar.gz src/ package.json package-lock.json tsconfig.json .eslintrc .prettierrc tsconfig.release.json .env package.json package-lock.json
       - name: copy files via ssh password 
+        env:
+          PRIVATE_KEY: ${{ env.AWS_PRIVATE_KEY  }}
+          HOSTNAME : ${{ env.HOSTNAME  }}
+          USER_NAME : ${{ env.USER_NAME  }}
         run: |
           echo "${{env.AWS_PRIVATE_KEY}}" > private_key
           chmod 600 private_key
-          scp -o StrictHostKeyChecking=no -i private_key ${{env.HOSTNAME}}
+          scp -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME}:~/
       - name: Deploy in EC2
+        env:
+          PRIVATE_KEY: ${{ env.AWS_PRIVATE_KEY  }}
+          HOSTNAME : ${{ env.HOSTNAME  }}
+          USER_NAME : ${{ env.USER_NAME  }}
         run: |
-          ssh -o StrictHostKeyChecking=no -i private_key ${{env.HOSTNAME}} '
+          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
             #Now we have got the access of EC2 and we will start the deploy .
             cd ~/ &&
             mkdir -p source-code &&
