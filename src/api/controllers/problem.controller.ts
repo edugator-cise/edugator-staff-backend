@@ -16,8 +16,6 @@ import {
 import validator from 'validator';
 import { translateIdOnProblemArray, translateIdOnProblem } from './util';
 
-jest.setTimeout(10000);
-
 const filterOpenTestCases = (testCases: TestCase[]): TestCase[] => {
   return testCases.filter(
     (test) => test.visibility === TestCaseVisibility.IO_VISIBLE
