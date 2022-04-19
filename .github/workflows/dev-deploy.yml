@@ -27,7 +27,7 @@ env:
 on:
   pull_request:
     branches:
-      - main
+      - dev
 
 jobs:
   ssh-and-run:
@@ -63,17 +63,25 @@ jobs:
           SECRET_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
           EOF
 
+      - name: Tar the files
+        run: |
+          tar czf backend.tar.gz src/ package.json package-lock.json tsconfig.json .eslintrc .prettierrc tsconfig.release.json .env package.json package-lock.json
+      - name: copy files via ssh password 
+        env:
+          PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY  }}
+          HOSTNAME : ${{ secrets.HOSTNAME  }}
+          USER_NAME : ${{ secrets.USER_NAME  }} 
+        run: |
+          echo "$PRIVATE_KEY" > private_key
+          chmod 600 private_key
+          scp -o StrictHostKeyChecking=no -i "private_key" ${USER_NAME}@${HOSTNAME}:~/
       - name: Deploy in EC2
         env:
             PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY  }}
             HOSTNAME : ${{ secrets.HOSTNAME  }}
             USER_NAME : ${{ secrets.USER_NAME  }}
         run: |
-          tar czf backend.tar.gz src/ package.json package-lock.json tsconfig.json .eslintrc .prettierrc tsconfig.release.json .env package.json package-lock.json
-          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
-          scp -o StrictHostKeyChecking=no -i "private_key" ${USER_NAME}@${HOSTNAME}:~/
           ssh -o StrictHostKeyChecking=no -i "private_key" ${USER_NAME}@${HOSTNAME} '
-
             #Now we have got the access of EC2 and we will start the deploy .
             cd ~/ &&
             mkdir -pr source-code &&
