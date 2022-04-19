@@ -1,6 +1,4 @@
 import { Request, Response } from 'express';
-// import { Module, ModuleDocument } from '../models/module.model';
-// import { Problem, ProblemDocument, TestCase } from '../models/problem.model';
 import {
   TestCase,
   IProblem,
@@ -36,10 +34,6 @@ const readStudentProblems = async (
       return res.status(400).send('problemId not a valid id');
     }
     try {
-      // const problem = await Problem.findOne({
-      //   hidden: false,
-      //   _id: req.params.problemId
-      // });
       const problem = await ProblemTable.findOne({
         where: { hidden: false, id: req.params.problemId },
         include: [
@@ -65,9 +59,6 @@ const readStudentProblems = async (
     if (!validator.isInt(req.params.moduleId + '')) {
       return res.status(400).send('moduleId not a valid id');
     }
-    // const module = await Module.findOne({
-    //   _id: req.params.moduleId
-    // }).populate('problems');
     const module = await ModuleTable.findOne({
       where: { id: req.params.moduleId },
       include: [
@@ -95,9 +86,6 @@ const readStudentProblems = async (
     });
     studentProblems = translateIdOnProblemArray(studentProblems);
   } else {
-    // studentProblems = await Problem.find({
-    //   hidden: false
-    // });
     studentProblems = await ProblemTable.findAll({
       where: { hidden: false },
       include: [
@@ -128,9 +116,6 @@ const readAdminProblems = async (
       return res.status(400).send('problemId not a valid id');
     }
     try {
-      // adminProblems = await Problem.findOne({
-      //   _id: req.params.problemId
-      // });
       adminProblems = await ProblemTable.findOne({
         where: { id: req.params.problemId },
         include: [
@@ -149,9 +134,6 @@ const readAdminProblems = async (
     if (!validator.isInt(req.params.moduleId + '')) {
       return res.status(400).send('moduleId not a valid id');
     }
-    // const module = await Module.findOne({
-    //   _id: req.params.moduleId
-    // }).populate('problems');
     const module = await ModuleTable.findOne({
       where: { id: req.params.moduleId },
       include: [
@@ -170,7 +152,6 @@ const readAdminProblems = async (
     }
     adminProblems = translateIdOnProblemArray(module.problems);
   } else {
-    // adminProblems = await Problem.find({});
     adminProblems = await ProblemTable.findAll({
       include: [
         { model: TestCaseTable, as: 'testCases' },
@@ -196,21 +177,6 @@ const createProblem = async (
       .status(400)
       .send('Body needs at least one test case visible to public');
   }
-
-  // const problem = new Problem({
-  //   statement: req.body.statement,
-  //   title: req.body.title,
-  //   hidden: req.body.hidden,
-  //   language: req.body.language,
-  //   dueDate: req.body.dueDate,
-  //   code: req.body.code,
-  //   fileExtension: req.body.fileExtension,
-  //   testCases: req.body.testCases,
-  //   templatePackage: req.body.templatePackage,
-  //   timeLimit: req.body.timeLimit,
-  //   memoryLimit: req.body.memoryLimit,
-  //   buildCommand: req.body.buildCommand
-  // }) as unknown as IProblem;
 
   try {
     const module: IModule = await ModuleTable.findOne({
@@ -243,13 +209,7 @@ const createProblem = async (
         ]
       }
     );
-    // const savedProblem = await problem.save();
-    // const module: IModule = await Module.findOne({
-    //   _id: req.body.moduleId
-    // });
 
-    // module.problems.push(savedProblem._id);
-    // await module.save();
     return res.send({
       _id: savedProblem.id
     });
@@ -270,25 +230,6 @@ const updateProblem = async (
     return res.status(400).send('problemId is not a problem id');
   }
   try {
-    // const problem = await Problem.findByIdAndUpdate(
-    //   req.params.problemId,
-    //   {
-    //     statement: req.body.statement,
-    //     title: req.body.title,
-    //     hidden: req.body.hidden,
-    //     language: req.body.language,
-    //     dueDate: req.body.dueDate,
-    //     code: req.body.code,
-    //     fileExtension: req.body.fileExtension,
-    //     testCases: req.body.testCases,
-    //     templatePackage: req.body.templatePackage,
-    //     timeLimit: req.body.timeLimit,
-    //     memoryLimit: req.body.memoryLimit,
-    //     buildCommand: req.body.buildCommand
-    //   },
-    //   { new: true }
-    // );
-
     const numUpdated: number = await ProblemTable.update(
       {
         statement: req.body.statement,
@@ -344,9 +285,6 @@ const deleteProblem = async (
     return res.status(400).send('problemId is not a problem id');
   }
   try {
-    // const problem = await Problem.findOne({
-    //   _id: req.params.problemId
-    // });
     const problem = await ProblemTable.findOne({
       where: { id: req.params.problemId },
       include: [
@@ -357,7 +295,6 @@ const deleteProblem = async (
     if (!problem) {
       return res.status(404).send();
     }
-    // await problem.delete();
     await ProblemTable.destroy({
       where: {
         id: problem.id
@@ -374,17 +311,6 @@ const deleteProblem = async (
       }
     });
 
-    // Delete from problems array on each module
-    // const modules: ModuleDocument[] = await Module.find();
-    // let i: number;
-    // for (i = 0; i < modules.length; i++) {
-    //   modules[i].problems = modules[i].problems.filter((problemId) => {
-    //     return problemId != new Types.ObjectId(req.params.problemId);
-    //   }) as [Types.ObjectId];
-    // }
-    // modules.forEach(async (module) => {
-    //   await module.save();
-    // });
     return res.sendStatus(200);
   } catch (error) {
     return res.status(400).send(error);

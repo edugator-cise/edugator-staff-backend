@@ -16,7 +16,6 @@ const getUsers = async (_req: Request, res: Response): Promise<void> => {
   let users: IUser[];
   try {
     //Find All modules
-    // users = await UserModel.find().select('-password').sort({ role: 1 });
     users = await UserTable.findAll({
       attributes: { exclude: ['password'] },
       order: [['role', 'ASC']]
@@ -88,7 +87,7 @@ const updateUser = async (req: Request, res: Response): Promise<void> => {
       user.username = req.body.username;
       user.name = req.body.name;
       user.role = req.body.role;
-      user.save();
+      user.save(); // TODO: Make this await
       res.status(200).type('json').send(user);
     } else {
       res

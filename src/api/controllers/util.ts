@@ -111,40 +111,6 @@ function translateIdOnProblemArray(problems: IProblem[]): FrontEndIProblem[] {
   return newProblems;
 }
 
-// started working on this, but we don't even need it I guess? since _id works for user? sorta?
-// leaving untill we see more clearly on testing
-// function translateIdOnUser(user: IUser) {
-// }
-
-// function translateIdOnUserArray(users: IUser[]) {
-//   const newUsers: any[] = [];
-//   for (const user of users) {
-//     newUsers.push(transl)
-//   }
-// }
-
-// I don't even think this is needed, judge is the only service that calls directly so?
-// function translateIdOnCode(code: Code) {
-//   return {
-//     id: code.
-//   };
-// }
-
-// Same here - I don't think we need this, do we?
-// function translateIdOnTestCase(testCase: TestCase) {
-//   return {
-//     id: testCase.id
-//   };
-// }
-
-// function translateIdOnTestCaseArray(testCases: ) {
-//   const newTestCases: any[] = [];
-//   for (const testCase of testCases) {
-//     newTestCases.push(translateIdOnTestCase(testCase));
-//   }
-//   return newTestCases;
-// }
-
 export {
   translateIdOnModule,
   translateIdOnModuleArray,

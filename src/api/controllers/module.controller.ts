@@ -1,7 +1,5 @@
 import { Request, Response } from 'express';
-// import { Types } from 'mongoose';
 import { IModule, ModuleTable } from '../models/module.mysql.model';
-// import { Problem } from '../models/problem.model';
 import {
   IProblem,
   ProblemTable,
@@ -19,7 +17,6 @@ export const getModules = async (
   let modules: IModule[];
   try {
     //Find All modules
-    // modules = await Module.find().select('-problems').sort({ number: 1 });
     modules = await ModuleTable.findAll({
       order: [['number', 'ASC']]
     });
@@ -35,15 +32,6 @@ export const getModulesWithNonHiddenProblemsAndTestCases = async (
   res: Response
 ): Promise<void> => {
   try {
-    // populate is a way of resolving the "objectId" FK in mongo
-    // so, this returns the id and title of the problems of a module where hidden is false for those problems.
-    // const modules = await Module.find()
-    //   .populate({
-    //     path: 'problems',
-    //     select: 'id title',
-    //     match: { hidden: false }
-    //   })
-    //   .sort({ number: 1 });
     const modules: IModule[] = await ModuleTable.findAll({
       include: [
         {
@@ -55,10 +43,6 @@ export const getModulesWithNonHiddenProblemsAndTestCases = async (
           attributes: {
             include: ['id', 'title']
           }
-          // include: [
-          //   { model: TestCaseTable, as: 'testCases' },
-          //   { model: CodeTable, as: 'code' }
-          // ]
         }
       ]
     });
@@ -72,17 +56,12 @@ export const getModuleByID = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  // let modules: ModuleDocument;
-  let module: any; // TODO: don't make this any type
+  let module: IModule;
   try {
     if (!validator.isInt(req.params.moduleId + '')) {
       throw { message: 'This route requires a valid module ID' };
     }
 
-    // Find One Module
-    // modules = await Module.findOne({
-    //   _id: req.params.moduleId
-    // }).select('-problems');
     module = await ModuleTable.findOne({
       where: { id: req.params.moduleId }
     });
@@ -136,13 +115,6 @@ export const getModulesWithProblems = async (
 ): Promise<void> => {
   let modules: IModule[];
   try {
-    //Find All modules
-    // modules = await Module.find()
-    //   .populate({
-    //     path: 'problems',
-    //     select: 'id title'
-    //   })
-    //   .sort({ number: 1 });
     modules = await ModuleTable.findAll({
       include: [
         {
@@ -151,10 +123,6 @@ export const getModulesWithProblems = async (
           attributes: {
             include: ['id', 'title']
           }
-          // include: [
-          //   { model: TestCaseTable, as: 'testCases' },
-          //   { model: CodeTable, as: 'code' }
-          // ]
         }
       ],
       order: [['number', 'ASC']]
@@ -187,12 +155,6 @@ export const postModules = async (
       return;
     }
 
-    // const module = await Module.create({
-    //   name: req.body.name,
-    //   number: req.body.number
-    // });
-
-    // do we need to initialize problems and other associations here???
     const module = await ModuleTable.create({
       name: req.body.name,
       number: req.body.number
@@ -233,13 +195,6 @@ export const putModule = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    // const module = await Module.findByIdAndUpdate(
-    //   {
-    //     _id: req.params.moduleId
-    //   },
-    //   req.body,
-    //   { new: true }
-    // ).select('-problems');
     const numUpdated = await ModuleTable.update(req.body, {
       where: { id: req.params.moduleId }
     });
@@ -266,9 +221,6 @@ export const deleteModule = async (
 ): Promise<void> => {
   try {
     if (req.params.moduleId) {
-      // const module = await Module.findOne({
-      //   _id: req.params.moduleId
-      // });
       const module = await ModuleTable.findOne({
         where: { id: req.params.moduleId },
         include: [
@@ -286,17 +238,7 @@ export const deleteModule = async (
       if (!module) {
         throw { message: 'Module with given id is not found in database' };
       }
-      //Deletes the problems in the problems array from the problems collection
       try {
-        // for (let i = 0; i < module.problems.length; i++) {
-        //   const problem = await Problem.findOneAndDelete({
-        //     _id: module.problems[i]
-        //   });
-        //   if (!problem) {
-        //     throw { message: 'Problem with given id is not found in database' };
-        //   }
-        // }
-
         await ProblemTable.destroy({
           where: { moduleId: module.id }
         });
