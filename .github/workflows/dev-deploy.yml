@@ -59,7 +59,7 @@ jobs:
         run: |
           echo "${{env.AWS_PRIVATE_KEY}}" > private_key
           chmod 600 private_key
-          scp -o StrictHostKeyChecking=no -i private_key backend.tar.gz ${USER_NAME}@${HOSTNAME}:/home/ubuntu/
+          scp -o StrictHostKeyChecking=no -i private_key backend.tar.gz ${USER_NAME}@${HOSTNAME}:~/
       - name: Deploy in EC2
         env:
           PRIVATE_KEY: ${{ env.AWS_PRIVATE_KEY  }}
@@ -68,6 +68,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
             #Now we have got the access of EC2 and we will start the deploy .
+            cd ~/;
             export NODE_ENV=production;
             export DB_URI="${{secrets.DB_URI}}";
             export JWT_SECRET=${{secrets.JWT_SECRET}};
@@ -92,13 +93,13 @@ jobs:
             export DB_NAME=${{ secrets.DB_NAME }};
             export TEST_DB_NAME=${{ secrets.TEST_DB_NAME }};
             echo "making directory";
-            mkdir -p /home/ubuntu/source-code;
+            mkdir -p source-code;
             echo " removing in source code";
-            rm -rf /home/ubuntu/source-code/*;
+            rm -rf source-code/*;
             echo " untaring file";
             tar -xvf backend.tar.gz -C source-code/;
             echo " cd into source code";
-            cd /home/ubuntu/source-code;
+            cd source-code;
             echo "install";
             npm install;
             echo "build";
@@ -109,5 +110,6 @@ jobs:
             echo "pm2 delete";
             pm2 delete index || true;
             echo "pm2 new";
-            pm2 start /home/ubuntu/source-code/build/src/index.js || true;
+            ls -a;
+            pm2 start ~/source-code/build/src/index.js || true;
           ';
