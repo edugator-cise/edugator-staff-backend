@@ -16,6 +16,9 @@ import {
   TestCaseVisibility
 } from '../validation/problem.validation';
 import validator from 'validator';
+import { translateIdOnProblemArray, translateIdOnProblem } from './util';
+
+jest.setTimeout(10000);
 
 const filterOpenTestCases = (testCases: TestCase[]): TestCase[] => {
   return testCases.filter(
@@ -54,6 +57,7 @@ const readStudentProblems = async (
       );
       studentProblems.code.header = undefined;
       studentProblems.code.footer = undefined;
+      studentProblems = translateIdOnProblem(studentProblems);
     } catch (error) {
       return res.status(400).send(error);
     }
@@ -89,6 +93,7 @@ const readStudentProblems = async (
       item.code.header = undefined;
       item.code.footer = undefined;
     });
+    studentProblems = translateIdOnProblemArray(studentProblems);
   } else {
     // studentProblems = await Problem.find({
     //   hidden: false
@@ -106,6 +111,7 @@ const readStudentProblems = async (
       item.code.header = undefined;
       item.code.footer = undefined;
     });
+    studentProblems = translateIdOnProblemArray(studentProblems);
   }
 
   return res.status(200).send(studentProblems);
@@ -135,6 +141,7 @@ const readAdminProblems = async (
       if (!adminProblems) {
         return res.status(404).send();
       }
+      adminProblems = translateIdOnProblem(adminProblems);
     } catch (err) {
       return res.status(400).send(err);
     }
@@ -161,7 +168,7 @@ const readAdminProblems = async (
     if (!module) {
       return res.status(404).send();
     }
-    adminProblems = module.problems;
+    adminProblems = translateIdOnProblemArray(module.problems);
   } else {
     // adminProblems = await Problem.find({});
     adminProblems = await ProblemTable.findAll({
@@ -170,6 +177,7 @@ const readAdminProblems = async (
         { model: CodeTable, as: 'code' }
       ]
     });
+    adminProblems = translateIdOnProblemArray(adminProblems);
   }
 
   return res.status(200).send(adminProblems);
@@ -280,6 +288,8 @@ const updateProblem = async (
     //   },
     //   { new: true }
     // );
+
+    // TODO: This route will incorrectly return the old problem, when it should return the new one
     const problem = await ProblemTable.findOne({
       where: { id: req.params.problemId }
     });
@@ -316,7 +326,7 @@ const updateProblem = async (
     await CodeTable.destroy({ where: { problemId: problem.id } });
     await CodeTable.update(req.body.code, { where: { problemId: problem.id } });
 
-    return res.status(200).send(problem);
+    return res.status(200).send(translateIdOnProblem(problem));
   } catch (error) {
     return res.status(400).send(error);
   }

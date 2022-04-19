@@ -10,7 +10,7 @@ import {
 } from '../models/problem.mysql.model';
 import validator from 'validator';
 import moduleValidation from '../validation/module.validation';
-import { translateIdOnModule } from './util';
+import { translateIdOnModule, translateIdOnModuleArray } from './util';
 
 export const getModules = async (
   _req: Request,
@@ -23,7 +23,7 @@ export const getModules = async (
     modules = await ModuleTable.findAll({
       order: [['number', 'ASC']]
     });
-    res.status(200).send(modules);
+    res.status(200).send(translateIdOnModuleArray(modules));
   } catch (err) {
     res.status(400).type('json').send(err);
   }
@@ -62,7 +62,7 @@ export const getModulesWithNonHiddenProblemsAndTestCases = async (
         }
       ]
     });
-    res.status(200).send(modules);
+    res.status(200).send(translateIdOnModuleArray(modules));
   } catch (err) {
     res.status(400).send(err);
   }
@@ -127,7 +127,7 @@ export const getModuleByProblemId = async (
   if (modules.length > 1) {
     return res.status(500).send('Multiple modules have this problemId');
   }
-  return res.status(200).send(modules[0]);
+  return res.status(200).send(translateIdOnModule(modules[0]));
 };
 
 export const getModulesWithProblems = async (
@@ -160,7 +160,7 @@ export const getModulesWithProblems = async (
       order: [['number', 'ASC']]
     });
 
-    res.status(200).send(modules);
+    res.status(200).send(translateIdOnModuleArray(modules));
   } catch (err) {
     res.status(400).type('json').send(err);
   }
@@ -200,7 +200,7 @@ export const postModules = async (
 
     res.status(200).send(
       JSON.stringify({
-        id: module._id
+        _id: module._id
       })
     );
   } catch (err) {
