@@ -48,36 +48,9 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
-      - name: Create .env file
-        run: |
-          touch .env
-          echo export NODE_ENV=production >> .env
-          echo export DB_URI="${{secrets.DB_URI}}" >> .env
-          echo export JWT_SECRET=${{secrets.JWT_SECRET}} >> .env
-          echo export APP_PASSWORD=${{secrets.APP_PASSWORD}} >> .env
-          echo export ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY_ID }} >> .env
-          echo export BETA_JUDGE_URI=${{secrets.BETA_JUDGE_URI}} >> .env
-          echo export EDUGATOR_API_PASS=${{secrets.EDUGATOR_API_PASS}} >> .env
-          echo export EDUGATOR_API_URL=${{secrets.EDUGATOR_API_URL}} >> .env
-          echo export EDUGATOR_API_USER=${{secrets.EDUGATOR_API_USER}} >> .env
-          echo export EDUGATOR_AUTH_TOKEN=${{secrets.EDUGATOR_AUTH_TOKEN}} >> .env
-          echo export JOB_DEFINITION=${{secrets.JOB_DEFINITION}} >> .env
-          echo export JOB_QUEUE=${{secrets.JOB_QUEUE}} >> .env
-          echo export JUDGE_URL=${{secrets.JUDGE_URL}} >> .env
-          echo export PROD_JUDGE_URI=${{secrets.PROD_JUDGE_URI}} >> .env
-          echo export REGION_AWS=${{secrets.REGION_AWS}} >> .env
-          echo export SENDER_EMAIL=${{secrets.SENDER_EMAIL}} >> .env
-          echo export UPLOAD_SUBMISSIONS_BUCKET=${{secrets.UPLOAD_SUBMISSIONS_BUCKET}} >> .env
-          echo export SECRET_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} >> .env
-          echo export DB_HOST=${{ secrets.DB_HOST }} >> .env
-          echo export DB_USER=${{ secrets.DB_USER }} >> .env
-          echo export DB_PASSWORD=${{ secrets.DB_PASSWORD }} >> .env
-          echo export DB_NAME=${{ secrets.DB_NAME }} >> .env
-          echo export TEST_DB_NAME=${{ secrets.TEST_DB_NAME }} >> .env
-
       - name: Tar the files
         run: |
-          tar czf backend.tar.gz src/ package.json package-lock.json tsconfig.json .eslintrc .prettierrc tsconfig.release.json .env package.json package-lock.json
+          tar czf backend.tar.gz src/ package.json package-lock.json tsconfig.json .eslintrc .prettierrc tsconfig.release.json package.json package-lock.json
       - name: copy files via ssh password 
         env:
           PRIVATE_KEY: ${{ env.AWS_PRIVATE_KEY  }}
@@ -96,6 +69,29 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
             #Now we have got the access of EC2 and we will start the deploy .
             cd ~/;
+            export NODE_ENV=production
+            export DB_URI="${{secrets.DB_URI}}"
+            export JWT_SECRET=${{secrets.JWT_SECRET}}
+            export APP_PASSWORD=${{secrets.APP_PASSWORD}}
+            export ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY_ID }}
+            export BETA_JUDGE_URI=${{secrets.BETA_JUDGE_URI}}
+            export EDUGATOR_API_PASS=${{secrets.EDUGATOR_API_PASS}}
+            export EDUGATOR_API_URL=${{secrets.EDUGATOR_API_URL}}
+            export EDUGATOR_API_USER=${{secrets.EDUGATOR_API_USER}}
+            export EDUGATOR_AUTH_TOKEN=${{secrets.EDUGATOR_AUTH_TOKEN}}
+            export JOB_DEFINITION=${{secrets.JOB_DEFINITION}}
+            export JOB_QUEUE=${{secrets.JOB_QUEUE}}
+            export JUDGE_URL=${{secrets.JUDGE_URL}}
+            export PROD_JUDGE_URI=${{secrets.PROD_JUDGE_URI}}
+            export REGION_AWS=${{secrets.REGION_AWS}}
+            export SENDER_EMAIL=${{secrets.SENDER_EMAIL}}
+            export UPLOAD_SUBMISSIONS_BUCKET=${{secrets.UPLOAD_SUBMISSIONS_BUCKET}}
+            export SECRET_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            export DB_HOST=${{ secrets.DB_HOST }}
+            export DB_USER=${{ secrets.DB_USER }}
+            export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            export DB_NAME=${{ secrets.DB_NAME }}
+            export TEST_DB_NAME=${{ secrets.TEST_DB_NAME }}
             echo "making directory";
             mkdir -p source-code;
             echo " removing in source code";
@@ -104,8 +100,6 @@ jobs:
             tar -xvf backend.tar.gz -C source-code/;
             echo " cd into source code";
             cd source-code;
-            echo " source env";
-            source .env;
             echo "install";
             npm install;
             echo "build";
