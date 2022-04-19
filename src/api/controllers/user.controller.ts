@@ -87,7 +87,7 @@ const updateUser = async (req: Request, res: Response): Promise<void> => {
       user.username = req.body.username;
       user.name = req.body.name;
       user.role = req.body.role;
-      user.save(); // TODO: Make this await
+      await user.save();
       res.status(200).type('json').send(user);
     } else {
       res
