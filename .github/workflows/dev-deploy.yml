@@ -52,7 +52,7 @@ jobs:
         run: |
           touch .env
           echo export NODE_ENV=production >> .env
-          echo export DB_URI=${{secrets.DB_URI}} >> .env
+          echo export DB_URI="${{secrets.DB_URI}}" >> .env
           echo export JWT_SECRET=${{secrets.JWT_SECRET}} >> .env
           echo export APP_PASSWORD=${{secrets.APP_PASSWORD}} >> .env
           echo export ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY_ID }} >> .env
