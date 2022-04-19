@@ -22,7 +22,8 @@ connection.query(`USE ${db_name}`, function (err) {
   if (err) throw err;
 });
 
-// Drop existing tables; ordered based on foreign keys
+// Drop existing tables in referential order
+
 connection.query('DROP TABLE IF EXISTS TestCase', function (err) {
   if (err) throw err;
 });
@@ -45,14 +46,6 @@ connection.query('DROP TABLE IF EXISTS User', function (err) {
 
 // Create tables in reverse referential order
 
-/*
- * Questions:
- *   - Should Number be the primary key?
- *   - Should (Name, Number) form a composite key?
- *   - Or should we continue with the non-app-exposed primary key, Id?
- *   - Should any of the non-PK fields have a uniqueness constraint?
- */
-
 connection.query(
   `
   CREATE TABLE IF NOT EXISTS Module (
@@ -66,16 +59,6 @@ connection.query(
     if (err) throw err;
   }
 );
-
-/*
- * Questions:
- *   - Default values?
- *   - What date type should we use? MongoDB Date supports millisecond
- *     granluarity. Should this continue?
- *   - Should the code_id foreign key be mandatory (i.e. NOT NULL)?
- *   - Do we want to make time_limit a floating point precision numeric,
- *     like DOUBLE? Or would we rather use a fixed point precision?
- */
 
 connection.query(
   `
@@ -102,11 +85,6 @@ connection.query(
     if (err) throw err;
   }
 );
-
-/*
- * Questions:
- *   - Should the problem_id be enforced UNIQUE or not?
- */
 
 connection.query(
   `
