@@ -289,15 +289,7 @@ const updateProblem = async (
     //   { new: true }
     // );
 
-    // TODO: This route will incorrectly return the old problem, when it should return the new one
-    const problem = await ProblemTable.findOne({
-      where: { id: req.params.problemId }
-    });
-    if (!problem) {
-      return res.status(404).send();
-    }
-
-    await ProblemTable.update(
+    const numUpdated: number = await ProblemTable.update(
       {
         statement: req.body.statement,
         title: req.body.title,
@@ -314,19 +306,31 @@ const updateProblem = async (
         where: { id: req.params.problemId }
       }
     );
-    await TestCaseTable.destroy({ where: { problemId: problem.id } });
-    const tests: TestCase[] = req.body.testCases.map(
-      (test) =>
-        <TestCase>{
-          problemId: problem.id,
-          ...test
-        }
-    );
-    await TestCaseTable.bulkCreate(tests);
-    await CodeTable.destroy({ where: { problemId: problem.id } });
-    await CodeTable.update(req.body.code, { where: { problemId: problem.id } });
 
-    return res.status(200).send(translateIdOnProblem(problem));
+    if (numUpdated > 0) {
+      await TestCaseTable.destroy({
+        where: { problemId: req.params.problemId }
+      });
+      const tests: TestCase[] = req.body.testCases.map(
+        (test) =>
+          <TestCase>{
+            problemId: req.params.problemId,
+            ...test
+          }
+      );
+      await TestCaseTable.bulkCreate(tests);
+      await CodeTable.destroy({ where: { problemId: req.params.problemId } });
+      await CodeTable.update(req.body.code, {
+        where: { problemId: req.params.problemId }
+      });
+
+      const problem = await ProblemTable.findOne({
+        where: { id: req.params.problemId }
+      });
+      return res.status(200).send(translateIdOnProblem(problem));
+    } else {
+      return res.status(404).send();
+    }
   } catch (error) {
     return res.status(400).send(error);
   }
