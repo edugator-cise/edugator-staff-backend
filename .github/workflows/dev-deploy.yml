@@ -106,9 +106,9 @@ jobs:
             npm run build;
             npm install -g pm2;
             echo "pm2 stop";
-            pm2 stop index || true;
+            pm2 stop index 2>/dev/null;
             echo "pm2 delete";
-            pm2 delete index || true;
+            pm2 delete index 2>/dev/null;
             echo "pm2 new";
-            pm2 start build/src/index.js
+            pm2 start build/src/index.js 2>/dev/null;
           '
