@@ -29,8 +29,8 @@ env:
   DB_NAME: ${{ secrets.DB_NAME }}
   TEST_DB_NAME: ${{ secrets.TEST_DB_NAME }}
   AWS_PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY }}
-  HOSTNAME: ${{ secrets.HOSTNAME}}
-  USER_NAME: ${{ secrets.USER_NAME}}
+  HOSTNAME: ${{ secrets.HOSTNAME }}
+  USER_NAME: ${{ secrets.USER_NAME }}
 
 on:
   pull_request:
@@ -79,11 +79,19 @@ jobs:
       - name: Tar the files
         run: |
           tar czf backend.tar.gz src/ package.json package-lock.json tsconfig.json .eslintrc .prettierrc tsconfig.release.json .env package.json package-lock.json
-      - name: copy files via ssh password 
+      - name: make private key
         run: |
           echo "${{env.AWS_PRIVATE_KEY}}" > private_key
           chmod 600 private_key
-          scp -o StrictHostKeyChecking=no -i private_key ${{env.USER_NAME}}@${{env.HOSTNAME}}:~/
+      - name: copy file via ssh password
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ env.HOSTNAME }}
+          username: ${{ env.USER_NAME }}
+          key: private_key
+          key_path: "./"
+          source: "backend.tar.gz"
+          target: "."
       - name: Deploy in EC2
         run: |
           ssh -o StrictHostKeyChecking=no -i private_key ${{env.USER_NAME}}@${{env.HOSTNAME}} '
