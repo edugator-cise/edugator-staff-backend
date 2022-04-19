@@ -23,6 +23,11 @@ env:
   SENDER_EMAIL: ${{secrets.SENDER_EMAIL}}
   UPLOAD_SUBMISSIONS_BUCKET: ${{secrets.UPLOAD_SUBMISSIONS_BUCKET}}
   SECRET_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  DB_HOST: ${{ secrets.DB_HOST }}
+  DB_USER: ${{ secrets.DB_USER }}
+  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+  DB_NAME: ${{ secrets.DB_NAME }}
+  TEST_DB_NAME: ${{ secrets.TEST_DB_NAME }}
 
 on:
   pull_request:
@@ -61,36 +66,34 @@ jobs:
           SENDER_EMAIL=${{secrets.SENDER_EMAIL}}
           UPLOAD_SUBMISSIONS_BUCKET=${{secrets.UPLOAD_SUBMISSIONS_BUCKET}}
           SECRET_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          DB_HOST=${{ secrets.DB_HOST }}
+          DB_USER=${{ secrets.DB_USER }}
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          DB_NAME=${{ secrets.DB_NAME }}
+          TEST_DB_NAME=${{ secrets.TEST_DB_NAME }}
           EOF
 
       - name: Tar the files
         run: |
           tar czf backend.tar.gz src/ package.json package-lock.json tsconfig.json .eslintrc .prettierrc tsconfig.release.json .env package.json package-lock.json
       - name: copy files via ssh password 
-        env:
-          PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY  }}
-          HOSTNAME : ${{ secrets.HOSTNAME  }}
-          USER_NAME : ${{ secrets.USER_NAME  }} 
         run: |
-          echo "$PRIVATE_KEY" > private_key
+          echo "${{env.AWS_PRIVATE_KEY}}" > private_key
           chmod 600 private_key
-          scp -o StrictHostKeyChecking=no -i "private_key" ${USER_NAME}@${HOSTNAME}:~/
+          scp -o StrictHostKeyChecking=no -i "private_key" ${{env.USER_NAME}}@${{env.HOSTNAME}}:~/
       - name: Deploy in EC2
-        env:
-            PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY  }}
-            HOSTNAME : ${{ secrets.HOSTNAME  }}
-            USER_NAME : ${{ secrets.USER_NAME  }}
         run: |
-          ssh -o StrictHostKeyChecking=no -i "private_key" ${USER_NAME}@${HOSTNAME} '
+          ssh -o StrictHostKeyChecking=no -i "private_key" ${{env.USER_NAME}}@${{env.HOSTNAME}} '
             #Now we have got the access of EC2 and we will start the deploy .
             cd ~/ &&
-            mkdir -pr source-code &&
-            rm -rf source-code/ &&
+            mkdir -p source-code &&
+            rm -rf source-code/* &&
             tar -xvf backend.tar.gz -C source-code/ &&
             cd source-code &&
             source .env &&
             npm install &&
             npm run build &&
             pm2 stop index &&
+            pm2 delete index &&
             pm2 start build/src/index.js
           '
