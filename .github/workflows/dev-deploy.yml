@@ -28,6 +28,9 @@ env:
   DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
   DB_NAME: ${{ secrets.DB_NAME }}
   TEST_DB_NAME: ${{ secrets.TEST_DB_NAME }}
+  AWS_PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY }}
+  HOST_NAME: ${{ secrets.HOST_NAME}}
+  USER_NAME: ${{ secrets.USER_NAME}}
 
 on:
   pull_request:
