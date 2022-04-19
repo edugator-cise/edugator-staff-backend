@@ -69,29 +69,29 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
             #Now we have got the access of EC2 and we will start the deploy .
             cd ~/;
-            export NODE_ENV=production
-            export DB_URI="${{secrets.DB_URI}}"
-            export JWT_SECRET=${{secrets.JWT_SECRET}}
-            export APP_PASSWORD=${{secrets.APP_PASSWORD}}
-            export ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY_ID }}
-            export BETA_JUDGE_URI=${{secrets.BETA_JUDGE_URI}}
-            export EDUGATOR_API_PASS=${{secrets.EDUGATOR_API_PASS}}
-            export EDUGATOR_API_URL=${{secrets.EDUGATOR_API_URL}}
-            export EDUGATOR_API_USER=${{secrets.EDUGATOR_API_USER}}
-            export EDUGATOR_AUTH_TOKEN=${{secrets.EDUGATOR_AUTH_TOKEN}}
-            export JOB_DEFINITION=${{secrets.JOB_DEFINITION}}
-            export JOB_QUEUE=${{secrets.JOB_QUEUE}}
-            export JUDGE_URL=${{secrets.JUDGE_URL}}
-            export PROD_JUDGE_URI=${{secrets.PROD_JUDGE_URI}}
-            export REGION_AWS=${{secrets.REGION_AWS}}
-            export SENDER_EMAIL=${{secrets.SENDER_EMAIL}}
-            export UPLOAD_SUBMISSIONS_BUCKET=${{secrets.UPLOAD_SUBMISSIONS_BUCKET}}
-            export SECRET_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            export DB_HOST=${{ secrets.DB_HOST }}
-            export DB_USER=${{ secrets.DB_USER }}
-            export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            export DB_NAME=${{ secrets.DB_NAME }}
-            export TEST_DB_NAME=${{ secrets.TEST_DB_NAME }}
+            export NODE_ENV=production;
+            export DB_URI="${{secrets.DB_URI}}";
+            export JWT_SECRET=${{secrets.JWT_SECRET}};
+            export APP_PASSWORD=${{secrets.APP_PASSWORD}};
+            export ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY_ID }};
+            export BETA_JUDGE_URI=${{secrets.BETA_JUDGE_URI}};
+            export EDUGATOR_API_PASS=${{secrets.EDUGATOR_API_PASS}};
+            export EDUGATOR_API_URL=${{secrets.EDUGATOR_API_URL}};
+            export EDUGATOR_API_USER=${{secrets.EDUGATOR_API_USER}};
+            export EDUGATOR_AUTH_TOKEN=${{secrets.EDUGATOR_AUTH_TOKEN}};
+            export JOB_DEFINITION=${{secrets.JOB_DEFINITION}};
+            export JOB_QUEUE=${{secrets.JOB_QUEUE}};
+            export JUDGE_URL=${{secrets.JUDGE_URL}};
+            export PROD_JUDGE_URI=${{secrets.PROD_JUDGE_URI}};
+            export REGION_AWS=${{secrets.REGION_AWS}};
+            export SENDER_EMAIL=${{secrets.SENDER_EMAIL}};
+            export UPLOAD_SUBMISSIONS_BUCKET=${{secrets.UPLOAD_SUBMISSIONS_BUCKET}};
+            export SECRET_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }};
+            export DB_HOST=${{ secrets.DB_HOST }};
+            export DB_USER=${{ secrets.DB_USER }};
+            export DB_PASSWORD=${{ secrets.DB_PASSWORD }};
+            export DB_NAME=${{ secrets.DB_NAME }};
+            export TEST_DB_NAME=${{ secrets.TEST_DB_NAME }};
             echo "making directory";
             mkdir -p source-code;
             echo " removing in source code";
@@ -110,5 +110,5 @@ jobs:
             echo "pm2 delete";
             pm2 delete index 2>/dev/null;
             echo "pm2 new";
-            pm2 start build/src/index.js 2>/dev/null;
+            pm2 start ~/source-code/build/src/index.js 2>/dev/null;
           '
