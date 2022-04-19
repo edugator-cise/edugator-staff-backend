@@ -104,10 +104,11 @@ jobs:
             npm install;
             echo "build";
             npm run build;
+            npm install -g pm2;
             echo "pm2 stop";
-            pm2 stop index;
+            pm2 stop index || true;
             echo "pm2 delete";
-            pm2 delete index;
+            pm2 delete index || true;
             echo "pm2 new";
             pm2 start build/src/index.js
           '
