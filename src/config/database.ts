@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 import { Sequelize } from 'sequelize';
 import { buildModuleTable } from '../api/models/module.mysql.model';
-import { buildProblem } from '../api/models/problem.mysql.model';
+import { buildProblemTables } from '../api/models/problem.mysql.model';
 import { buildUserTable } from '../api/models/user.mysql.model';
 
 const globalAny: any = global;
@@ -55,7 +55,7 @@ const mySqlConnect = async () => {
   await sequelize.authenticate();
   await buildModuleTable();
   await buildUserTable();
-  await buildProblem();
+  await buildProblemTables();
 };
 
 const mySqlDisconnect = async () => {

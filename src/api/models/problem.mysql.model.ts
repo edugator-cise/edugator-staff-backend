@@ -1,6 +1,6 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../../config/database';
-import { buildModuleTable, ModuleTable } from './module.mysql.model';
+import { ModuleTable } from './module.mysql.model';
 
 interface TestCase {
   input: string;
@@ -43,11 +43,9 @@ const buildProblemTable = async () => {
   if (ProblemTable != null) {
     return; // already built
   }
-  await buildModuleTable();
   ProblemTable = sequelize.define(
     'Problem',
     {
-      // TODO: This needs to be renamed to _id to be compatible with frontend
       id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -116,11 +114,9 @@ const buildTestCaseTable = async () => {
   if (TestCaseTable != null) {
     return; // already built
   }
-  await buildProblemTable();
   TestCaseTable = sequelize.define(
     'TestCase',
     {
-      // TODO: This needs to be renamed to _id to be compatible with frontend
       id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -171,11 +167,9 @@ const buildCodeTable = async () => {
   if (CodeTable != null) {
     return; // already built
   }
-  await buildProblemTable();
   CodeTable = sequelize.define(
     'Code',
     {
-      // TODO: This needs to be renamed to _id to be compatible with frontend
       id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -223,7 +217,7 @@ const relateTables = () => {
   });
   ProblemTable.TestCases = ProblemTable.hasMany(TestCaseTable, {
     foreignKey: 'problemId',
-    as: 'testCases' // not 'TestCases'
+    as: 'testCases'
   });
   ProblemTable.Codes = ProblemTable.hasOne(CodeTable, {
     foreignKey: 'problemId',
@@ -231,14 +225,14 @@ const relateTables = () => {
   });
 };
 
-// Other files should call this function to build the tables
-const buildProblem = async () => {
+// Build function for ProblemTable, CodeTable, and TestCaseTable
+const buildProblemTables = async () => {
   await buildTables();
   relateTables();
 };
 
 export {
-  buildProblem,
+  buildProblemTables,
   ProblemTable,
   CodeTable,
   TestCaseTable,
