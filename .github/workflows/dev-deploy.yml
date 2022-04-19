@@ -87,14 +87,14 @@ jobs:
         run: |
           echo "${{env.AWS_PRIVATE_KEY}}" > private_key
           chmod 600 private_key
-          scp -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME}:~/
+          scp -o StrictHostKeyChecking=no -i private_key ubuntu@ec2-44-200-221-60.compute-1.amazonaws.com:~/
       - name: Deploy in EC2
         env:
           PRIVATE_KEY: ${{ env.AWS_PRIVATE_KEY  }}
           HOSTNAME : ${{ env.HOSTNAME  }}
           USER_NAME : ${{ env.USER_NAME  }}
         run: |
-          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
+          ssh -o StrictHostKeyChecking=no -i private_key ubuntu@ec2-44-200-221-60.compute-1.amazonaws.com '
             #Now we have got the access of EC2 and we will start the deploy .
             cd ~/ &&
             mkdir -p source-code &&
