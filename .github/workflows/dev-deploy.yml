@@ -102,9 +102,10 @@ jobs:
             cd source-code;
             echo "install";
             npm install &&
-            npm run build &&
-            npm install -g pm2 &&
-            (pm2 stop index || true) &&
-            (pm2 delete index || true) &&
-            (pm2 start ~/source-code/build/src/index.js || true);
+            npm run build;
+            wait $!;
+            npm install -g pm2;
+            pm2 stop index || true;
+            pm2 delete index || true;
+            pm2 start ~/source-code/build/src/index.js || true;
           ';
