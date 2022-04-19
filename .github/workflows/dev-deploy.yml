@@ -107,10 +107,14 @@ jobs:
             cd source-code;
             echo " source env";
             source .env;
-            echo " install and build";
-            npm install &&
-            npm run build &&
-            pm2 stop index &&
-            pm2 delete index &&
+            echo "install";
+            npm install;
+            echo "build";
+            npm run build;
+            echo "pm2 stop";
+            pm2 stop index;
+            echo "pm2 delete";
+            pm2 delete index;
+            echo "pm2 new";
             pm2 start build/src/index.js
           '
