@@ -37,7 +37,10 @@ interface IProblem extends Problem {
   id: number;
 }
 
+// null until buildProblemTables is called
 let ProblemTable: any = null;
+let TestCaseTable: any = null;
+let CodeTable: any = null;
 
 const buildProblemTable = async () => {
   if (ProblemTable != null) {
@@ -108,8 +111,6 @@ const buildProblemTable = async () => {
   );
 };
 
-let TestCaseTable: any = null;
-
 const buildTestCaseTable = async () => {
   if (TestCaseTable != null) {
     return; // already built
@@ -160,8 +161,6 @@ const buildTestCaseTable = async () => {
     }
   );
 };
-
-let CodeTable: any = null;
 
 const buildCodeTable = async () => {
   if (CodeTable != null) {
