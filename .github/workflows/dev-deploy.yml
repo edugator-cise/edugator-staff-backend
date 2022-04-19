@@ -83,7 +83,7 @@ jobs:
         run: |
           echo "${{env.AWS_PRIVATE_KEY}}" > private_key
           chmod 600 private_key
-          scp -o StrictHostKeyChecking=no -i private_key "${{env.USER_NAME}}@${{env.HOSTNAME}}:~/""
+          scp -o StrictHostKeyChecking=no -i private_key "${{env.USER_NAME}}@${{env.HOSTNAME}}:~/"
       - name: Deploy in EC2
         run: |
           ssh -o StrictHostKeyChecking=no -i private_key ${{env.USER_NAME}}@${{env.HOSTNAME}} '
