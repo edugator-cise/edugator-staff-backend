@@ -1,9 +1,9 @@
 import * as httpStatus from 'http-status';
 import { Request, Response } from 'express';
 import * as jwt from 'jsonwebtoken';
-import { UserModel, IUser } from '../models/user.model';
 import { jwtSecret, jwtExpirationInterval } from '../../config/vars';
 import * as bcrypt from 'bcrypt';
+import { UserTable, IUser } from '../models/user.mysql.model';
 
 // Logs the validated user in
 const authenticateUser = async (req: Request, res: Response): Promise<void> => {
@@ -16,7 +16,7 @@ const authenticateUser = async (req: Request, res: Response): Promise<void> => {
       username: req.body.username
     };
 
-    const user: IUser = await UserModel.findOne(payload);
+    const user: IUser = await UserTable.findOne({ where: payload });
 
     if (!user) {
       res.status(401).type('json').send({

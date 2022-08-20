@@ -1,12 +1,9 @@
 import { expressApp } from '../src/config/express';
 import * as request from 'supertest';
-import { UserModel, IUser } from '../src/api/models/user.model';
 import * as bcrypt from 'bcrypt';
+import { UserTable } from '../src/api/models/user.mysql.model';
 
 describe('GET /auth/*', () => {
-  let user: IUser;
-  let superUser: IUser;
-
   beforeEach(async () => {
     const pass = 'password';
 
@@ -27,22 +24,21 @@ describe('GET /auth/*', () => {
     });
 
     if (result) {
-      user = await UserModel.create({
+      await UserTable.create({
         name: 'Test TA',
         username: 'testTA@gmail.com',
         password: hashedPassword,
-        role: 'TA'
+        role: 'TA',
+        salt: 10
       });
 
-      superUser = await UserModel.create({
+      await UserTable.create({
         name: 'Test Professor',
         username: 'testProfessor@gmail.com',
         password: hashedPassword,
-        role: 'Professor'
+        role: 'Professor',
+        salt: 10
       });
-
-      await user.save();
-      await superUser.save();
     } else {
       throw { message: 'Hash method not working properly' };
     }

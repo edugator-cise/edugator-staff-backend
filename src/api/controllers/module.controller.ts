@@ -1,41 +1,52 @@
 import { Request, Response } from 'express';
-import { Types } from 'mongoose';
+import { IModule, ModuleTable } from '../models/module.mysql.model';
 import {
-  Module,
-  ModuleDocument,
-  ModuleInterface
-} from '../models/module.model';
-import { Problem } from '../models/problem.model';
-import * as validator from 'validator';
+  IProblem,
+  ProblemTable,
+  CodeTable,
+  TestCaseTable
+} from '../models/problem.mysql.model';
+import validator from 'validator';
 import moduleValidation from '../validation/module.validation';
+import { translateIdOnModule, translateIdOnModuleArray } from './util';
 
 export const getModules = async (
   _req: Request,
   res: Response
 ): Promise<void> => {
-  let modules: ModuleInterface[];
+  let modules: IModule[];
   try {
     //Find All modules
-    modules = await Module.find().select('-problems').sort({ number: 1 });
-    res.status(200).send(modules);
+    modules = await ModuleTable.findAll({
+      order: [['number', 'ASC']]
+    });
+    res.status(200).send(translateIdOnModuleArray(modules));
   } catch (err) {
     res.status(400).type('json').send(err);
   }
 };
 
+// TODO
 export const getModulesWithNonHiddenProblemsAndTestCases = async (
   _req: Request,
   res: Response
 ): Promise<void> => {
   try {
-    const modules = await Module.find()
-      .populate({
-        path: 'problems',
-        select: 'id title',
-        match: { hidden: false }
-      })
-      .sort({ number: 1 });
-    res.status(200).send(modules);
+    const modules: IModule[] = await ModuleTable.findAll({
+      include: [
+        {
+          model: ProblemTable,
+          as: 'problems',
+          where: {
+            hidden: false
+          },
+          attributes: {
+            include: ['id', 'title']
+          }
+        }
+      ]
+    });
+    res.status(200).send(translateIdOnModuleArray(modules));
   } catch (err) {
     res.status(400).send(err);
   }
@@ -45,19 +56,18 @@ export const getModuleByID = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  let modules: ModuleDocument;
+  let module: IModule;
   try {
-    if (!validator.isMongoId(req.params.moduleId)) {
+    if (!validator.isInt(req.params.moduleId + '')) {
       throw { message: 'This route requires a valid module ID' };
     }
 
-    // Find One Module
-    modules = await Module.findOne({
-      _id: req.params.moduleId
-    }).select('-problems');
+    module = await ModuleTable.findOne({
+      where: { id: req.params.moduleId }
+    });
 
-    if (modules != null) {
-      res.status(200).send(modules);
+    if (module != null) {
+      res.status(200).send(translateIdOnModule(module));
     } else {
       res.status(400).send({ message: 'Module not found in database' });
     }
@@ -70,14 +80,24 @@ export const getModuleByProblemId = async (
   req: Request,
   res: Response
 ): Promise<Response<any, Record<string, any>>> => {
-  if (!validator.isMongoId(req.params.problemId)) {
+  if (!validator.isInt(req.params.problemId + '')) {
     return res.status(400).send('This route requires a valid problem ID');
   }
   // Get all modules
-  let modules: ModuleInterface[] = await Module.find();
-  modules = modules.filter((doc) => {
-    return doc.problems.includes(new Types.ObjectId(req.params.problemId));
+  const problem: IProblem = await ProblemTable.findOne({
+    where: {
+      id: req.params.problemId
+    }
   });
+
+  if (problem == null) {
+    return res
+      .status(404)
+      .send('No module associated with this problemId was found');
+  }
+
+  let modules: IModule[] = await ModuleTable.findAll();
+  modules = modules.filter((module) => module.id == problem.moduleId);
   if (modules.length === 0) {
     return res
       .status(404)
@@ -86,24 +106,29 @@ export const getModuleByProblemId = async (
   if (modules.length > 1) {
     return res.status(500).send('Multiple modules have this problemId');
   }
-  return res.status(200).send(modules[0]);
+  return res.status(200).send(translateIdOnModule(modules[0]));
 };
 
 export const getModulesWithProblems = async (
   _req: Request,
   res: Response
 ): Promise<void> => {
-  let modules: ModuleInterface[];
+  let modules: IModule[];
   try {
-    //Find All modules
-    modules = await Module.find()
-      .populate({
-        path: 'problems',
-        select: 'id title'
-      })
-      .sort({ number: 1 });
+    modules = await ModuleTable.findAll({
+      include: [
+        {
+          model: ProblemTable,
+          as: 'problems',
+          attributes: {
+            include: ['id', 'title']
+          }
+        }
+      ],
+      order: [['number', 'ASC']]
+    });
 
-    res.status(200).send(modules);
+    res.status(200).send(translateIdOnModuleArray(modules));
   } catch (err) {
     res.status(400).type('json').send(err);
   }
@@ -130,14 +155,14 @@ export const postModules = async (
       return;
     }
 
-    const module = await Module.create({
+    const module = await ModuleTable.create({
       name: req.body.name,
       number: req.body.number
     });
 
     res.status(200).send(
       JSON.stringify({
-        id: module._id
+        _id: module._id
       })
     );
   } catch (err) {
@@ -150,7 +175,7 @@ export const postModules = async (
 export const putModule = async (req: Request, res: Response): Promise<void> => {
   // makes sure there is a moduleId given in the params
   try {
-    if (!validator.isMongoId(req.params.moduleId)) {
+    if (!validator.isInt(req.params.moduleId + '')) {
       throw { message: 'This route requires a valid module ID' };
     }
 
@@ -170,16 +195,15 @@ export const putModule = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const module = await Module.findByIdAndUpdate(
-      {
-        _id: req.params.moduleId
-      },
-      req.body,
-      { new: true }
-    ).select('-problems');
+    const numUpdated = await ModuleTable.update(req.body, {
+      where: { id: req.params.moduleId }
+    });
 
-    if (module) {
-      res.status(200).type('json').send(module);
+    if (numUpdated > 0) {
+      const module = await ModuleTable.findOne({
+        where: { id: req.params.moduleId }
+      });
+      res.status(200).type('json').send(translateIdOnModule(module));
     } else {
       res
         .status(400)
@@ -197,29 +221,41 @@ export const deleteModule = async (
 ): Promise<void> => {
   try {
     if (req.params.moduleId) {
-      const module = await Module.findOne({
-        _id: req.params.moduleId
+      const module = await ModuleTable.findOne({
+        where: { id: req.params.moduleId },
+        include: [
+          {
+            model: ProblemTable,
+            as: 'problems',
+            include: [
+              { model: TestCaseTable, as: 'testCases' },
+              { model: CodeTable, as: 'code' }
+            ]
+          }
+        ]
       });
 
       if (!module) {
         throw { message: 'Module with given id is not found in database' };
       }
-      //Deletes the problems in the problems array from the problems collection
       try {
-        for (let i = 0; i < module.problems.length; i++) {
-          const problem = await Problem.findOneAndDelete({
-            _id: module.problems[i]
+        await ProblemTable.destroy({
+          where: { moduleId: module.id }
+        });
+        for (const problem of module.problems) {
+          await CodeTable.destroy({
+            where: { problemId: problem.id }
           });
-          if (!problem) {
-            throw { message: 'Problem with given id is not found in database' };
-          }
+          await TestCaseTable.destroy({
+            where: { problemId: problem.id }
+          });
         }
       } catch (err) {
         res.status(400).type('json').send(err);
         return;
       }
 
-      await module.delete();
+      await module.destroy();
       res
         .status(200)
         .type('json')

@@ -5,12 +5,12 @@ import * as cors from 'cors';
 import * as passport from 'passport';
 import { jwtStrategy } from './passport';
 import * as database from './database';
+
 class Server {
   public app: express.Application;
 
   constructor() {
     this.app = express();
-    this.connectDatabase();
     this.config();
     this.routes();
   }
@@ -28,12 +28,19 @@ class Server {
     passport.use('jwt', jwtStrategy);
   }
 
-  private connectDatabase(): void {
+  private async connectDatabase(): Promise<void> {
     database.connect();
+    await database.mySqlConnect();
+    //eslint-disable-next-line no-console
+    console.log('mySQL connected.');
   }
   public start(): void {
-    //eslint-disable-next-line
-    this.app.listen(8080, () => console.log(`server started on port 8080`));
+    this.connectDatabase().then(() => {
+      this.app.listen(8080, () => {
+        //eslint-disable-next-line
+        console.log(`server started on port 8080`);
+      });
+    });
   }
 }
 
