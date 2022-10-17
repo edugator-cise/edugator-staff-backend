@@ -5,6 +5,7 @@ import userRouter from './user.routes';
 import { studentProblemRouter, adminProblemRouter } from './problem.routes';
 import { moduleRouter } from './module.routes';
 import { submissionRouter } from './submission.routes';
+import { lessonRouter } from './lesson.routes';
 import { Router } from 'express';
 
 const router = Router();
@@ -17,5 +18,6 @@ router.use('/admin/problem', adminProblemRouter);
 router.use('/user', userRouter);
 router.use('/auth', authRouter);
 router.use('/submission', submissionRouter);
+router.use('/lesson/', lessonRouter);
 
 export default router;
