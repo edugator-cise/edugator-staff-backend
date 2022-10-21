@@ -5,6 +5,7 @@ import {
   LessonDocument
 } from '../models/lesson.model';
 import * as validator from 'validator';
+import { Module, ModuleDocument } from '../models/module.model';
 
 export const getLessons = async (
   _req: Request,
@@ -23,41 +24,30 @@ export const getLessons = async (
 export const postLessons = async (
   req: Request,
   res: Response
-): Promise<void> => {
+): Promise<Response<any, Record<string, any>>> => {
+  const lesson = new Lesson({
+    title: req.body.title,
+    author: req.body.author,
+    createDate: req.body.createDate,
+    updateDate: req.body.updateDate,
+    content: req.body.content
+  }) as unknown as LessonDocument;
+
   try {
-    if (Object.keys(req.body).length === 0) {
-      throw { message: 'This route requires a body to be passed in' };
-    }
-
-    //Joi Validation
-    //const { error } = moduleValidation(req.body);
-
-    /*if (error) {
-      const errorMessage = error.details[0].message;
-      const errorMessageNoQuotes = errorMessage.replace(/["]+/g, '');
-      res.status(400).type('json').send({
-        message: errorMessageNoQuotes
-      });
-      return;
-    }*/
-
-    const lesson = await Lesson.create({
-      title: req.body.title,
-      author: req.body.author,
-      createDate: req.body.createDate,
-      updateDate: req.body.updateDate,
-      content: req.body.content
+    const savedLesson = await lesson.save();
+    const module: ModuleDocument = await Module.findOne({
+      _id: req.body.moduleId
     });
-
-    res.status(200).send(
-      JSON.stringify({
-        id: lesson._id
-      })
-    );
-  } catch (err) {
-    // if(res.body.code == 11000)
-    // console.log(res);
-    res.status(400).type('json').send(err);
+    if (!module) {
+      return res.status(404).send('Module not found!');
+    }
+    module.lessons.push(savedLesson._id);
+    await module.save();
+    return res.send({
+      _id: savedLesson._id
+    });
+  } catch (error) {
+    return res.status(400).send(error);
   }
 };
 

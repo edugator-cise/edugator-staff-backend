@@ -16,7 +16,10 @@ export const getModules = async (
   let modules: ModuleInterface[];
   try {
     //Find All modules
-    modules = await Module.find().select('-problems').sort({ number: 1 });
+    modules = await Module.find()
+      .select(['-problems', '-lessons'])
+      .sort({ number: 1 })
+      .find();
     res.status(200).send(modules);
   } catch (err) {
     res.status(400).type('json').send(err);
@@ -33,6 +36,11 @@ export const getModulesWithNonHiddenProblemsAndTestCases = async (
         path: 'problems',
         select: 'id title',
         match: { hidden: false }
+      })
+      .sort({ number: 1 })
+      .populate({
+        path: 'lessons',
+        select: 'id title'
       })
       .sort({ number: 1 });
     res.status(200).send(modules);
@@ -99,6 +107,12 @@ export const getModulesWithProblems = async (
     modules = await Module.find()
       .populate({
         path: 'problems',
+        select: 'id title',
+        match: { hidden: false }
+      })
+      .sort({ number: 1 })
+      .populate({
+        path: 'lessons',
         select: 'id title'
       })
       .sort({ number: 1 });
