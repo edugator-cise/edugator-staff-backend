@@ -43,6 +43,8 @@ export const postLessons = async (
     }
     module.lessons.push(savedLesson._id);
     await module.save();
+    module.content.push(savedLesson._id);
+    await module.save();
     return res.send({
       _id: savedLesson._id
     });

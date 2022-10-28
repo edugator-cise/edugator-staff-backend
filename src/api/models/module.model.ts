@@ -5,6 +5,7 @@ interface ModuleInterface {
   number: number;
   problems: [Types.ObjectId];
   lessons: [Types.ObjectId];
+  content: [Types.ObjectId];
 }
 
 interface ModuleDocument extends ModuleInterface, Document {}
@@ -29,6 +30,16 @@ const moduleSchema = new Schema(
       type: [Schema.Types.ObjectId],
       ref: '_lesson',
       required: true
+    },
+    refContent: {
+      type: String,
+      required: true,
+      enum: ['_problem', '_lesson']
+    },
+    content: {
+      type: [Schema.Types.ObjectId],
+      refPath: 'refContent',
+      enum: ['_problem', '_lesson']
     }
   },
   { collection: 'modules' }
