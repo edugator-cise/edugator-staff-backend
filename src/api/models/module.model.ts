@@ -33,13 +33,12 @@ const moduleSchema = new Schema(
     },
     refContent: {
       type: String,
-      required: true,
       enum: ['_problem', '_lesson']
     },
     content: {
       type: [Schema.Types.ObjectId],
       refPath: 'refContent',
-      enum: ['_problem', '_lesson']
+      required: true
     }
   },
   { collection: 'modules' }

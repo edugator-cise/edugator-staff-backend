@@ -13,7 +13,7 @@ export const getLessons = async (
 ): Promise<void> => {
   let lessons: LessonInterface[];
   try {
-    //Find All modules
+    //Find All lessons
     lessons = await Lesson.find().select('-lesson').sort({ number: 1 });
     res.status(200).send(lessons);
   } catch (err) {

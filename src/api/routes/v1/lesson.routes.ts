@@ -4,7 +4,7 @@ import { authenticateJWT } from '../../middlewares/auth';
 const lessonRouter = express.Router();
 
 lessonRouter
-  .route('/?')
+  .route('/findByModule/:moduleId')
   .get(lessons.getLessons)
   .post(authenticateJWT, lessons.postLessons);
 lessonRouter
