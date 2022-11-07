@@ -1,16 +1,25 @@
 import * as express from 'express';
-import * as lessons from '../../controllers/lesson.controller';
+import {
+  postLesson,
+  putLesson,
+  deleteLesson,
+  getLessons,
+  getLessonByID
+} from '../../controllers/lesson.controller';
 import { authenticateJWT } from '../../middlewares/auth';
-const lessonRouter = express.Router();
+const studentLessonRouter = express.Router();
+const adminLessonRouter = express.Router();
 
-lessonRouter
-  .route('/findByModule/:moduleId')
-  .get(lessons.getLessons)
-  .post(authenticateJWT, lessons.postLessons);
-lessonRouter
+adminLessonRouter.route('/').post(authenticateJWT, postLesson).get(getLessons);
+
+adminLessonRouter
   .route('/:lessonId')
-  .get(lessons.getLessonByID)
-  .put(authenticateJWT, lessons.putLesson)
-  .delete(authenticateJWT, lessons.deleteLesson);
+  .get(getLessonByID)
+  .put(authenticateJWT, putLesson)
+  .delete(authenticateJWT, deleteLesson);
 
-export { lessonRouter };
+studentLessonRouter.route('/?').get(getLessons);
+
+studentLessonRouter.route('/:lessonId').get(getLessonByID);
+
+export { studentLessonRouter, adminLessonRouter };

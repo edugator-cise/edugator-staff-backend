@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { Types } from 'mongoose';
 import {
   Lesson,
   LessonInterface,
@@ -21,7 +22,7 @@ export const getLessons = async (
   }
 };
 
-export const postLessons = async (
+export const postLesson = async (
   req: Request,
   res: Response
 ): Promise<Response<any, Record<string, any>>> => {
@@ -123,8 +124,26 @@ export const deleteLesson = async (
       if (!lesson) {
         throw { message: 'lesson with given id is not found in database' };
       }
-
       await lesson.delete();
+
+      // Delete from lessons array on each module <-- Are we not just in one module?
+      const modules: ModuleDocument[] = await Module.find();
+      let i: number;
+      for (i = 0; i < modules.length; i++) {
+        modules[i].lessons = modules[i].lessons.filter((lessonId) => {
+          return lessonId != new Types.ObjectId(req.params.problemId);
+        }) as [Types.ObjectId];
+      }
+      //Delete from contents array in each module
+      for (i = 0; i < modules.length; i++) {
+        modules[i].content = modules[i].content.filter((lessonId) => {
+          return lessonId != new Types.ObjectId(req.params.problemId);
+        }) as [Types.ObjectId];
+      }
+      modules.forEach(async (module) => {
+        await module.save();
+      });
+
       res
         .status(200)
         .type('json')

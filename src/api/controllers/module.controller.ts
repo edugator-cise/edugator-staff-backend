@@ -190,7 +190,10 @@ export const putModule = async (req: Request, res: Response): Promise<void> => {
       },
       req.body,
       { new: true }
-    ).select('-problems');
+    )
+      .select('-problems')
+      .select('-lessons')
+      .select('-content');
 
     if (module) {
       res.status(200).type('json').send(module);
