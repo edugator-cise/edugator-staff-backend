@@ -31,7 +31,10 @@ export const postLesson = async (
     author: req.body.author,
     createDate: req.body.createDate,
     updateDate: req.body.updateDate,
-    content: req.body.content
+    content: req.body.content,
+    editableContent: req.body.editableContent,
+    blocks: req.body.blocks,
+    entityMap: req.body.entityMap
   }) as unknown as LessonDocument;
 
   try {

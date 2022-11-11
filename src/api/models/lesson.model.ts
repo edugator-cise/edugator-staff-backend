@@ -42,11 +42,29 @@ interface ContentBlock {
     | ImageContent;
 }
 
+interface Block {
+  data: Object;
+  type: string;
+  depth: number;
+  entityRanges: Object[];
+  inlineStyleRanges: Object[];
+  text: string;
+  key: string;
+}
+
+interface EditorState {
+  blocks: Block[];
+  entityMap: Object;
+}
+
 interface LessonInterface {
   title: string;
   author: string;
   createDate: Date;
   updateDate: Date;
+  editableContent: EditorState;
+  blocks: Block[];
+  entityMap: Object;
   content: ContentBlock[];
 }
 
@@ -70,6 +88,93 @@ const lessonSchema = new Schema<LessonInterface>(
       type: Date,
       required: false
     },
+    editableContent: {
+      blocks: [
+        {
+          data: {
+            type: Object,
+            required: true
+          },
+          type: {
+            type: String,
+            required: true
+          },
+          depth: {
+            type: Number,
+            required: true
+          },
+          entityRanges: {
+            type: Object,
+            required: true
+          },
+          inlineStyleRanges: {
+            type: Object,
+            required: true
+          },
+          text: {
+            type: String,
+            required: true
+          },
+          key: {
+            type: String,
+            required: true
+          }
+        }
+      ],
+      entityMap: {
+        type: Object,
+        required: false
+      }
+    },
+    blocks: [
+      {
+        data: {
+          type: Object,
+          required: true
+        },
+        type: {
+          type: String,
+          required: true
+        },
+        depth: {
+          type: Number,
+          required: true
+        },
+        entityRanges: {
+          type: Object,
+          required: true
+        },
+        inlineStyleRanges: {
+          type: Object,
+          required: true
+        },
+        text: {
+          type: String,
+          required: true
+        },
+        key: {
+          type: String,
+          required: true
+        }
+      }
+    ],
+    // define entity map with keys as numbers and values as objects
+    entityMap: [
+      {
+        data: {
+          type: Object,
+          required: true
+        },
+        type: {
+          type: String,
+          required: true
+        },
+        mutability: {
+          type: String,
+          required: true
+        }
+      }
+    ],
     content: [
       {
         type: {
