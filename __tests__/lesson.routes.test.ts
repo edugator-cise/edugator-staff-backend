@@ -60,30 +60,50 @@ describe('GET /', () => {
   let moduleId = '';
 
   it('creates a lesson and gets a 200 response', async () => {
-    const sampleProblem = createSamplePayload(moduleId);
+    const sampleLesson = createSamplePayload(moduleId);
     const result = await request(expressApp)
       .post('/v1/admin/lesson')
       .set('Authorization', 'bearer ' + token)
-      .send(sampleProblem);
+      .send(sampleLesson);
     expect(result.statusCode).toEqual(200);
   });
 
   it('creates a lesson with some empty fields and gets a 200 response', async () => {
-    const sampleProblem = createSamplePayload(moduleId);
-    sampleProblem.content = [];
+    const sampleLesson = createSamplePayload(moduleId);
+    sampleLesson.content = [];
     const result = await request(expressApp)
       .post('/v1/admin/lesson')
       .set('Authorization', 'bearer ' + token)
-      .send(sampleProblem);
+      .send(sampleLesson);
     expect(result.statusCode).toEqual(200);
   });
 
   it('attempts to create a lesson with a nonexistent moduleId', async () => {
-    const sampleProblem = createSamplePayload('010101010101010101010101');
+    const sampleLesson = createSamplePayload('010101010101010101010101');
     const result = await request(expressApp)
       .post('/v1/admin/lesson')
       .set('Authorization', 'bearer ' + token)
-      .send(sampleProblem);
+      .send(sampleLesson);
     expect(result.statusCode).toEqual(404);
+  });
+
+  it('attempts to create a lesson with no author', async () => {
+    const sampleLesson = createSamplePayload(moduleId);
+    sampleLesson.author = '';
+    const result = await request(expressApp)
+      .post('/v1/admin/lesson')
+      .set('Authorization', 'bearer ' + token)
+      .send(sampleLesson);
+    expect(result.statusCode).toEqual(400);
+  });
+
+  it('attempts to create a lesson with no title', async () => {
+    const sampleLesson = createSamplePayload(moduleId);
+    sampleLesson.title = '';
+    const result = await request(expressApp)
+      .post('/v1/admin/lesson')
+      .set('Authorization', 'bearer ' + token)
+      .send(sampleLesson);
+    expect(result.statusCode).toEqual(400);
   });
 });
