@@ -11,6 +11,7 @@ app.zip
 /coverage
 .cache
 /dist
+environment_file
 
 # react-scripts production
 /build
