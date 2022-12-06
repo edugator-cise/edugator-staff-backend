@@ -15,7 +15,6 @@ app.zip
 # react-scripts production
 /build
 .env
-environment_file
 
 # misc
 .DS_Store
