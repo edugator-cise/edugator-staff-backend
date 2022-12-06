@@ -12,6 +12,8 @@ describe('GET /', () => {
     { username: 'dhruv2000patel@gmail.com', role: 'TA' },
     jwtSecret
   );
+  // Saved id for the module
+  let moduleId = '';
   beforeEach(async () => {
     const pass = 'password';
 
@@ -49,15 +51,13 @@ describe('GET /', () => {
       problems: []
     });
 
-    moduleId = module._id;
+    const id = module._id;
+    moduleId = id.toString();
   });
 
   afterEach((done: jest.DoneCallback) => {
     done();
   });
-
-  // Saved id for the module
-  let moduleId = '';
 
   it('creates a problem and gets a 200 response', async () => {
     const sampleProblem = createSamplePayload(moduleId);
