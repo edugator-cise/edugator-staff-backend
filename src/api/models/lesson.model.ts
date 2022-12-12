@@ -74,11 +74,11 @@ const lessonSchema = new Schema<LessonInterface>(
   {
     title: {
       type: String,
-      required: false
+      required: true
     },
     author: {
       type: String,
-      required: false
+      required: true
     },
     createDate: {
       type: Date,
