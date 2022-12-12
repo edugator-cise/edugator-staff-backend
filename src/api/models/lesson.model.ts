@@ -43,18 +43,18 @@ interface ContentBlock {
 }
 
 interface Block {
-  data: Object;
+  data: any;
   type: string;
   depth: number;
-  entityRanges: Object[];
-  inlineStyleRanges: Object[];
+  entityRanges: any[];
+  inlineStyleRanges: any[];
   text: string;
   key: string;
 }
 
 interface EditorState {
   blocks: Block[];
-  entityMap: Object;
+  entityMap: any;
 }
 
 interface LessonInterface {
@@ -64,7 +64,7 @@ interface LessonInterface {
   updateDate: Date;
   editableContent: EditorState;
   blocks: Block[];
-  entityMap: Object;
+  entityMap: any;
   content: ContentBlock[];
 }
 
