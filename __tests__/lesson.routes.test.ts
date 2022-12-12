@@ -57,7 +57,7 @@ describe('GET /', () => {
   });
 
   // Saved id for the module
-  let moduleId = '';
+  let moduleId = null;
 
   it('creates a lesson and gets a 200 response', async () => {
     const sampleLesson = createSamplePayload(moduleId);
