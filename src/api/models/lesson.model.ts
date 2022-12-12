@@ -74,11 +74,11 @@ const lessonSchema = new Schema<LessonInterface>(
   {
     title: {
       type: String,
-      required: true
+      required: false
     },
     author: {
       type: String,
-      required: true
+      required: false
     },
     createDate: {
       type: Date,
@@ -93,31 +93,31 @@ const lessonSchema = new Schema<LessonInterface>(
         {
           data: {
             type: Object,
-            required: true
+            required: false
           },
           type: {
             type: String,
-            required: true
+            required: false
           },
           depth: {
             type: Number,
-            required: true
+            required: false
           },
           entityRanges: {
             type: Object,
-            required: true
+            required: false
           },
           inlineStyleRanges: {
             type: Object,
-            required: true
+            required: false
           },
           text: {
             type: String,
-            required: true
+            required: false
           },
           key: {
             type: String,
-            required: true
+            required: false
           }
         }
       ],
@@ -130,31 +130,31 @@ const lessonSchema = new Schema<LessonInterface>(
       {
         data: {
           type: Object,
-          required: true
+          required: false
         },
         type: {
           type: String,
-          required: true
+          required: false
         },
         depth: {
           type: Number,
-          required: true
+          required: false
         },
         entityRanges: {
           type: Object,
-          required: true
+          required: false
         },
         inlineStyleRanges: {
           type: Object,
-          required: true
+          required: false
         },
         text: {
           type: String,
-          required: true
+          required: false
         },
         key: {
           type: String,
-          required: true
+          required: false
         }
       }
     ],
@@ -163,15 +163,15 @@ const lessonSchema = new Schema<LessonInterface>(
       {
         data: {
           type: Object,
-          required: true
+          required: false
         },
         type: {
           type: String,
-          required: true
+          required: false
         },
         mutability: {
           type: String,
-          required: true
+          required: false
         }
       }
     ],
@@ -179,11 +179,11 @@ const lessonSchema = new Schema<LessonInterface>(
       {
         type: {
           type: String,
-          required: true
+          required: false
         },
         content: {
           type: Object,
-          required: true
+          required: false
         }
       }
     ]
