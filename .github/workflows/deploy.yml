@@ -80,11 +80,11 @@ jobs:
     needs: [create_eb_version]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python 3.6 (needed for eb cli)
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.11 (needed for eb cli)
         uses: actions/setup-python@v1
         with:
-          python-version: '3.6'
+          python-version: '3.11'
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
