@@ -169,6 +169,8 @@ const createProblem = async (
     }
     module.problems.push(savedProblem._id);
     await module.save();
+    module.content.push(savedProblem._id);
+    await module.save();
     return res.send({
       _id: savedProblem._id
     });
