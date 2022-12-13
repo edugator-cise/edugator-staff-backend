@@ -27,7 +27,7 @@ env:
 on:
   push:
     branches:
-      - release
+      - main
 
 jobs:
   create_eb_version:
