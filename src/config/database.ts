@@ -7,7 +7,8 @@ const connect = async () => {
     await mongoose.connect(
       process.env.NODE_ENV === 'test'
         ? globalAny.__DB_URL__
-        : process.env.DB_URI
+        : // : process.env.DB_URI
+          process.env.TEST_DB_URI
     );
   }
 };
