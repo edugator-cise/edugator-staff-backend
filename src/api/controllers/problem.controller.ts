@@ -202,6 +202,7 @@ const updateProblem = async (
         statement: req.body.statement,
         title: req.body.title,
         hidden: req.body.hidden,
+        fileName: req.body.fileName,
         language: req.body.language,
         dueDate: req.body.dueDate,
         code: req.body.code,
