@@ -27,19 +27,31 @@ interface ImageContent {
   size: string;
   alignment: string;
 }
+
+interface FillInTheBlankContent {
+  questionSegments: string[];
+  correctAnswers: BlankAnswer[];
+}
+
+interface BlankAnswer {
+  possibleChoices: string[];
+  shouldHaveExactMatch: boolean;
+}
+
 interface Answer {
   text: string;
   id: 0;
 }
 
 interface ContentBlock {
-  type: 'text' | 'MC' | 'MS' | 'code' | 'image';
+  type: 'text' | 'MC' | 'MS' | 'code' | 'image' | 'FITB';
   content:
     | TextContent
     | MultipleChoiceContent
     | MultipleSelectContent
     | CodeContent
-    | ImageContent;
+    | ImageContent
+    | FillInTheBlankContent;
 }
 
 interface Block {
