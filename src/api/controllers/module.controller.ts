@@ -239,7 +239,7 @@ export const deleteModule = async (
 
       //Delete the lesson arrays
       try {
-        for (let i = 0; i < module.problems.length; i++) {
+        for (let i = 0; i < module.lessons.length; i++) {
           const lesson = await Lesson.findOneAndDelete({
             _id: module.problems[i]
           });
