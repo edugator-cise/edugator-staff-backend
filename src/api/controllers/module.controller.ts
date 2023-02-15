@@ -241,7 +241,7 @@ export const deleteModule = async (
       try {
         for (let i = 0; i < module.lessons.length; i++) {
           const lesson = await Lesson.findOneAndDelete({
-            _id: module.problems[i]
+            _id: module.lessons[i]
           });
           if (!lesson) {
             throw { message: 'Lesson with given id is not found in database' };
