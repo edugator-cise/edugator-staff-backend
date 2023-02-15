@@ -73,6 +73,7 @@ describe('GET /', () => {
     sampleProblem.code.header = '';
     sampleProblem.code.body = '';
     sampleProblem.code.footer = '';
+    sampleProblem.code.solution = '';
     sampleProblem.testCases[0].hint = '';
     sampleProblem.testCases[0].expectedOutput = '';
     sampleProblem.buildCommand = '';

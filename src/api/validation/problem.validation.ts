@@ -35,7 +35,8 @@ const problemValidation = (data: any): ValidationResult => {
     code: {
       header: string().allow('').required(),
       body: string().allow('').required(),
-      footer: string().allow('').required()
+      footer: string().allow('').required(),
+      solution: string().allow('').required()
     },
     fileExtension: string().valid('.java', '.cpp', '.h').min(1).required(),
     testCases: array().items({
@@ -64,7 +65,8 @@ const problemValidationWithoutModuleId = (data: any): ValidationResult => {
     code: {
       header: string().allow('').required(),
       body: string().allow('').required(),
-      footer: string().allow('').required()
+      footer: string().allow('').required(),
+      solution: string().allow('').required()
     },
     fileExtension: string().valid('.java', '.cpp', '.h').min(1).required(),
     testCases: array().items({

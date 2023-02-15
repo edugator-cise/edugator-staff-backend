@@ -9,7 +9,8 @@ const createSampleProblem = () => {
     code: {
       header: '#include <iostream>',
       body: 'int main()',
-      footer: '  '
+      footer: '  ',
+      solution: '  '
     },
     fileExtension: '.cpp',
     testCases: [
