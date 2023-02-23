@@ -6,6 +6,7 @@ import {
   ModuleInterface
 } from '../models/module.model';
 import { Problem } from '../models/problem.model';
+import { Lesson } from '../models/lesson.model';
 import * as validator from 'validator';
 import moduleValidation from '../validation/module.validation';
 
@@ -229,6 +230,21 @@ export const deleteModule = async (
           });
           if (!problem) {
             throw { message: 'Problem with given id is not found in database' };
+          }
+        }
+      } catch (err) {
+        res.status(400).type('json').send(err);
+        return;
+      }
+
+      //Delete the lesson arrays
+      try {
+        for (let i = 0; i < module.lessons.length; i++) {
+          const lesson = await Lesson.findOneAndDelete({
+            _id: module.lessons[i]
+          });
+          if (!lesson) {
+            throw { message: 'Lesson with given id is not found in database' };
           }
         }
       } catch (err) {
