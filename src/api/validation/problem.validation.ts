@@ -32,10 +32,16 @@ const problemValidation = (data: any): ValidationResult => {
     hidden: boolean().required(),
     language: string().required(),
     dueDate: date().iso().required(),
+    author: string().allow(''),
+    difficulty: string().allow(''),
+    dateCreated: date().iso(),
+    lastModified: date().iso(),
+    footer: string().allow(''),
     code: {
       header: string().allow('').required(),
       body: string().allow('').required(),
-      footer: string().allow('').required()
+      footer: string().allow('').required(),
+      solution: string().allow('')
     },
     fileExtension: string().valid('.java', '.cpp', '.h').min(1).required(),
     testCases: array().items({
@@ -61,10 +67,15 @@ const problemValidationWithoutModuleId = (data: any): ValidationResult => {
     hidden: boolean().required(),
     language: string().required(),
     dueDate: date().iso().required(),
+    author: string(),
+    difficulty: string(),
+    dateCreated: date().iso(),
+    lastModified: date().iso(),
     code: {
       header: string().allow('').required(),
       body: string().allow('').required(),
-      footer: string().allow('').required()
+      footer: string().allow('').required(),
+      solution: string().allow('')
     },
     fileExtension: string().valid('.java', '.cpp', '.h').min(1).required(),
     testCases: array().items({

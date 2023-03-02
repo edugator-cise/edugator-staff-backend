@@ -12,6 +12,10 @@ interface ProblemInterface {
   hidden: boolean;
   language: string;
   dueDate: Date;
+  author: string;
+  difficulty: string;
+  dateCreated: Date;
+  lastModified: Date;
   code: {
     header: string;
     body: string;
@@ -40,6 +44,22 @@ const problemSchema = new Schema<ProblemInterface>(
     hidden: {
       type: Boolean,
       required: true
+    },
+    author: {
+      type: String,
+      required: false
+    },
+    difficulty: {
+      type: String,
+      required: false
+    },
+    dateCreated: {
+      type: Date,
+      required: false
+    },
+    lastModified: {
+      type: Date,
+      required: false
     },
     language: {
       type: String,
