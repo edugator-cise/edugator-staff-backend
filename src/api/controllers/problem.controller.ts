@@ -9,6 +9,8 @@ import {
   validateTestCases,
   TestCaseVisibility
 } from '../validation/problem.validation';
+import { readFileSync } from 'fs';
+import path = require('path');
 
 const filterOpenTestCases = (testCases: TestCase[]): TestCase[] => {
   return testCases.filter(
@@ -200,15 +202,24 @@ const updateProblem = async (
   const statement = req.body.statement;
   const zip = new JSZip();
 
+  const fileName = 'main.h';
+
   zip.file('readme.md', statement);
+  zip.folder('src').file(fileName, req.body.code.header + req.body.code.footer);
   zip
-    .folder('src')
-    .file('main.cpp', req.body.code.header + req.body.code.footer);
+    .folder('test_unit')
+    .file(
+      'test.cpp',
+      `#include "../src/${fileName}"\n#define CATCH_CONFIG_MAIN\n#include "catch.hpp"`
+    );
+  zip
+    .folder('test_unit')
+    .file(
+      'catch.hpp',
+      readFileSync(path.join(__dirname, '../../static/catch.hpp')).toString()
+    );
 
   const zipFile = await zip.generateAsync({ type: 'base64' });
-
-  // const zip2 = new JSZip();
-  // zip2.loadAsync(zipFile, { base64: true }).then((zip) => {});
 
   try {
     const problem = await Problem.findByIdAndUpdate(
