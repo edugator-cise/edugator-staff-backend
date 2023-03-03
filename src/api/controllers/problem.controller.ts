@@ -182,6 +182,33 @@ const createProblem = async (
   }
 };
 
+const generateTemplateZip = async (body) => {
+  const statement = body.statement;
+  const zip = new JSZip();
+
+  //File name just uses the title. Isn't updated to use filename yet
+  const fileName = body.title.trim().replaceAll(' ', '_').toLowerCase();
+
+  zip.file('readme.md', statement);
+  zip
+    .folder('src')
+    .file(fileName + body.fileExtension, body.code.header + body.code.footer);
+  zip
+    .folder('test_unit')
+    .file(
+      'test.cpp',
+      `#include "../src/${fileName}"\n#define CATCH_CONFIG_MAIN\n#include "catch.hpp"`
+    );
+  zip
+    .folder('test_unit')
+    .file(
+      'catch.hpp',
+      readFileSync(path.join(__dirname, '../../static/catch.hpp')).toString()
+    );
+  const zipFile = await zip.generateAsync({ type: 'base64' });
+  return zipFile;
+};
+
 const updateProblem = async (
   req: Request,
   res: Response
@@ -199,27 +226,7 @@ const updateProblem = async (
     return res.status(400).send('problemId not a valid mongoDB ObjectId');
   }
 
-  const statement = req.body.statement;
-  const zip = new JSZip();
-
-  const fileName = 'main.h';
-
-  zip.file('readme.md', statement);
-  zip.folder('src').file(fileName, req.body.code.header + req.body.code.footer);
-  zip
-    .folder('test_unit')
-    .file(
-      'test.cpp',
-      `#include "../src/${fileName}"\n#define CATCH_CONFIG_MAIN\n#include "catch.hpp"`
-    );
-  zip
-    .folder('test_unit')
-    .file(
-      'catch.hpp',
-      readFileSync(path.join(__dirname, '../../static/catch.hpp')).toString()
-    );
-
-  const zipFile = await zip.generateAsync({ type: 'base64' });
+  const zipFile = await generateTemplateZip(req.body);
 
   try {
     const problem = await Problem.findByIdAndUpdate(
