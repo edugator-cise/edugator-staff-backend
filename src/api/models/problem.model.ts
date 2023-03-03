@@ -23,6 +23,7 @@ interface ProblemInterface {
   timeLimit: number; // in seconds
   memoryLimit: number; // in KB
   buildCommand: string;
+  templateZip: string;
 }
 
 interface ProblemDocument extends ProblemInterface, Document {}
@@ -96,6 +97,9 @@ const problemSchema = new Schema<ProblemInterface>(
       type: Number
     },
     buildCommand: {
+      type: String
+    },
+    templateZip: {
       type: String
     }
   },

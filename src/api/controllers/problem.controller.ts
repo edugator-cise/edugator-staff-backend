@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { Types } from 'mongoose';
+import JSZip = require('jszip');
 import { Module, ModuleDocument } from '../models/module.model';
 import { Problem, ProblemDocument, TestCase } from '../models/problem.model';
 import {
@@ -187,6 +188,7 @@ const updateProblem = async (
   if (error) {
     return res.status(400).send(error.details[0].message);
   }
+
   const objectIdRegEx = /[0-9a-f]{24}/g;
   if (
     req.params.problemId.length != 24 ||
@@ -194,6 +196,20 @@ const updateProblem = async (
   ) {
     return res.status(400).send('problemId not a valid mongoDB ObjectId');
   }
+
+  const statement = req.body.statement;
+  const zip = new JSZip();
+
+  zip.file('readme.md', statement);
+  zip
+    .folder('src')
+    .file('main.cpp', req.body.code.header + req.body.code.footer);
+
+  const zipFile = await zip.generateAsync({ type: 'base64' });
+
+  // const zip2 = new JSZip();
+  // zip2.loadAsync(zipFile, { base64: true }).then((zip) => {});
+
   try {
     const problem = await Problem.findByIdAndUpdate(
       req.params.problemId,
@@ -209,7 +225,8 @@ const updateProblem = async (
         templatePackage: req.body.templatePackage,
         timeLimit: req.body.timeLimit,
         memoryLimit: req.body.memoryLimit,
-        buildCommand: req.body.buildCommand
+        buildCommand: req.body.buildCommand,
+        templateZip: zipFile
       },
       { new: true }
     );
