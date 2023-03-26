@@ -16,6 +16,9 @@ interface ProblemInterface {
   difficulty: string;
   dateCreated: Date;
   lastModified: Date;
+  isShort: boolean;
+  hasTemplate: boolean;
+  isQuiz: boolean;
   code: {
     header: string;
     body: string;
@@ -59,6 +62,18 @@ const problemSchema = new Schema<ProblemInterface>(
     },
     lastModified: {
       type: Date,
+      required: false
+    },
+    isShort: {
+      type: Boolean,
+      required: false
+    },
+    hasTemplate: {
+      type: Boolean,
+      required: false
+    },
+    isQuiz: {
+      type: Boolean,
       required: false
     },
     language: {

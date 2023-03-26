@@ -36,6 +36,9 @@ const problemValidation = (data: any): ValidationResult => {
     difficulty: string().allow(''),
     dateCreated: date().iso(),
     lastModified: date().iso(),
+    isShort: boolean().required(),
+    hasTemplate: boolean().required(),
+    isQuiz: boolean().required(),
     footer: string().allow(''),
     code: {
       header: string().allow('').required(),
@@ -71,6 +74,9 @@ const problemValidationWithoutModuleId = (data: any): ValidationResult => {
     difficulty: string(),
     dateCreated: date().iso(),
     lastModified: date().iso(),
+    isShort: boolean().required(),
+    hasTemplate: boolean().required(),
+    isQuiz: boolean().required(),
     code: {
       header: string().allow('').required(),
       body: string().allow('').required(),
