@@ -159,7 +159,8 @@ const createProblem = async (
     templatePackage: req.body.templatePackage,
     timeLimit: req.body.timeLimit,
     memoryLimit: req.body.memoryLimit,
-    buildCommand: req.body.buildCommand
+    buildCommand: req.body.buildCommand,
+    solution: req.body.solution
   }) as unknown as ProblemDocument;
 
   try {
@@ -212,7 +213,7 @@ const updateProblem = async (
         templatePackage: req.body.templatePackage,
         timeLimit: req.body.timeLimit,
         memoryLimit: req.body.memoryLimit,
-        buildCommand: req.body.buildCommand
+        buildCommand: req.body.buildCommand,
       },
       { new: true }
     );
