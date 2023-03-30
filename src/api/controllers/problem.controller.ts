@@ -43,6 +43,7 @@ const readStudentProblems = async (
       );
       studentProblems.code.header = undefined;
       studentProblems.code.footer = undefined;
+      studentProblems.code.solution = undefined;
     } catch (error) {
       return res.status(400).send(error);
     }
@@ -68,6 +69,7 @@ const readStudentProblems = async (
       item.testCases = filterOpenTestCases(item.testCases);
       item.code.header = undefined;
       item.code.footer = undefined;
+      item.code.solution = undefined;
     });
   } else {
     studentProblems = await Problem.find({
@@ -78,6 +80,7 @@ const readStudentProblems = async (
       item.testCases = filterOpenTestCases(item.testCases);
       item.code.header = undefined;
       item.code.footer = undefined;
+      item.code.solution = undefined;
     });
   }
 

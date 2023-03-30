@@ -17,6 +17,7 @@ interface ProblemInterface {
     header: string;
     body: string;
     footer: string;
+    solution: string;
   };
   fileExtension: string; //Interface doesn't enforce enum
   testCases: TestCase[];
@@ -62,6 +63,9 @@ const problemSchema = new Schema<ProblemInterface>(
         type: String
       },
       footer: {
+        type: String
+      },
+      solution: {
         type: String
       }
     },

@@ -176,15 +176,19 @@ const runCode = async (req: Request, response: Response): Promise<Response> => {
   if (!problem) {
     return response.status(404).send();
   }
-  const { header, footer } = problem.code;
+  const { header, footer, solution } = problem.code;
   let fullCode = '';
   if (base_64) {
     // have to decode and recode header + code + footer
     fullCode =
-      header + Buffer.from(source_code || '', 'base64').toString() + footer;
+      header +
+      Buffer.from(source_code || '', 'base64').toString() +
+      footer +
+      Buffer.from(source_code || '', 'base64') +
+      solution;
     fullCode = Buffer.from(fullCode || '', 'utf-8').toString('base64');
   } else {
-    fullCode = header + source_code + footer;
+    fullCode = header + source_code + footer + source_code + solution;
   }
   const payload: SubmissionPayload = {
     language_id,
@@ -283,15 +287,19 @@ const submitCode = async (
       return response.status(404).send();
     }
     const { testCases, code } = problem;
-    const { header, footer } = code;
+    const { header, footer, solution } = code;
     let fullCode = '';
     if (base_64) {
-      // have to decode and recode header + code + footer
+      // have to decode and recode header + code + footer + code + solution
       fullCode =
-        header + Buffer.from(source_code || '', 'base64').toString() + footer;
+        header +
+        Buffer.from(source_code || '', 'base64').toString() +
+        footer +
+        Buffer.from(source_code || '', 'base64').toString() +
+        solution;
       fullCode = Buffer.from(fullCode || '', 'utf-8').toString('base64');
     } else {
-      fullCode = header + source_code + footer;
+      fullCode = header + source_code + footer + solution;
     }
     // create an array payload for judge0 create submissions
     const options: CodeSubmission[] = testCases.map((value) => ({
