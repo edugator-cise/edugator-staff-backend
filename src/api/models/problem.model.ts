@@ -62,7 +62,7 @@ const problemSchema = new Schema<ProblemInterface>(
       },
       solution: {
         type: String
-      },
+      }
     },
     fileExtension: {
       type: String,

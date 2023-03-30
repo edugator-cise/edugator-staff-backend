@@ -69,7 +69,7 @@ const readStudentProblems = async (
       item.testCases = filterOpenTestCases(item.testCases);
       item.code.header = undefined;
       item.code.footer = undefined;
-      item.code.solution = undefined
+      item.code.solution = undefined;
     });
   } else {
     studentProblems = await Problem.find({
@@ -159,7 +159,7 @@ const createProblem = async (
     templatePackage: req.body.templatePackage,
     timeLimit: req.body.timeLimit,
     memoryLimit: req.body.memoryLimit,
-    buildCommand: req.body.buildCommand,
+    buildCommand: req.body.buildCommand
   }) as unknown as ProblemDocument;
 
   try {
@@ -212,7 +212,7 @@ const updateProblem = async (
         templatePackage: req.body.templatePackage,
         timeLimit: req.body.timeLimit,
         memoryLimit: req.body.memoryLimit,
-        buildCommand: req.body.buildCommand,
+        buildCommand: req.body.buildCommand
       },
       { new: true }
     );
