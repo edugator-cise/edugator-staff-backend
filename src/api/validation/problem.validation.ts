@@ -72,7 +72,8 @@ const problemValidationWithoutModuleId = (data: any): ValidationResult => {
       input: string().required(),
       expectedOutput: string().allow('').required(),
       hint: string().allow('').required(),
-      visibility: number().valid(0, 1, 2).required()
+      visibility: number().valid(0, 1, 2).required(),
+      testCaseCode: string().allow('')
     }),
     templatePackage: string().uri().required(),
     timeLimit: number(),

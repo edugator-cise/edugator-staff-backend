@@ -186,7 +186,11 @@ const generateTemplateZip = async (body) => {
   const statement = body.statement;
   const zip = new JSZip();
 
-  //File name just uses the title. Isn't updated to use filename yet
+  const testCaseCodes = body.testCases
+    .map((testCase) => testCase.testCaseCode)
+    .join('\n\n');
+
+  //File name just uses the title. Isn't updated to use filename yet as that branch isn't merged yet
   const fileName = body.title.trim().replaceAll(' ', '_').toLowerCase();
 
   zip.file('readme.md', statement);
@@ -197,7 +201,7 @@ const generateTemplateZip = async (body) => {
     .folder('test_unit')
     .file(
       'test.cpp',
-      `#include "../src/${fileName}"\n#define CATCH_CONFIG_MAIN\n#include "catch.hpp"`
+      `#include "../src/${fileName}"\n#define CATCH_CONFIG_MAIN\n#include "catch.hpp"\n\n\n${testCaseCodes}`
     );
   zip
     .folder('test_unit')

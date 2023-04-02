@@ -83,6 +83,9 @@ const problemSchema = new Schema<ProblemInterface>(
           type: Number,
           required: true,
           enum: [0, 1, 2]
+        },
+        testCaseCode: {
+          type: String
         }
       }
     ],
