@@ -36,6 +36,16 @@ const createSampleLesson = () => {
             { text: 'Python', id: 3 }
           ]
         }
+      },
+      {
+        type: 'FITB',
+        content: {
+          questionSegments: ['Mitochondria is the ', ' of the ', '.'],
+          correctAnswers: [
+            { possibleChoices: ['powerhouse'], shouldHaveExactMatch: false },
+            { possibleChoices: ['cell', 'cells'], shouldHaveExactMatch: true }
+          ]
+        }
       }
     ]
   };
