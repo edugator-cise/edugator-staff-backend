@@ -138,25 +138,27 @@ const createProblem = async (
   if (error) {
     return res.status(400).send(error.details[0].message);
   }
-  if (!validateTestCases(req.body.testCases)) {
-    return res
-      .status(400)
-      .send('Body needs at least one test case visible to public');
-  }
 
+  let testCasesError = false
+
+ req.body.lang_config.forEach((item) => {
+    if (!validateTestCases(item.testCases)) {
+      testCasesError = true
+    }
+  });
+
+  if (testCasesError) {
+    return res
+        .status(400)
+        .send('Body needs at least one test case visible to public');
+  }
   const problem = new Problem({
     statement: req.body.statement,
     title: req.body.title,
     hidden: req.body.hidden,
-    language: req.body.language,
+    lang_config: req.body.lang_config,
     dueDate: req.body.dueDate,
-    code: req.body.code,
-    fileExtension: req.body.fileExtension,
-    testCases: req.body.testCases,
-    templatePackage: req.body.templatePackage,
-    timeLimit: req.body.timeLimit,
-    memoryLimit: req.body.memoryLimit,
-    buildCommand: req.body.buildCommand
+    templatePackage: req.body.templatePackage
   }) as unknown as ProblemDocument;
 
   try {
@@ -201,15 +203,9 @@ const updateProblem = async (
         statement: req.body.statement,
         title: req.body.title,
         hidden: req.body.hidden,
-        language: req.body.language,
+        lang_config: req.body.lang_config,
         dueDate: req.body.dueDate,
-        code: req.body.code,
-        fileExtension: req.body.fileExtension,
-        testCases: req.body.testCases,
-        templatePackage: req.body.templatePackage,
-        timeLimit: req.body.timeLimit,
-        memoryLimit: req.body.memoryLimit,
-        buildCommand: req.body.buildCommand
+        templatePackage: req.body.templatePackage
       },
       { new: true }
     );

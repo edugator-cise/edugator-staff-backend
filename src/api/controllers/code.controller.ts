@@ -160,6 +160,7 @@ const runCode = async (req: Request, response: Response): Promise<Response> => {
 
   const {
     source_code,
+    language_name,
     language_id,
     base_64,
     stdin,
@@ -176,7 +177,7 @@ const runCode = async (req: Request, response: Response): Promise<Response> => {
   if (!problem) {
     return response.status(404).send();
   }
-  const { header, footer } = problem.code;
+  const { header, footer } = problem.lang_config.find(item => item.language === language_name).code;
   let fullCode = '';
   if (base_64) {
     // have to decode and recode header + code + footer
@@ -267,6 +268,7 @@ const submitCode = async (
   }
   const {
     source_code,
+    language_name,
     language_id,
     base_64,
     problemId,
@@ -282,7 +284,7 @@ const submitCode = async (
     if (!problem) {
       return response.status(404).send();
     }
-    const { testCases, code } = problem;
+    const { testCases, code } = problem.lang_config.find(item => item.language === language_name);
     const { header, footer } = code;
     let fullCode = '';
     if (base_64) {
