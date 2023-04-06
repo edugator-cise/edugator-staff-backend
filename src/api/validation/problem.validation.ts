@@ -30,7 +30,6 @@ const problemValidation = (data: any): ValidationResult => {
     statement: string().required(),
     title: string().required(),
     hidden: boolean().required(),
-    fileName: string().required(),
     language: string().required(),
     dueDate: date().iso().required(),
     code: {
@@ -62,7 +61,6 @@ const problemValidationWithoutModuleId = (data: any): ValidationResult => {
     hidden: boolean().required(),
     language: string().required(),
     dueDate: date().iso().required(),
-    fileName: string(),
     code: {
       header: string().allow('').required(),
       body: string().allow('').required(),

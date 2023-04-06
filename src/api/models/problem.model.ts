@@ -10,7 +10,6 @@ interface ProblemInterface {
   statement: string;
   title: string;
   hidden: boolean;
-  fileName: string;
   language: string;
   dueDate: Date;
   code: {
@@ -41,10 +40,6 @@ const problemSchema = new Schema<ProblemInterface>(
     hidden: {
       type: Boolean,
       required: true
-    },
-    fileName: {
-      type: String,
-      required: false
     },
     language: {
       type: String,
