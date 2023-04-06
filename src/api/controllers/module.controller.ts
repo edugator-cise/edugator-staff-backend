@@ -262,3 +262,54 @@ export const deleteModule = async (
     res.status(400).type('json').send(err);
   }
 };
+
+export const changeProblemOrder = async (
+  req: Request,
+  res: Response
+): Promise<Response<any, Record<string, any>>> => {
+  try {
+    const { moduleId, problemId, direction } = req.body;
+    const objectIdRegEx = /[0-9a-f]{24}/g;
+    if (problemId.length != 24 || !objectIdRegEx.test(problemId)) {
+      return res.status(400).send('problemId not a valid mongoDB ObjectId');
+    }
+
+    const module = await Module.findOne({ _id: moduleId });
+
+    if (module.problems.length == 1) {
+      return res
+        .status(400)
+        .send('Cannot change order of only problem in module');
+    }
+
+    const problemIndex = module.problems.indexOf(problemId);
+
+    if (problemIndex == -1) {
+      return res.status(400).send('Problem not found in module');
+    }
+
+    if (direction == 'up') {
+      if (problemIndex == 0) {
+        return res.status(400).send('Problem already at top of module');
+      }
+
+      const problemToSwap = module.problems[problemIndex - 1];
+      module.problems[problemIndex - 1] = problemId;
+      module.problems[problemIndex] = problemToSwap;
+    } else if (direction == 'down') {
+      if (problemIndex == module.problems.length - 1) {
+        return res.status(400).send('Problem already at bottom of module');
+      }
+
+      const problemToSwap = module.problems[problemIndex + 1];
+      module.problems[problemIndex + 1] = problemId;
+      module.problems[problemIndex] = problemToSwap;
+    } else {
+      return res.status(400).send('Invalid direction');
+    }
+    await module.save();
+    return res.sendStatus(200);
+  } catch (err) {
+    return res.status(400).type('json').send(err);
+  }
+};
