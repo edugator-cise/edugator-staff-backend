@@ -44,7 +44,7 @@ const problemValidation = (data: any): ValidationResult => {
       hint: string().allow('').required(),
       visibility: number().valid(0, 1, 2).required()
     }),
-    templatePackage: string().uri().required(),
+    templatePackage: string().allow('').uri(),
     timeLimit: number(),
     memoryLimit: number(),
     buildCommand: string().allow(''),
@@ -75,7 +75,7 @@ const problemValidationWithoutModuleId = (data: any): ValidationResult => {
       visibility: number().valid(0, 1, 2).required(),
       testCaseCode: string().allow('')
     }),
-    templatePackage: string().uri().required(),
+    templatePackage: string().allow('').uri(),
     timeLimit: number(),
     memoryLimit: number(),
     buildCommand: string().allow(''),
