@@ -38,11 +38,13 @@ const readStudentProblems = async (
       }
       studentProblems = problem;
       // make the test cases for a problem unaccessible to students
-      studentProblems.testCases = filterOpenTestCases(
-        studentProblems.testCases
-      );
-      studentProblems.code.header = undefined;
-      studentProblems.code.footer = undefined;
+      studentProblems.lang_config.forEach((item) => {
+        item.testCases = filterOpenTestCases(
+          item.testCases
+        );
+        item.code.header = undefined;
+        item.code.footer = undefined;
+      });
     } catch (error) {
       return res.status(400).send(error);
     }
@@ -64,7 +66,7 @@ const readStudentProblems = async (
       return !(item as unknown as ProblemDocument).hidden;
     });
     // make the test cases for all problems unaccessible to students
-    studentProblems.forEach((item) => {
+    studentProblems.lang_config.forEach((item) => {
       item.testCases = filterOpenTestCases(item.testCases);
       item.code.header = undefined;
       item.code.footer = undefined;
@@ -74,7 +76,7 @@ const readStudentProblems = async (
       hidden: false
     });
     // make the test cases for all problems unaccessible to students
-    studentProblems.forEach((item) => {
+    studentProblems.lang_config.forEach((item) => {
       item.testCases = filterOpenTestCases(item.testCases);
       item.code.header = undefined;
       item.code.footer = undefined;
