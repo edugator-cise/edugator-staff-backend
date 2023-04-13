@@ -14,6 +14,11 @@ moduleRouter
   .route('/?')
   .get(modules.getModules)
   .post(authenticateJWT, modules.postModules);
+
+// Admin routes
+moduleRouter
+  .route('/changeProblemOrder')
+  .post(authenticateJWT, modules.changeProblemOrder);
 moduleRouter
   .route('/:moduleId')
   .get(modules.getModuleByID)

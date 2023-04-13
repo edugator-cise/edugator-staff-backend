@@ -30,6 +30,7 @@ const problemValidation = (data: any): ValidationResult => {
     statement: string().required(),
     title: string().required(),
     hidden: boolean().required(),
+    fileName: string().required(),
     language: string().required(),
     dueDate: date().iso().required(),
     author: string().allow(''),
@@ -70,6 +71,7 @@ const problemValidationWithoutModuleId = (data: any): ValidationResult => {
     hidden: boolean().required(),
     language: string().required(),
     dueDate: date().iso().required(),
+<<<<<<< HEAD
     author: string(),
     difficulty: string(),
     dateCreated: date().iso(),
@@ -77,6 +79,9 @@ const problemValidationWithoutModuleId = (data: any): ValidationResult => {
     isShort: boolean().required(),
     hasTemplate: boolean().required(),
     isQuiz: boolean().required(),
+=======
+    fileName: string(),
+>>>>>>> 536f41a72960b24aae4b79518d00da1f5bca1899
     code: {
       header: string().allow('').required(),
       body: string().allow('').required(),
