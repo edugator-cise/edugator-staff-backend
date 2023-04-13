@@ -49,7 +49,6 @@ const problemSchema = new Schema<ProblemInterface>(
       type: Boolean,
       required: true
     },
-<<<<<<< HEAD
     author: {
       type: String,
       required: false
@@ -78,12 +77,10 @@ const problemSchema = new Schema<ProblemInterface>(
       type: Boolean,
       required: false
     },
-=======
     fileName: {
       type: String,
       required: false
     },
->>>>>>> 536f41a72960b24aae4b79518d00da1f5bca1899
     language: {
       type: String,
       required: true

@@ -148,7 +148,6 @@ const createProblem = async (
     statement: req.body.statement,
     title: req.body.title,
     hidden: req.body.hidden,
-<<<<<<< HEAD
     author: req.body.author,
     difficulty: req.body.difficulty,
     dateCreated: Date(),
@@ -156,9 +155,7 @@ const createProblem = async (
     isShort: req.body.isShort,
     hasTemplate: req.body.hasTemplate,
     isQuiz: req.body.isQuiz,
-=======
     fileName: req.body.fileName,
->>>>>>> 536f41a72960b24aae4b79518d00da1f5bca1899
     language: req.body.language,
     dueDate: req.body.dueDate,
     code: req.body.code,
@@ -212,16 +209,13 @@ const updateProblem = async (
         statement: req.body.statement,
         title: req.body.title,
         hidden: req.body.hidden,
-<<<<<<< HEAD
         author: req.body.author,
         difficulty: req.body.difficulty,
         lastModified: Date(),
         isShort: req.body.isShort,
         hasTemplate: req.body.hasTemplate,
         isQuiz: req.body.isQuiz,
-=======
         fileName: req.body.fileName,
->>>>>>> 536f41a72960b24aae4b79518d00da1f5bca1899
         language: req.body.language,
         dueDate: req.body.dueDate,
         code: req.body.code,
