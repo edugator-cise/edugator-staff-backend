@@ -10,12 +10,16 @@ interface ProblemInterface {
   statement: string;
   title: string;
   hidden: boolean;
+  fileName: string;
   language: string;
   dueDate: Date;
   author: string;
   difficulty: string;
   dateCreated: Date;
   lastModified: Date;
+  isShort: boolean;
+  hasTemplate: boolean;
+  isQuiz: boolean;
   code: {
     header: string;
     body: string;
@@ -59,6 +63,22 @@ const problemSchema = new Schema<ProblemInterface>(
     },
     lastModified: {
       type: Date,
+      required: false
+    },
+    isShort: {
+      type: Boolean,
+      required: false
+    },
+    hasTemplate: {
+      type: Boolean,
+      required: false
+    },
+    isQuiz: {
+      type: Boolean,
+      required: false
+    },
+    fileName: {
+      type: String,
       required: false
     },
     language: {
