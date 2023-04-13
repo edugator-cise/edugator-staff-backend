@@ -186,11 +186,14 @@ const generateTemplateZip = async (body) => {
   const statement = body.statement;
   const zip = new JSZip();
 
+  if (body.templatePackage != '') {
+    return '';
+  }
+
   const testCaseCodes = body.testCases
     .map((testCase) => testCase.testCaseCode)
     .join('\n\n');
 
-  //File name just uses the title. Isn't updated to use filename yet as that branch isn't merged yet
   const fileName = body.title.trim().replaceAll(' ', '_').toLowerCase();
 
   zip.file('readme.md', statement);
