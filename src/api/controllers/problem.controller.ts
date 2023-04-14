@@ -38,7 +38,7 @@ const readStudentProblems = async (
       }
       studentProblems = problem;
       // make the test cases for a problem unaccessible to students
-      studentProblems.lang_config.forEach((item) => {
+      studentProblems.langConfig.forEach((item) => {
         item.testCases = filterOpenTestCases(
           item.testCases
         );
@@ -66,7 +66,7 @@ const readStudentProblems = async (
       return !(item as unknown as ProblemDocument).hidden;
     });
     // make the test cases for all problems unaccessible to students
-    studentProblems.lang_config.forEach((item) => {
+    studentProblems.langConfig.forEach((item) => {
       item.testCases = filterOpenTestCases(item.testCases);
       item.code.header = undefined;
       item.code.footer = undefined;
@@ -76,7 +76,7 @@ const readStudentProblems = async (
       hidden: false
     });
     // make the test cases for all problems unaccessible to students
-    studentProblems.lang_config.forEach((item) => {
+    studentProblems.langConfig.forEach((item) => {
       item.testCases = filterOpenTestCases(item.testCases);
       item.code.header = undefined;
       item.code.footer = undefined;
@@ -143,7 +143,7 @@ const createProblem = async (
 
   let testCasesError = false
 
- req.body.lang_config.forEach((item) => {
+ req.body.langConfig.forEach((item) => {
     if (!validateTestCases(item.testCases)) {
       testCasesError = true
     }
@@ -158,7 +158,7 @@ const createProblem = async (
     statement: req.body.statement,
     title: req.body.title,
     hidden: req.body.hidden,
-    lang_config: req.body.lang_config,
+    langConfig: req.body.langConfig,
     dueDate: req.body.dueDate,
     templatePackage: req.body.templatePackage
   }) as unknown as ProblemDocument;
@@ -205,7 +205,7 @@ const updateProblem = async (
         statement: req.body.statement,
         title: req.body.title,
         hidden: req.body.hidden,
-        lang_config: req.body.lang_config,
+        langConfig: req.body.langConfig,
         dueDate: req.body.dueDate,
         templatePackage: req.body.templatePackage
       },

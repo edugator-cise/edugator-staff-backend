@@ -30,7 +30,7 @@ const problemValidation = (data: any): ValidationResult => {
     statement: string().required(),
     title: string().required(),
     hidden: boolean().required(),
-    lang_config: array().items({
+    langConfig: array().items({
       language: string().required(),
       code: {
         header: string().allow('').required(),
@@ -61,7 +61,7 @@ const problemValidationWithoutModuleId = (data: any): ValidationResult => {
     statement: string().required(),
     title: string().required(),
     hidden: boolean().required(),
-    lang_config: array().items({
+    langConfig: array().items({
       language: string().required(),
       code: {
         header: string().allow('').required(),

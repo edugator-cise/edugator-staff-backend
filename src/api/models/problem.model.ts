@@ -10,19 +10,20 @@ interface ProblemInterface {
   statement: string;
   title: string;
   hidden: boolean;
-  lang_config: {
+  langConfig: {
     language: string;
+    selected: boolean;
     code: {
       header: string;
       body: string;
       footer: string;
     };
     fileExtension: string; //Interface doesn't enforce enum
-    testCases: TestCase[];
     timeLimit: number; // in seconds
     memoryLimit: number; // in KB
     buildCommand: string;
   }[];
+  testCases: TestCase[];
   dueDate: Date;
   templatePackage: string;
 }
@@ -43,10 +44,14 @@ const problemSchema = new Schema<ProblemInterface>(
       type: Boolean,
       required: true
     },
-    lang_config: [
+    langConfig: [
       {
         language: {
           type: String,
+          required: true
+        },
+        selected: {
+          type: Boolean,
           required: true
         },
         code: {
