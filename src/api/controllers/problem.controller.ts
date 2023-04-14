@@ -38,10 +38,10 @@ const readStudentProblems = async (
       }
       studentProblems = problem;
       // make the test cases for a problem unaccessible to students
+      studentProblems.testCases = filterOpenTestCases(
+        studentProblems.testCases
+      );
       studentProblems.langConfig.forEach((item) => {
-        item.testCases = filterOpenTestCases(
-          item.testCases
-        );
         item.code.header = undefined;
         item.code.footer = undefined;
       });
@@ -66,8 +66,10 @@ const readStudentProblems = async (
       return !(item as unknown as ProblemDocument).hidden;
     });
     // make the test cases for all problems unaccessible to students
+    studentProblems.testCases = filterOpenTestCases(
+      studentProblems.testCases
+    );
     studentProblems.langConfig.forEach((item) => {
-      item.testCases = filterOpenTestCases(item.testCases);
       item.code.header = undefined;
       item.code.footer = undefined;
     });
@@ -76,8 +78,10 @@ const readStudentProblems = async (
       hidden: false
     });
     // make the test cases for all problems unaccessible to students
+    studentProblems.testCases = filterOpenTestCases(
+      studentProblems.testCases
+    );
     studentProblems.langConfig.forEach((item) => {
-      item.testCases = filterOpenTestCases(item.testCases);
       item.code.header = undefined;
       item.code.footer = undefined;
     });
@@ -141,18 +145,10 @@ const createProblem = async (
     return res.status(400).send(error.details[0].message);
   }
 
-  let testCasesError = false
-
- req.body.langConfig.forEach((item) => {
-    if (!validateTestCases(item.testCases)) {
-      testCasesError = true
-    }
-  });
-
-  if (testCasesError) {
+  if (!validateTestCases(req.body.testCases)) {
     return res
-        .status(400)
-        .send('Body needs at least one test case visible to public');
+      .status(400)
+      .send('Body needs at least one test case visible to public');
   }
   const problem = new Problem({
     statement: req.body.statement,
@@ -160,7 +156,8 @@ const createProblem = async (
     hidden: req.body.hidden,
     langConfig: req.body.langConfig,
     dueDate: req.body.dueDate,
-    templatePackage: req.body.templatePackage
+    templatePackage: req.body.templatePackage,
+    testCases: req.body.testCases
   }) as unknown as ProblemDocument;
 
   try {
@@ -207,7 +204,8 @@ const updateProblem = async (
         hidden: req.body.hidden,
         langConfig: req.body.langConfig,
         dueDate: req.body.dueDate,
-        templatePackage: req.body.templatePackage
+        templatePackage: req.body.templatePackage,
+        testCases: req.body.testCases
       },
       { new: true }
     );

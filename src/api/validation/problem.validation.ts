@@ -32,24 +32,25 @@ const problemValidation = (data: any): ValidationResult => {
     hidden: boolean().required(),
     langConfig: array().items({
       language: string().required(),
+      selected: boolean().required(),
       code: {
         header: string().allow('').required(),
         body: string().allow('').required(),
         footer: string().allow('').required()
       },
       fileExtension: string().valid('.py','.java', '.cpp', '.h').min(1).required(),
-      testCases: array().items({
-        input: string().required(),
-        expectedOutput: string().allow('').required(),
-        hint: string().allow('').required(),
-        visibility: number().valid(0, 1, 2).required()
-      }),
       timeLimit: number(),
       memoryLimit: number(),
       buildCommand: string().allow('')
     }),
     dueDate: date().iso().required(),
-    templatePackage: string().uri().required()
+    templatePackage: string().uri().required(),
+    testCases: array().items({
+      input: string().required(),
+      expectedOutput: string().allow('').required(),
+      hint: string().allow('').required(),
+      visibility: number().valid(0, 1, 2).required()
+    })
   });
 
   return schema.validate(data);
@@ -63,24 +64,25 @@ const problemValidationWithoutModuleId = (data: any): ValidationResult => {
     hidden: boolean().required(),
     langConfig: array().items({
       language: string().required(),
+      selected: boolean().required(),
       code: {
         header: string().allow('').required(),
         body: string().allow('').required(),
         footer: string().allow('').required()
       },
       fileExtension: string().valid('.py','.java', '.cpp', '.h', '.py').min(1).required(),
-      testCases: array().items({
-        input: string().required(),
-        expectedOutput: string().allow('').required(),
-        hint: string().allow('').required(),
-        visibility: number().valid(0, 1, 2).required()
-      }),
       timeLimit: number(),
       memoryLimit: number(),
       buildCommand: string().allow('')
     }),
     dueDate: date().iso().required(),
-    templatePackage: string().uri().required()
+    templatePackage: string().uri().required(),
+    testCases: array().items({
+      input: string().required(),
+      expectedOutput: string().allow('').required(),
+      hint: string().allow('').required(),
+      visibility: number().valid(0, 1, 2).required()
+    }),
   });
 
   return schema.validate(data);

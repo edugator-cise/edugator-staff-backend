@@ -70,26 +70,6 @@ const problemSchema = new Schema<ProblemInterface>(
           required: true,
           enum: ['.py', '.cpp', '.h', '.java'] //I don't know what else could go in here? Maybe ".cxx"?
         },
-        testCases: [
-          {
-            input: {
-              type: String,
-              required: true
-            },
-            expectedOutput: {
-              type: String
-            },
-            hint: {
-              type: String
-            },
-            // visibility: 0, 1, or 2
-            visibility: {
-              type: Number,
-              required: true,
-              enum: [0, 1, 2]
-            }
-          }
-        ],
         timeLimit: {
           type: Number
         },
@@ -108,7 +88,27 @@ const problemSchema = new Schema<ProblemInterface>(
     templatePackage: {
       type: String,
       required: true
-    }
+    },
+    testCases: [
+      {
+        input: {
+          type: String,
+          required: true
+        },
+        expectedOutput: {
+          type: String
+        },
+        hint: {
+          type: String
+        },
+        // visibility: 0, 1, or 2
+        visibility: {
+          type: Number,
+          required: true,
+          enum: [0, 1, 2]
+        }
+      }
+    ]
   },
   //This is the name of the collection
   { collection: '_problem' }
