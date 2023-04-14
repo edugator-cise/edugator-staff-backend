@@ -179,13 +179,14 @@ const runCode = async (req: Request, response: Response): Promise<Response> => {
   }
   const { header, footer } = problem.langConfig.find(item => item.language === language_name).code;
   let fullCode = '';
-  if (base_64) {
+
+  if (Boolean(base_64).valueOf() === true) {
     // have to decode and recode header + code + footer
     fullCode =
-      header + Buffer.from(source_code || '', 'base64').toString() + footer;
+      header + Buffer.from(source_code || '', 'base64').toString('utf-8') + footer;
     fullCode = Buffer.from(fullCode || '', 'utf-8').toString('base64');
   } else {
-    fullCode = header + source_code + footer;
+    fullCode = fullCode.concat(header, Buffer.from(source_code, 'utf-8').toString(), footer);
   }
   const payload: SubmissionPayload = {
     language_id,
@@ -197,7 +198,7 @@ const runCode = async (req: Request, response: Response): Promise<Response> => {
   };
 
   return judgeEngine
-    .createSubmission(payload, base_64)
+    .createSubmission(payload, Boolean(base_64).valueOf())
     .then((axiosResponse: AxiosResponse) => {
       return response.send(axiosResponse.data).status(httpStatus.OK);
     })
