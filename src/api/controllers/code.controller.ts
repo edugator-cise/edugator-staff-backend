@@ -277,6 +277,7 @@ const submitCode = async (
     memory_limit,
     compiler_options
   } = req.body;
+
   try {
     // find the problem
     const problem = await Problem.findOne({
@@ -289,7 +290,8 @@ const submitCode = async (
     const { code } = problem.langConfig.find(item => item.language === language_name);
     const { header, footer } = code;
     let fullCode = '';
-    if (base_64) {
+
+    if (Boolean(base_64).valueOf() === true) {
       // have to decode and recode header + code + footer
       fullCode =
         header + Buffer.from(source_code || '', 'base64').toString() + footer;
@@ -297,6 +299,7 @@ const submitCode = async (
     } else {
       fullCode = header + source_code + footer;
     }
+    
     // create an array payload for judge0 create submissions
     const options: CodeSubmission[] = testCases.map((value) => ({
       source_code: fullCode,
