@@ -5,6 +5,10 @@ import * as cors from 'cors';
 import * as passport from 'passport';
 import { jwtStrategy } from './passport';
 import * as database from './database';
+import { setup } from '../api/services/ltijs';
+
+import { port } from './vars';
+
 class Server {
   public app: express.Application;
 
@@ -13,6 +17,7 @@ class Server {
     this.connectDatabase();
     this.config();
     this.routes();
+    setup();
   }
   public routes(): void {
     this.app.use('/v1', routes);
@@ -33,7 +38,7 @@ class Server {
   }
   public start(): void {
     //eslint-disable-next-line
-    this.app.listen(8080, () => console.log(`server started on port 8080`));
+    this.app.listen(port, () => console.log(`server started on port ${port}`));
   }
 }
 

@@ -6,7 +6,7 @@ const judgeURI =
 const env = process.env.NODE_ENV;
 const jwtExpirationInterval = 86400; // 1 day in seconds
 const jwtSecret = process.env.JWT_SECRET;
-const port = process.env.PORT;
+const port = process.env.PORT == undefined ? 8080 : process.env.PORT;
 const access_key_id = process.env.ACCESS_KEY;
 const secret_access_key = process.env.SECRET_KEY;
 
@@ -27,6 +27,15 @@ const APP_PASSWORD = process.env.APP_PASSWORD;
 
 //AUTH token for EDUGATOR
 const EDUGATOR_AUTH_TOKEN = process.env.EDUGATOR_AUTH_TOKEN;
+
+const LTI_DB_HOST = process.env.LTI_DB_HOST;
+const LTI_DB_NAME = process.env.LTI_DB_NAME;
+const LTI_DB_USER = process.env.LTI_DB_USER;
+const LTI_DB_PASS = process.env.LTI_DB_PASS;
+const LTI_KEY = process.env.LTI_KEY;
+const CANVAS_HOST = process.env.CANVAS_HOST;
+const LTI_CLIENT_ID = process.env.LTI_CLIENT_ID;
+
 export {
   env,
   port,
@@ -44,5 +53,12 @@ export {
   SENDER_EMAIL,
   APP_PASSWORD,
   REGION_AWS,
-  EDUGATOR_AUTH_TOKEN
+  EDUGATOR_AUTH_TOKEN,
+  LTI_DB_HOST,
+  LTI_DB_NAME,
+  LTI_DB_USER,
+  LTI_DB_PASS,
+  LTI_KEY,
+  CANVAS_HOST,
+  LTI_CLIENT_ID
 };
