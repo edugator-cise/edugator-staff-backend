@@ -10,7 +10,7 @@ import {
   CANVAS_HOST
 } from '../../config/vars';
 
-interface CourseMember {
+interface Student {
   status: string;
   name: string;
   picture: string;
@@ -19,7 +19,7 @@ interface CourseMember {
   email: string;
   user_id: string;
   lti11_legacy_user_id: string;
-  roles: string[];
+  roles: Array<string>;
 }
 
 lti.setup(
@@ -68,7 +68,7 @@ const setup = async (): Promise<void> => {
   });
 };
 
-const listStudents = async (): Promise<CourseMember[]> => {
+const listStudents = async (): Promise<Array<Student>> => {
   const idToken = {
     iss: 'https://canvas.instructure.com',
     clientId: LTI_CLIENT_ID
@@ -79,10 +79,12 @@ const listStudents = async (): Promise<CourseMember[]> => {
     }
   };
 
-  let members: CourseMember[];
+  let members: Array<Student>;
   try {
-    members = await lti.NamesAndRoles.getMembers(idToken, { role: 'Learner' })
-      .members;
+    const result = await lti.NamesAndRoles.getMembers(idToken, {
+      role: 'http://purl.imsglobal.org/vocab/lis/v2/membership#Learner'
+    });
+    members = result.members;
   } catch (err) {
     // return err.message;
   }
