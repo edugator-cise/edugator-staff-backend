@@ -10,6 +10,18 @@ import {
   CANVAS_HOST
 } from '../../config/vars';
 
+interface CourseMember {
+  status: string;
+  name: string;
+  picture: string;
+  given_name: string;
+  family_name: string;
+  email: string;
+  user_id: string;
+  lti11_legacy_user_id: string;
+  roles: string[];
+}
+
 lti.setup(
   LTI_KEY,
   {
@@ -56,4 +68,53 @@ const setup = async (): Promise<void> => {
   });
 };
 
-export { lti, setup };
+const listStudents = async (): Promise<CourseMember[]> => {
+  const idToken = {
+    iss: 'https://canvas.instructure.com',
+    clientId: LTI_CLIENT_ID
+  };
+  idToken['platformContext'] = {
+    namesRoles: {
+      context_memberships_url: `${CANVAS_HOST}/api/lti/courses/2/names_and_roles`
+    }
+  };
+
+  let members: CourseMember[];
+  try {
+    members = await lti.NamesAndRoles.getMembers(idToken, { role: 'Learner' })
+      .members;
+  } catch (err) {
+    // return err.message;
+  }
+  return members;
+};
+
+const postGrade = async (userId: string, score: number): Promise<any> => {
+  const lineItem = `${CANVAS_HOST}/api/lti/courses/2/line_items/1`;
+  const idToken = {
+    iss: 'https://canvas.instructure.com',
+    clientId: LTI_CLIENT_ID
+  };
+
+  idToken['user'] = userId;
+  // Creating Grade object
+  const gradeObj = {
+    userId: userId,
+    scoreGiven: score,
+    scoreMaximum: 10,
+    activityProgress: 'Completed',
+    gradingProgress: 'FullyGraded'
+  };
+  try {
+    const responseGrade = await lti.Grade.submitScore(
+      idToken,
+      lineItem,
+      gradeObj
+    );
+    return responseGrade;
+  } catch (err) {
+    return err.message;
+  }
+};
+
+export { lti, setup, listStudents, postGrade };
