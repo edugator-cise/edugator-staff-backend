@@ -1,11 +1,15 @@
 import { Request, Response } from 'express';
 import { listMembers, postGrade, LTIRoles } from '../services/ltijs';
+import { CANVAS_HOST } from '../../config/vars';
 
 const submitAssignment = async (
   _req: Request,
   res: Response
 ): Promise<Response> => {
-  const members = await listMembers(LTIRoles.Student);
+  const members = await listMembers(
+    `${CANVAS_HOST}/api/lti/courses/2`,
+    LTIRoles.Student
+  );
   if (members.length == 0) return res.sendStatus(500);
 
   members.forEach((member) => {
@@ -16,7 +20,10 @@ const submitAssignment = async (
 };
 
 const getMembers = async (_req: Request, res: Response): Promise<Response> => {
-  const members = await listMembers(LTIRoles.Student);
+  const members = await listMembers(
+    `${CANVAS_HOST}/api/lti/courses/2`,
+    LTIRoles.Student
+  );
   if (members.length > 0) return res.send(members);
   else return res.sendStatus(500).send('No students found!');
 };

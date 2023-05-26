@@ -1,9 +1,10 @@
 import { model, Schema, Document } from 'mongoose';
 
 interface User {
-  firstName: string;
-  lastName: string;
-  userId: string;
+  given_name: string;
+  family_name: string;
+  user_id: string;
+  email: string;
   status: string;
   roles: Array<string>;
 }
@@ -15,65 +16,75 @@ interface Assignment {
 }
 
 interface Course {
-  canvas_url: string;
+  course_url: string;
   members: Array<User>;
   assignments: Array<Assignment>;
 }
 
 const ltiSchema = new Schema<Course>(
   {
-    canvas_url: {
+    course_url: {
       type: String,
       required: true
     },
-    members: [
-      {
-        firstName: {
-          type: String,
-          required: true
-        },
-        lastName: {
-          type: String,
-          required: true
-        },
-        userId: {
-          type: String,
-          required: true
-        },
-        status: {
-          type: String,
-          required: false
-        },
-        roles: [
-          {
+    members: {
+      type: [
+        {
+          given_name: {
+            type: String,
+            required: true
+          },
+          family_name: {
+            type: String,
+            required: true
+          },
+          user_id: {
+            type: String,
+            required: true
+          },
+          email: {
+            type: String,
+            required: true
+          },
+          status: {
+            type: String,
+            required: false
+          },
+          roles: [
+            {
+              type: String,
+              required: true
+            }
+          ]
+        }
+      ],
+      required: true
+    },
+    assignments: {
+      type: [
+        {
+          lineItem: {
+            type: String,
+            required: true
+          },
+          problemId: {
+            type: String,
+            required: true
+          },
+          maxPoints: {
             type: String,
             required: true
           }
-        ]
-      }
-    ],
-    assignments: [
-      {
-        lineItem: {
-          type: String,
-          required: true
-        },
-        problemId: {
-          type: String,
-          required: true
-        },
-        maxPoints: {
-          type: String,
-          required: true
         }
-      }
-    ]
+      ],
+      required: false
+    }
   },
   { collection: 'ltiData' }
 );
 
-interface CourseDocument extends Course, Document {}
+interface LtiCourseDocument extends Course, Document {}
 
-const LtiModel = model('ltiData', ltiSchema);
+const LtiCourseModel = model('ltiData', ltiSchema);
 
-export { LtiModel, CourseDocument };
+export { LtiCourseModel, LtiCourseDocument };

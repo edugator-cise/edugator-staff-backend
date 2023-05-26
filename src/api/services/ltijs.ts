@@ -1,4 +1,5 @@
 import { Provider as lti } from 'ltijs';
+import { LtiCourseModel, LtiCourseDocument } from '../models/lti.model';
 
 import {
   LTI_KEY,
@@ -10,7 +11,7 @@ import {
   CANVAS_HOST
 } from '../../config/vars';
 
-interface Student {
+interface CourseMember {
   status: string;
   name: string;
   picture: string;
@@ -57,10 +58,24 @@ lti.setup(
 // called when the default app route (/launch) is requested
 lti.onConnect(async (_token, _req, res) => {
   const lineItemId = res.locals.context.endpoint.lineitem;
+  let lineItemsUrl = res.locals.context.endpoint.lineitems;
+  const courseUrl = lineItemsUrl.substring(0, lineItemsUrl.lastIndexOf('/'));
 
-  if (!lineItemId) console.log('This is a course link!');
-  else console.log(`This is an assignment link for ${lineItemId}`);
-  // lineItemId would be the assignment context from which the app is launched
+  if (!lineItemId) {
+    console.log('This is a course link!');
+    const courseMembers: Array<CourseMember> = await listMembers(courseUrl);
+
+    const course = new LtiCourseModel({
+      course_url: courseUrl,
+      members: courseMembers
+    });
+    course.save((err) => {
+      if (err) {
+        return res.status(422).send(err);
+      }
+    });
+  } else console.log(`This is an assignment link for ${lineItemId}`);
+
   return lti.redirect(res, 'https://edugator.app');
 });
 
@@ -80,22 +95,30 @@ const setup = async (): Promise<void> => {
   });
 };
 
-const listMembers = async (role: LTIRoles): Promise<Array<Student>> => {
+const listMembers = async (
+  course_url: string,
+  role?: LTIRoles
+): Promise<Array<CourseMember>> => {
   const idToken = {
     iss: 'https://canvas.instructure.com',
     clientId: LTI_CLIENT_ID
   };
   idToken['platformContext'] = {
     namesRoles: {
-      context_memberships_url: `${CANVAS_HOST}/api/lti/courses/2/names_and_roles`
+      context_memberships_url: `${course_url}/names_and_roles`
     }
   };
 
-  let members: Array<Student>;
+  let members: Array<CourseMember>;
   try {
-    const result = await lti.NamesAndRoles.getMembers(idToken, {
-      role: role
-    });
+    let result;
+    if (!role) {
+      result = await lti.NamesAndRoles.getMembers(idToken);
+    } else {
+      result = await lti.NamesAndRoles.getMembers(idToken, {
+        role: role
+      });
+    }
     members = result.members;
   } catch (err) {
     // will return empty array of members
