@@ -22,6 +22,21 @@ interface Student {
   roles: Array<string>;
 }
 
+interface Score {
+  userId: string;
+  scoreGiven: number;
+  scoreMaximum: number;
+  activityProgress: string;
+  gradingProgress: string;
+  timestamp?: string;
+}
+
+// simplified mapping of role URLs
+enum LTIRoles {
+  Student = 'http://purl.imsglobal.org/vocab/lis/v2/membership#Learner',
+  Instructor = 'http://purl.imsglobal.org/vocab/lis/v2/membership#Instructor'
+}
+
 lti.setup(
   LTI_KEY,
   {
@@ -39,22 +54,16 @@ lti.setup(
   }
 );
 
-// When receiving successful LTI launch redirects to app
-lti.onConnect(async (token, req, res) => {
-  token;
-  req;
+// called when the default app route (/launch) is requested
+lti.onConnect(async (_token, _req, res) => {
   // let lineItemId = res.locals.context.endpoint.lineitem;
+  // lineItemId would be the assignment context from which the app is launched
   return res.redirect('https://edugator.app?ltik=' + res.locals.ltik);
-  //return res.sendFile(path.join(__dirname, './public/index.html'));
 });
 
-// Setup function
 const setup = async (): Promise<void> => {
   await lti.deploy({ serverless: true });
 
-  /**
-   * Register platform
-   */
   await lti.registerPlatform({
     url: 'https://canvas.instructure.com',
     name: 'Prayuj Canvas',
@@ -68,7 +77,7 @@ const setup = async (): Promise<void> => {
   });
 };
 
-const listStudents = async (): Promise<Array<Student>> => {
+const listMembers = async (role: LTIRoles): Promise<Array<Student>> => {
   const idToken = {
     iss: 'https://canvas.instructure.com',
     clientId: LTI_CLIENT_ID
@@ -82,16 +91,16 @@ const listStudents = async (): Promise<Array<Student>> => {
   let members: Array<Student>;
   try {
     const result = await lti.NamesAndRoles.getMembers(idToken, {
-      role: 'http://purl.imsglobal.org/vocab/lis/v2/membership#Learner'
+      role: role
     });
     members = result.members;
   } catch (err) {
-    // return err.message;
+    // will return empty array of members
   }
   return members;
 };
 
-const postGrade = async (userId: string, score: number): Promise<any> => {
+const postGrade = async (userId: string, score: number): Promise<boolean> => {
   const lineItem = `${CANVAS_HOST}/api/lti/courses/2/line_items/1`;
   const idToken = {
     iss: 'https://canvas.instructure.com',
@@ -99,24 +108,26 @@ const postGrade = async (userId: string, score: number): Promise<any> => {
   };
 
   idToken['user'] = userId;
-  // Creating Grade object
-  const gradeObj = {
+  const gradeObj: Score = {
     userId: userId,
     scoreGiven: score,
     scoreMaximum: 10,
     activityProgress: 'Completed',
     gradingProgress: 'FullyGraded'
   };
+
   try {
-    const responseGrade = await lti.Grade.submitScore(
+    const responseGrade: Score = await lti.Grade.submitScore(
       idToken,
       lineItem,
       gradeObj
     );
-    return responseGrade;
+
+    if (responseGrade.scoreGiven == gradeObj.scoreGiven) return true;
   } catch (err) {
-    return err.message;
+    // will return false
   }
+  return false;
 };
 
-export { lti, setup, listStudents, postGrade };
+export { lti, setup, LTIRoles, listMembers, postGrade };
