@@ -56,9 +56,12 @@ lti.setup(
 
 // called when the default app route (/launch) is requested
 lti.onConnect(async (_token, _req, res) => {
-  // let lineItemId = res.locals.context.endpoint.lineitem;
+  const lineItemId = res.locals.context.endpoint.lineitem;
+
+  if (!lineItemId) console.log('This is a course link!');
+  else console.log(`This is an assignment link for ${lineItemId}`);
   // lineItemId would be the assignment context from which the app is launched
-  return res.redirect('https://edugator.app?ltik=' + res.locals.ltik);
+  return lti.redirect(res, 'https://edugator.app');
 });
 
 const setup = async (): Promise<void> => {
