@@ -12,16 +12,22 @@ interface User {
 interface Assignment {
   lineItem: string;
   problemId: string;
-  maxPoints: string;
+  assignmentName: string;
+  scoreMaximum: string;
+  grades: [
+    {
+      email: string;
+      score: number;
+    }
+  ];
 }
 
 interface Course {
   course_url: string;
   members: Array<User>;
-  assignments: Array<Assignment>;
 }
 
-const ltiSchema = new Schema<Course>(
+const ltiCourseSchema = new Schema<Course>(
   {
     course_url: {
       type: String,
@@ -59,20 +65,38 @@ const ltiSchema = new Schema<Course>(
         }
       ],
       required: true
+    }
+  },
+  { collection: 'ltiCourses' }
+);
+
+const ltiAssignmentSchema = new Schema<Assignment>(
+  {
+    lineItem: {
+      type: String,
+      required: true
     },
-    assignments: {
+    problemId: {
+      type: String,
+      required: true
+    },
+    assignmentName: {
+      type: String,
+      required: true
+    },
+    scoreMaximum: {
+      type: String,
+      required: true
+    },
+    grades: {
       type: [
         {
-          lineItem: {
+          email: {
             type: String,
             required: true
           },
-          problemId: {
-            type: String,
-            required: true
-          },
-          maxPoints: {
-            type: String,
+          score: {
+            type: Number,
             required: true
           }
         }
@@ -80,11 +104,18 @@ const ltiSchema = new Schema<Course>(
       required: false
     }
   },
-  { collection: 'ltiData' }
+  { collection: 'ltiAssignments' }
 );
 
 interface LtiCourseDocument extends Course, Document {}
+interface LtiAssignmentDocument extends Assignment, Document {}
 
-const LtiCourseModel = model('ltiData', ltiSchema);
+const LtiCourseModel = model('ltiCourses', ltiCourseSchema);
+const LtiAssignmentModel = model('ltiAssignments', ltiAssignmentSchema);
 
-export { LtiCourseModel, LtiCourseDocument };
+export {
+  LtiCourseModel,
+  LtiCourseDocument,
+  LtiAssignmentModel,
+  LtiAssignmentDocument
+};

@@ -1,5 +1,5 @@
 import { Provider as lti } from 'ltijs';
-import { LtiCourseModel, LtiCourseDocument } from '../models/lti.model';
+import { LtiCourseModel, LtiAssignmentModel } from '../models/lti.model';
 
 import {
   LTI_KEY,
@@ -32,6 +32,13 @@ interface Score {
   timestamp?: string;
 }
 
+interface LineItem {
+  id: string;
+  scoreMaximum: number;
+  label: string;
+  resourceLinkId: string;
+}
+
 // simplified mapping of role URLs
 enum LTIRoles {
   Student = 'http://purl.imsglobal.org/vocab/lis/v2/membership#Learner',
@@ -58,25 +65,69 @@ lti.setup(
 // called when the default app route (/launch) is requested
 lti.onConnect(async (_token, _req, res) => {
   const lineItemId = res.locals.context.endpoint.lineitem;
-  let lineItemsUrl = res.locals.context.endpoint.lineitems;
+  const lineItemsUrl = res.locals.context.endpoint.lineitems;
   const courseUrl = lineItemsUrl.substring(0, lineItemsUrl.lastIndexOf('/'));
 
-  if (!lineItemId) {
-    console.log('This is a course link!');
-    const courseMembers: Array<CourseMember> = await listMembers(courseUrl);
+  if (res.locals.context.roles.indexOf(LTIRoles.Instructor) != -1) {
+    console.log('Request is being made from the instructor account');
 
-    const course = new LtiCourseModel({
-      course_url: courseUrl,
-      members: courseMembers
-    });
-    course.save((err) => {
-      if (err) {
-        return res.status(422).send(err);
-      }
-    });
-  } else console.log(`This is an assignment link for ${lineItemId}`);
+    // redirect to course link page on edugator
+    if (!lineItemId) console.log(`This is a course link for ${courseUrl}`);
+    // redirect to assignment link page on edugator
+    else console.log(`This is an assignment link for ${lineItemId}`);
+  }
 
+  // temporary fixed redirect to home page
   return lti.redirect(res, 'https://edugator.app');
+});
+
+lti.app.post('/linkAssignment', async (req, res) => {
+  if (res.locals.context.roles.indexOf(LTIRoles.Instructor) == -1)
+    return res.status(401);
+  if (!req.body.problemId)
+    return res.status(400).send('Missing Edugator problem id');
+
+  const lineItemId = res.locals.context.endpoint.lineitem;
+  if (!lineItemId) return res.status(400).send('Missing line item id');
+
+  const lineItem = await getLineItem(lineItemId);
+
+  const assignment = new LtiAssignmentModel({
+    lineItem: lineItemId,
+    problemId: req.body.problemId,
+    assignmentName: lineItem.label,
+    scoreMaximum: lineItem.scoreMaximum
+  });
+
+  assignment.save((err) => {
+    if (err) {
+      console.log(err);
+    }
+  });
+
+  return res.status(200).send(`Linked assignment at ${lineItemId}`);
+});
+
+lti.app.post('/linkCourse', async (_req, res) => {
+  if (res.locals.context.roles.indexOf(LTIRoles.Instructor) == -1)
+    return res.status(401);
+
+  const lineItemsUrl = res.locals.context.endpoint.lineitems;
+  const courseUrl = lineItemsUrl.substring(0, lineItemsUrl.lastIndexOf('/'));
+
+  const courseMembers: Array<CourseMember> = await getCourseMembers(courseUrl);
+  const course = new LtiCourseModel({
+    course_url: courseUrl,
+    members: courseMembers
+  });
+
+  course.save((err) => {
+    if (err) {
+      console.log(err);
+    }
+  });
+
+  return res.status(200).send(`Linked course at ${courseUrl}`);
 });
 
 const setup = async (): Promise<void> => {
@@ -84,7 +135,7 @@ const setup = async (): Promise<void> => {
 
   await lti.registerPlatform({
     url: 'https://canvas.instructure.com',
-    name: 'Prayuj Canvas',
+    name: CANVAS_HOST,
     clientId: LTI_CLIENT_ID,
     authenticationEndpoint: `${CANVAS_HOST}/api/lti/authorize_redirect`,
     accesstokenEndpoint: `${CANVAS_HOST}/login/oauth2/token`,
@@ -95,7 +146,7 @@ const setup = async (): Promise<void> => {
   });
 };
 
-const listMembers = async (
+const getCourseMembers = async (
   course_url: string,
   role?: LTIRoles
 ): Promise<Array<CourseMember>> => {
@@ -113,9 +164,9 @@ const listMembers = async (
   try {
     let result;
     if (!role) {
-      result = await lti.NamesAndRoles.getMembers(idToken);
+      result = await lti.NamesAndRoles.getCourseMembers(idToken);
     } else {
-      result = await lti.NamesAndRoles.getMembers(idToken, {
+      result = await lti.NamesAndRoles.getCourseMembers(idToken, {
         role: role
       });
     }
@@ -123,6 +174,13 @@ const listMembers = async (
   } catch (err) {
     // will return empty array of members
   }
+
+  const indexOfTestStudent = members.findIndex((member) => {
+    return member.name === 'Test Student';
+  });
+
+  members.splice(indexOfTestStudent, 1);
+
   return members;
 };
 
@@ -137,7 +195,6 @@ const postGrade = async (userId: string, score: number): Promise<boolean> => {
   const gradeObj: Score = {
     userId: userId,
     scoreGiven: score,
-    scoreMaximum: 10,
     activityProgress: 'Completed',
     gradingProgress: 'FullyGraded'
   };
@@ -156,4 +213,14 @@ const postGrade = async (userId: string, score: number): Promise<boolean> => {
   return false;
 };
 
-export { lti, setup, LTIRoles, listMembers, postGrade };
+const getLineItem = async (lineItemId: string): Promise<LineItem> => {
+  const idToken = {
+    iss: 'https://canvas.instructure.com',
+    clientId: LTI_CLIENT_ID
+  };
+
+  const lineItem = await lti.Grade.getLineItemById(idToken, lineItemId);
+  return lineItem;
+};
+
+export { lti, setup, LTIRoles, getCourseMembers, postGrade };

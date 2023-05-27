@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
-import { listMembers, postGrade, LTIRoles } from '../services/ltijs';
+import { getCourseMembers, postGrade, LTIRoles } from '../services/ltijs';
 import { CANVAS_HOST } from '../../config/vars';
 
 const submitAssignment = async (
   _req: Request,
   res: Response
 ): Promise<Response> => {
-  const members = await listMembers(
+  const members = await getCourseMembers(
     `${CANVAS_HOST}/api/lti/courses/2`,
     LTIRoles.Student
   );
@@ -20,7 +20,7 @@ const submitAssignment = async (
 };
 
 const getMembers = async (_req: Request, res: Response): Promise<Response> => {
-  const members = await listMembers(
+  const members = await getCourseMembers(
     `${CANVAS_HOST}/api/lti/courses/2`,
     LTIRoles.Student
   );
