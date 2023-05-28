@@ -12,7 +12,7 @@
     "prettier"
   ],
   "rules": { 
-    "no-console": 0,// Remember, this means error!
+    "no-console": 2,// Remember, this means error!
     "prettier/prettier": 2
   }
 }

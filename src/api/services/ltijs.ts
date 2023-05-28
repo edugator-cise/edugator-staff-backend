@@ -1,5 +1,9 @@
 import { Provider as lti } from 'ltijs';
-import { LtiCourseModel, LtiAssignmentModel } from '../models/lti.model';
+import {
+  LtiCourseModel,
+  LtiAssignmentModel,
+  LtiAssignmentDocument
+} from '../models/lti.model';
 
 import {
   LTI_KEY,
@@ -26,7 +30,7 @@ interface CourseMember {
 interface Score {
   userId: string;
   scoreGiven: number;
-  scoreMaximum: number;
+  scoreMaximum?: number;
   activityProgress: string;
   gradingProgress: string;
   timestamp?: string;
@@ -68,22 +72,38 @@ lti.onConnect(async (_token, _req, res) => {
   const lineItemsUrl = res.locals.context.endpoint.lineitems;
   const courseUrl = lineItemsUrl.substring(0, lineItemsUrl.lastIndexOf('/'));
 
+  // checks if request is being made from the instructor account
   if (res.locals.context.roles.indexOf(LTIRoles.Instructor) != -1) {
-    console.log('Request is being made from the instructor account');
+    // redirect to course or assignment link page on edugator
+    if (!lineItemId) return res.send(`Course link page for ${courseUrl}`);
+    else return res.send(`Assignment link page for ${lineItemId}`);
 
-    // redirect to course link page on edugator
-    if (!lineItemId) console.log(`This is a course link for ${courseUrl}`);
-    // redirect to assignment link page on edugator
-    else console.log(`This is an assignment link for ${lineItemId}`);
+    // temporary fixed redirect to home page
+    return lti.redirect(res, 'https://edugator.prayujt.com');
+  } else {
+    if (!lineItemId)
+      return res.status(403).send('Unauthorized to access this page');
+    let assignment: LtiAssignmentDocument;
+    try {
+      assignment = await LtiAssignmentModel.findOne({
+        lineItem: lineItemId
+      }).select('problemId');
+    } catch (err) {
+      return res.sendStatus(500);
+    }
+
+    if (!assignment)
+      return res.status(404).send('This assignment is not linked yet');
+    else
+      return res.redirect(
+        'https://edugator.prayujt.com/code/' + assignment.problemId
+      );
   }
-
-  // temporary fixed redirect to home page
-  return lti.redirect(res, 'https://edugator.app');
 });
 
 lti.app.post('/linkAssignment', async (req, res) => {
   if (res.locals.context.roles.indexOf(LTIRoles.Instructor) == -1)
-    return res.status(401);
+    return res.sendStatus(403);
   if (!req.body.problemId)
     return res.status(400).send('Missing Edugator problem id');
 
@@ -101,7 +121,7 @@ lti.app.post('/linkAssignment', async (req, res) => {
 
   assignment.save((err) => {
     if (err) {
-      console.log(err);
+      return res.status(500);
     }
   });
 
@@ -110,7 +130,7 @@ lti.app.post('/linkAssignment', async (req, res) => {
 
 lti.app.post('/linkCourse', async (_req, res) => {
   if (res.locals.context.roles.indexOf(LTIRoles.Instructor) == -1)
-    return res.status(401);
+    return res.sendStatus(403);
 
   const lineItemsUrl = res.locals.context.endpoint.lineitems;
   const courseUrl = lineItemsUrl.substring(0, lineItemsUrl.lastIndexOf('/'));
@@ -123,7 +143,7 @@ lti.app.post('/linkCourse', async (_req, res) => {
 
   course.save((err) => {
     if (err) {
-      console.log(err);
+      return res.status(500);
     }
   });
 
@@ -164,9 +184,9 @@ const getCourseMembers = async (
   try {
     let result;
     if (!role) {
-      result = await lti.NamesAndRoles.getCourseMembers(idToken);
+      result = await lti.NamesAndRoles.getMembers(idToken);
     } else {
-      result = await lti.NamesAndRoles.getCourseMembers(idToken, {
+      result = await lti.NamesAndRoles.getMembers(idToken, {
         role: role
       });
     }

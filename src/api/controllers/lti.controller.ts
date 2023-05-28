@@ -25,7 +25,7 @@ const getMembers = async (_req: Request, res: Response): Promise<Response> => {
     LTIRoles.Student
   );
   if (members.length > 0) return res.send(members);
-  else return res.sendStatus(500).send('No students found!');
+  else return res.sendStatus(500);
 };
 
 export { submitAssignment, getMembers };
