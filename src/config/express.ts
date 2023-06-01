@@ -5,12 +5,14 @@ import * as cors from 'cors';
 import * as passport from 'passport';
 import { jwtStrategy } from './passport';
 import * as database from './database';
+import * as databasev2 from './databasev2'
 class Server {
   public app: express.Application;
 
   constructor() {
     this.app = express();
     this.connectDatabase();
+    this.connectDatabase2();
     this.config();
     this.routes();
   }
@@ -30,6 +32,9 @@ class Server {
 
   private connectDatabase(): void {
     database.connect();
+  }
+  private connectDatabase2(): void {
+    databasev2.connect();
   }
   public start(): void {
     //eslint-disable-next-line
