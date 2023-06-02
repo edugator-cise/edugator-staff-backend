@@ -1,9 +1,8 @@
 import { Request, Response } from 'express';
 import { UserModel, IUser } from '../models/user.model';
 import * as bcrypt from 'bcrypt';
-import * as validator from 'validator';
 import userValidation from '../validation/user.validation';
-
+import { isMongoId } from '../../util';
 const getUsers = async (_req: Request, res: Response): Promise<void> => {
   if (res.locals.role !== 'Professor') {
     res
@@ -50,7 +49,7 @@ const updateUser = async (req: Request, res: Response): Promise<void> => {
     }
 
     // Check to make sure ID is a valid mongoID
-    if (!validator.isMongoId(req.body._id)) {
+    if (!isMongoId(req.body._id)) {
       res.status(400).send('This route requires a valid user ID');
       return;
     }

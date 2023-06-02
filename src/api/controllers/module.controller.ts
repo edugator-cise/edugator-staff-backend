@@ -7,7 +7,7 @@ import {
 } from '../models/module.model';
 import { Problem } from '../models/problem.model';
 import { Lesson } from '../models/lesson.model';
-import * as validator from 'validator';
+import { isMongoId } from '../../util';
 import moduleValidation from '../validation/module.validation';
 
 export const getModules = async (
@@ -56,7 +56,7 @@ export const getModuleByID = async (
 ): Promise<void> => {
   let modules: ModuleDocument;
   try {
-    if (!validator.isMongoId(req.params.moduleId)) {
+    if (!isMongoId(req.params.moduleId)) {
       throw { message: 'This route requires a valid module ID' };
     }
 
@@ -79,7 +79,7 @@ export const getModuleByProblemId = async (
   req: Request,
   res: Response
 ): Promise<Response<any, Record<string, any>>> => {
-  if (!validator.isMongoId(req.params.problemId)) {
+  if (!isMongoId(req.params.problemId)) {
     return res.status(400).send('This route requires a valid problem ID');
   }
   // Get all modules
@@ -165,7 +165,7 @@ export const postModules = async (
 export const putModule = async (req: Request, res: Response): Promise<void> => {
   // makes sure there is a moduleId given in the params
   try {
-    if (!validator.isMongoId(req.params.moduleId)) {
+    if (!isMongoId(req.params.moduleId)) {
       throw { message: 'This route requires a valid module ID' };
     }
 

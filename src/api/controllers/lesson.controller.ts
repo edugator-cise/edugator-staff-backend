@@ -5,9 +5,8 @@ import {
   LessonInterface,
   LessonDocument
 } from '../models/lesson.model';
-import * as validator from 'validator';
 import { Module, ModuleDocument } from '../models/module.model';
-
+import { isMongoId } from '../../util';
 export const getLessons = async (
   _req: Request,
   res: Response
@@ -63,7 +62,7 @@ export const getLessonByID = async (
 ): Promise<void> => {
   let lesson: LessonDocument;
   try {
-    if (!validator.isMongoId(req.params.lessonId)) {
+    if (!isMongoId(req.params.lessonId)) {
       throw { message: 'This route requires a valid lesson ID' };
     }
 
@@ -83,7 +82,7 @@ export const getLessonByID = async (
 export const putLesson = async (req: Request, res: Response): Promise<void> => {
   // makes sure there is a moduleId given in the params
   try {
-    if (!validator.isMongoId(req.params.lessonId)) {
+    if (!isMongoId(req.params.lessonId)) {
       throw { message: 'This route requires a valid lesson ID' };
     }
 

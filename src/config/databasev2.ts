@@ -10,6 +10,11 @@ const connect = async () => {
     {
       host: process.env.DATABASE_HOST,
       dialect: 'mysql',
+      dialectOptions: {
+        ssl: {
+          rejectUnauthorized: true,
+        },
+      },
       logging: console.log,
     }
   )
