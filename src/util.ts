@@ -10,4 +10,4 @@ export default function assertString(input) {
 export const isMongoId = (str: string) => {
   assertString(str);
   return /^(0x|0h)?[0-9A-F]+$/i.test(str) && str.length === 24;
-}
+};

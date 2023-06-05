@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { Router } from 'express';
 import { courseRouter } from './course.routes';
 const router = Router();
 

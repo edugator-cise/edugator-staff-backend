@@ -1,13 +1,18 @@
-import { Router } from "express";
-import { create, deleteCourse, getCourseById, updateCourse } from "../../controllers/course.controller";
+import { Router } from 'express';
+import {
+  create,
+  deleteCourse,
+  getCourseById,
+  updateCourse,
+  getCourses
+} from '../../controllers/course.controller';
 const courseRouter = Router();
 
-courseRouter.route('/').post(create)
-courseRouter.route('/:courseId')
+courseRouter.route('/').post(create).get(getCourses);
+courseRouter
+  .route('/:courseId')
   .delete(deleteCourse)
   .put(updateCourse)
-  .get(getCourseById)
+  .get(getCourseById);
 
 export { courseRouter };
-
-

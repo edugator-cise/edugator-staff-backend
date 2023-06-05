@@ -1,4 +1,4 @@
-import { Sequelize } from "sequelize";
+import { Sequelize } from 'sequelize';
 
 export const sequelize: Sequelize = new Sequelize(
   process.env.DATABASE_NAME,
@@ -9,22 +9,23 @@ export const sequelize: Sequelize = new Sequelize(
     dialect: 'mysql',
     dialectOptions: {
       ssl: {
-        rejectUnauthorized: true,
-      },
+        rejectUnauthorized: true
+      }
     },
-    logging: console.log,
+    //eslint-disable-next-line
+    logging: console.log
   }
 );
 
 export const authenticate = async () => {
   await sequelize.authenticate();
   await sequelize.sync();
-}
+};
 export const disconnect = () => {
   sequelize.close();
-}
+};
 
 export const truncate = () => {
   sequelize.query('SET FOREIGN_KEY_CHECKS = 0', { raw: true });
   sequelize.truncate({ cascade: true });
-}
+};

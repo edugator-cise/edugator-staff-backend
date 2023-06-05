@@ -1,12 +1,12 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
 import routes from '../api/routes/v1';
-import routesV2 from '../api/routes/v2'
+import routesV2 from '../api/routes/v2';
 import * as cors from 'cors';
 import * as passport from 'passport';
 import { jwtStrategy } from './passport';
 import * as database from './database';
-import * as databasev2 from './databasev2'
+import * as databasev2 from './databasev2';
 import { Course } from '../api/models/course.model';
 class Server {
   public app: express.Application;
@@ -36,7 +36,7 @@ class Server {
   private connectDatabase(): void {
     database.connect();
   }
-  
+
   private async connectDatabaseV2(): Promise<void> {
     await databasev2.authenticate();
     await this.syncModels();
