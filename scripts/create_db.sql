@@ -4,14 +4,16 @@ CREATE TABLE IF NOT EXISTS Organization (
   logo VARCHAR(255)
 );
 
-CREATE TABLE IF NOT EXISTS Course (
-  id VARCHAR(255) NOT NULL PRIMARY KEY,
-  courseName VARCHAR(255) NOT NULL,
-  visibility VARCHAR(255) NOT NULL,
-  startDate VARCHAR(255),
-  endDate VARCHAR(255),
-  logo VARCHAR(255)
-);
+CREATE TABLE IF NOT EXISTS `Course` (
+  `id` VARCHAR(255) NOT NULL , 
+  `courseName` VARCHAR(255) NOT NULL, 
+  `startDate` DATETIME, 
+  `endDate` DATETIME, 
+  `logo` VARCHAR(255), 
+  `createdAt` DATETIME NOT NULL, 
+  `updatedAt` DATETIME NOT NULL, 
+  PRIMARY KEY (`id`)
+)
 
 CREATE TABLE IF NOT EXISTS CourseEnrollment (
   courseId VARCHAR(255) NOT NULL,
@@ -35,7 +37,7 @@ CREATE TABLE IF NOT EXISTS Lesson (
   dateCreated VARCHAR(255) NOT NULL,
   dateUpdated VARCHAR(255) NOT NULL,
   orderNumber TINYINT(125)
-)
+);
 
 CREATE TABLE IF NOT EXISTS Problem (
   id VARCHAR(255) NOT NULL PRIMARY KEY,
@@ -49,7 +51,7 @@ CREATE TABLE IF NOT EXISTS Problem (
   memoryLimit SMALLINT unsigned NOT NULL DEFAULT 0,
   buildCommand VARCHAR(255),
   orderNumber TINYINT(125)
-)
+);
 
 CREATE TABLE IF NOT EXISTS Code (
   id VARCHAR(255) NOT NULL PRIMARY KEY,
@@ -59,7 +61,7 @@ CREATE TABLE IF NOT EXISTS Code (
   body TEXT,
   footer TEXT,
   fileExtension CHAR(10)
-)
+);
 
 CREATE TABLE IF NOT EXISTS TestCase (
   id VARCHAR(255) NOT NULL PRIMARY KEY,
@@ -68,7 +70,7 @@ CREATE TABLE IF NOT EXISTS TestCase (
   expectedOutput VARCHAR(255) NOT NULL,
   hint VARCHAR(255) NOT NULL,
   visibility TINYINT(125)
-)
+);
 
 CREATE TABLE IF NOT EXISTS Submission (
   id VARCHAR(255) NOT NULL PRIMARY KEY,
@@ -77,7 +79,7 @@ CREATE TABLE IF NOT EXISTS Submission (
   submissiontype VARCHAR(255) NOT NULL,
   submissionId VARCHAR(255) NOT NULL,
   submissionTime VARCHAR(255) NOT NULL
-)
+);
 
 
 
