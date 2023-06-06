@@ -14,7 +14,9 @@ class Server {
   constructor() {
     this.app = express();
     this.connectDatabase();
-    this.connectDatabaseV2();
+    if (process.env.NODE_ENV !== 'test') {
+      this.connectDatabaseV2();
+    }
     this.config();
     this.routes();
   }
