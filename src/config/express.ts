@@ -8,6 +8,7 @@ import { jwtStrategy } from './passport';
 import * as database from './database';
 import * as databasev2 from './databasev2';
 import { Course } from '../api/models/course.model';
+import { Organization } from '../api/models/organization.model';
 class Server {
   public app: express.Application;
 
@@ -46,6 +47,7 @@ class Server {
 
   private async syncModels(): Promise<void> {
     await Course.sync();
+    await Organization.sync();
   }
   public start(): void {
     //eslint-disable-next-line
