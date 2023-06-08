@@ -1,4 +1,4 @@
-import { sequelize } from "../../config/databasev2";
+import { sequelize } from '../../config/databasev2';
 import { DataTypes, Model, Optional } from 'sequelize';
 
 export interface OrganizationAttributes {
@@ -7,9 +7,15 @@ export interface OrganizationAttributes {
   logo: string;
 }
 
-export type OrganizationAttributesInput = Optional<OrganizationAttributes, 'id'>
+export type OrganizationAttributesInput = Optional<
+  OrganizationAttributes,
+  'id'
+>;
 
-type OrganizationInstance = Model<OrganizationAttributes, OrganizationAttributesInput>;
+type OrganizationInstance = Model<
+  OrganizationAttributes,
+  OrganizationAttributesInput
+>;
 
 export const Organization = sequelize.define<OrganizationInstance>(
   'Organization',
@@ -17,17 +23,17 @@ export const Organization = sequelize.define<OrganizationInstance>(
     id: {
       type: DataTypes.STRING,
       allowNull: false,
-      primaryKey: true,
+      primaryKey: true
     },
     name: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: false
     },
     logo: {
       type: DataTypes.STRING
     }
   },
   {
-    freezeTableName: true,
+    freezeTableName: true
   }
-)
+);

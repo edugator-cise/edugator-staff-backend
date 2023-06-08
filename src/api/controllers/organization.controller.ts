@@ -26,11 +26,11 @@ export const getOrganizations = async (
   } catch (e) {
     res.status(500).send(e);
   }
-}
+};
 
 export const getOrganizationById = async (
   req: Request,
-  res: Response,
+  res: Response
 ): Promise<void> => {
   try {
     const id = req.params['organizationId'];
@@ -46,7 +46,7 @@ export const getOrganizationById = async (
   } catch (e) {
     res.status(500).send(e);
   }
-}
+};
 
 export const updateOrganization = async (
   req: Request,
@@ -65,11 +65,11 @@ export const updateOrganization = async (
   } catch (e) {
     res.status(500).send(e);
   }
-}
+};
 
 export const deleteOrganization = async (
   req: Request,
-  res: Response,
+  res: Response
 ): Promise<void> => {
   try {
     const payload = req.params['organizationId'];
@@ -81,5 +81,4 @@ export const deleteOrganization = async (
   } catch (e) {
     res.status(500).send(e);
   }
-}
-
+};

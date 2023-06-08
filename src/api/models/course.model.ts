@@ -24,7 +24,7 @@ export const Course = sequelize.define<CourseInstance>(
     },
     organizationId: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: false
     },
     courseName: {
       type: DataTypes.STRING,

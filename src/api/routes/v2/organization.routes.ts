@@ -1,15 +1,19 @@
 import { Router } from 'express';
-import { getOrganizations, getOrganizationById, deleteOrganization, create, updateOrganization } from '../../controllers/organization.controller';
+import {
+  getOrganizations,
+  getOrganizationById,
+  deleteOrganization,
+  create,
+  updateOrganization
+} from '../../controllers/organization.controller';
 
 const organizationRouter = Router();
 
-organizationRouter.route('/')
-  .get(getOrganizations)
-  .post(create)
-organizationRouter.route('/:organizationId')
+organizationRouter.route('/').get(getOrganizations).post(create);
+organizationRouter
+  .route('/:organizationId')
   .get(getOrganizationById)
   .put(updateOrganization)
-  .delete(deleteOrganization)
-
+  .delete(deleteOrganization);
 
 export { organizationRouter };

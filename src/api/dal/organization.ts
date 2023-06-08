@@ -1,8 +1,8 @@
 import {
   OrganizationAttributesInput,
   OrganizationAttributes,
-  Organization,
-} from '../models/organization.model'
+  Organization
+} from '../models/organization.model';
 
 export const create = async (
   payload: OrganizationAttributesInput
@@ -14,19 +14,19 @@ export const create = async (
 export const getById = async (id: string): Promise<OrganizationAttributes> => {
   const organization = await Organization.findByPk(id);
   return organization.dataValues;
-}
+};
 
-export const getAll = async(): Promise<OrganizationAttributes[]> => {
+export const getAll = async (): Promise<OrganizationAttributes[]> => {
   const org = await Organization.findAll();
   return org.map((value) => value.dataValues);
-}
+};
 
 export const deleteById = async (id: string): Promise<boolean> => {
   const numberOfDeletions = await Organization.destroy({
-    where: { id}
+    where: { id }
   });
   return !!numberOfDeletions;
-}
+};
 
 export const updateById = async (
   id: string,
@@ -39,4 +39,4 @@ export const updateById = async (
 
   const updatedOrganization = await organization.update(payload);
   return updatedOrganization.dataValues;
-}
+};
