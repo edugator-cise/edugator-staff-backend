@@ -23,6 +23,10 @@ export const deleteCourse = async (
       res.status(500).send('error course is undefined');
     }
     const result = await CourseDataLayer.deleteById(payload);
+    if (!result) {
+      res.status(404).send();
+      return;
+    }
     res.status(200).send(result);
   } catch (e) {
     res.status(500).send(e);

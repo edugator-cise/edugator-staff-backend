@@ -77,6 +77,10 @@ export const deleteOrganization = async (
       res.status(400).send('error course is undefined');
     }
     const result = await OrganizationDataLayer.deleteById(payload);
+    if (!result) {
+      res.status(404).send();
+      return;
+    }
     res.status(200).send(result);
   } catch (e) {
     res.status(500).send(e);
