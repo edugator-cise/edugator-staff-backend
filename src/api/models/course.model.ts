@@ -7,6 +7,7 @@ export interface CourseAttributes {
   startDate: string;
   endDate: string;
   logo: string;
+  organizationId: string;
 }
 
 export type CourseAttributesInput = Optional<CourseAttributes, 'id'>;
@@ -20,6 +21,10 @@ export const Course = sequelize.define<CourseInstance>(
       type: DataTypes.STRING,
       allowNull: false,
       primaryKey: true
+    },
+    organizationId: {
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     courseName: {
       type: DataTypes.STRING,
