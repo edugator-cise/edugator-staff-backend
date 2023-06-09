@@ -3,8 +3,6 @@ import {
   ModuleAttributes,
   Module
 } from '../models/v2/module.model';
-import { Problem } from '../models/v2/problem.model';
-import { Lesson } from '../models/v2/lesson.model';
 
 export const create = async (
   payload: ModuleAttributesInput
@@ -43,31 +41,6 @@ export const updateById = async (
 export const getAll = async (): Promise<ModuleAttributes[]> => {
   const module_ = await Module.findAll({
     include: ['problems', 'lessons'],
-    order: [
-      ['problems', 'orderNumber', 'ASC'],
-      ['lessons', 'orderNumber', 'ASC']
-    ]
-  });
-  return module_.map((value) => value.dataValues);
-};
-
-export const getAllNonHidden = async (): Promise<ModuleAttributes[]> => {
-  const module_ = await Module.findAll({
-    include: [
-      {
-        model: Problem,
-        as: 'problems',
-        where: {
-          hidden: false
-        },
-        attributes: ['id', 'title']
-      },
-      {
-        model: Lesson,
-        as: 'lessons',
-        attributes: ['id', 'title']
-      }
-    ],
     order: [
       ['problems', 'orderNumber', 'ASC'],
       ['lessons', 'orderNumber', 'ASC']

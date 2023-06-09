@@ -7,9 +7,6 @@ const moduleRouter = express.Router();
 // moduleRouter
 //   .route('/WithProblems')
 //   .get(authenticateJWT, modules.getModulesWithProblems);
-moduleRouter
-  .route('/WithNonHiddenProblems')
-  .get(modules.getModulesWithNonHiddenProblemsAndTestCases);
 moduleRouter.route('/?').get(modules.getModules).post(modules.postModule);
 
 // // Admin routes

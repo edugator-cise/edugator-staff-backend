@@ -16,7 +16,7 @@ export const create = async (
 
 export const getById = async (id: string): Promise<CourseAttributes> => {
   const course = await Course.findByPk(id);
-  return course.dataValues;
+  return course ? course.dataValues : null;
 };
 
 export const deleteById = async (id: string): Promise<boolean> => {
@@ -46,8 +46,8 @@ export const getAll = async (): Promise<CourseAttributes[]> => {
 export const getStructure = async (
   courseId: string,
   hidden: boolean
-): Promise<CourseAttributes[]> => {
-  const module_ = await Course.findAll({
+): Promise<CourseAttributes> => {
+  const course = await Course.findByPk(courseId, {
     include: [
       {
         model: Module,
@@ -73,10 +73,7 @@ export const getStructure = async (
           }
         ]
       }
-    ],
-    where: {
-      id: courseId
-    }
+    ]
   });
-  return module_.map((value) => value.dataValues);
+  return course ? course.dataValues : null;
 };

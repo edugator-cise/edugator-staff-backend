@@ -34,19 +34,6 @@ export const getModules = async (
   }
 };
 
-export const getModulesWithNonHiddenProblemsAndTestCases = async (
-  _req: Request,
-  res: Response
-): Promise<void> => {
-  try {
-    const modules = await ModuleDataLayer.getAllNonHidden();
-    if (!modules) res.status(404).send();
-    else res.status(200).send(modules);
-  } catch (e) {
-    res.status(500).send(e);
-  }
-};
-
 export const getModuleByID = async (
   req: Request,
   res: Response
