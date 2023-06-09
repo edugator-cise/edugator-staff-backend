@@ -1,19 +1,13 @@
 import { Provider as lti } from 'ltijs';
+import * as Database from 'ltijs-sequelize';
+
 import {
   LtiCourseModel,
   LtiAssignmentModel,
   LtiAssignmentDocument
 } from '../models/lti.model';
 
-import {
-  LTI_KEY,
-  LTI_DB_HOST,
-  LTI_DB_NAME,
-  LTI_DB_USER,
-  LTI_DB_PASS,
-  LTI_CLIENT_ID,
-  CANVAS_HOST
-} from '../../config/vars';
+import { LTI_KEY, LTI_CLIENT_ID, CANVAS_HOST } from '../../config/vars';
 
 interface CourseMember {
   status: string;
@@ -49,11 +43,26 @@ enum LTIRoles {
   Instructor = 'http://purl.imsglobal.org/vocab/lis/v2/membership#Instructor'
 }
 
+const db = new Database(
+  process.env.DATABASE_NAME,
+  process.env.DATABASE_USERNAME,
+  process.env.DATABASE_PASSWORD,
+  {
+    host: process.env.DATABASE_HOST,
+    dialect: 'mysql',
+    dialectOptions: {
+      ssl: {
+        rejectUnauthorized: true
+      }
+    },
+    logging: false
+  }
+);
+
 lti.setup(
   LTI_KEY,
   {
-    url: 'mongodb://' + LTI_DB_HOST + '/' + LTI_DB_NAME + '?authSource=admin',
-    connection: { user: LTI_DB_USER, pass: LTI_DB_PASS }
+    plugin: db
   },
   {
     appRoute: '/launch',

@@ -55,6 +55,7 @@
     "joi-objectid": "^4.0.2",
     "jsonwebtoken": "^8.5.1",
     "ltijs": "^5.9.2",
+    "ltijs-sequelize": "^2.4.4",
     "moment": "^2.29.1",
     "mongodb-memory-server": "^7.4.1",
     "mongoose": "^6.0.6",
