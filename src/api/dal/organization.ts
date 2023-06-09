@@ -11,9 +11,11 @@ export const create = async (
   return organization.dataValues;
 };
 
-export const getById = async (id: string): Promise<OrganizationAttributes> => {
+export const getById = async (
+  id: string
+): Promise<OrganizationAttributes | undefined> => {
   const organization = await Organization.findByPk(id);
-  return organization.dataValues;
+  return organization ? organization.dataValues : undefined;
 };
 
 export const getAll = async (): Promise<OrganizationAttributes[]> => {

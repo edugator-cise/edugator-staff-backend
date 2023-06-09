@@ -72,17 +72,20 @@ export const getCourseById = async (
 };
 
 export const getCourses = async (
-  _req: Request,
+  req: Request,
   res: Response
-): Promise<void> => {
+): Promise<Response<any, Record<string, any>>> => {
   try {
-    const results = await CourseDataLayer.getAll();
-    if (!results) {
-      res.status(404).send();
+    if (!req.params.organizationId) {
+      return res.status(400).send('bad request organizationId not found');
     }
-    res.status(200).send(results);
+    const results = await CourseDataLayer.getAll(req.params.organizationId);
+    if (!results) {
+      return res.status(404).send();
+    }
+    return res.status(200).send(results);
   } catch (e) {
-    res.status(500).send(e);
+    return res.status(500).send(e);
   }
 };
 

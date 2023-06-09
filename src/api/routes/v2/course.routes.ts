@@ -4,12 +4,11 @@ import {
   deleteCourse,
   getCourseById,
   updateCourse,
-  getCourses,
   getCourseStructure
 } from '../../controllers/v2/course.controller';
 const courseRouter = Router();
 
-courseRouter.route('/').post(create).get(getCourses);
+courseRouter.route('/').post(create);
 courseRouter
   .route('/:courseId')
   .delete(deleteCourse)

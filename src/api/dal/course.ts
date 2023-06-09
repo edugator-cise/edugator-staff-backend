@@ -14,9 +14,11 @@ export const create = async (
   return course.dataValues;
 };
 
-export const getById = async (id: string): Promise<CourseAttributes> => {
+export const getById = async (
+  id: string
+): Promise<CourseAttributes | undefined> => {
   const course = await Course.findByPk(id);
-  return course ? course.dataValues : null;
+  return course ? course.dataValues : undefined;
 };
 
 export const deleteById = async (id: string): Promise<boolean> => {
@@ -38,8 +40,14 @@ export const updateById = async (
   return updatedCourse.dataValues;
 };
 
-export const getAll = async (): Promise<CourseAttributes[]> => {
-  const courses = await Course.findAll();
+export const getAll = async (
+  organizationId: string
+): Promise<CourseAttributes[]> => {
+  const courses = await Course.findAll({
+    where: {
+      organizationId
+    }
+  });
   return courses.map((value) => value.dataValues);
 };
 
