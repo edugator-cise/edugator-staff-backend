@@ -1,0 +1,47 @@
+import { Request, Response } from 'express';
+import { LessonAttributesInput } from '../models/lessonv2.model';
+import * as LessonDataLayer from '../dal/lesson';
+import * as ModuleDataLayer from '../dal/module';
+import { v4 as uuidv4 } from 'uuid';
+
+export const postLesson = async (
+  req: Request,
+  res: Response
+): Promise<Record<string, any>> => {
+  const module_ = await ModuleDataLayer.getById(req.body.moduleId);
+  if (!module_) return res.status(400).send('invalid module id');
+  try {
+    const payload: LessonAttributesInput = { ...req.body, id: uuidv4() };
+    const result = await LessonDataLayer.create(payload);
+    return res.status(200).send(result);
+  } catch (e) {
+    return res.status(500).send(e);
+  }
+};
+
+export const getLessons = async (
+  _req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const lessons = await LessonDataLayer.getAll();
+    if (!lessons) res.status(404).send();
+    else res.status(200).send(lessons);
+  } catch (e) {
+    res.status(500).send(e);
+  }
+};
+
+export const getLessonByID = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  // add validation for lessonId?
+  try {
+    const lessons = await LessonDataLayer.getById(req.params.lessonid);
+    if (!lessons) res.status(404).send();
+    else res.status(200).send(lessons);
+  } catch (e) {
+    res.status(500).send(e);
+  }
+};

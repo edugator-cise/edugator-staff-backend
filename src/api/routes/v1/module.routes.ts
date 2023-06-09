@@ -10,10 +10,7 @@ moduleRouter
 moduleRouter
   .route('/WithNonHiddenProblems')
   .get(modules.getModulesWithNonHiddenProblemsAndTestCases);
-moduleRouter
-  .route('/?')
-  .get(modules.getModules)
-  .post(authenticateJWT, modules.postModules);
+moduleRouter.route('/?').get(modules.getModules).post(modules.postModules);
 
 // Admin routes
 moduleRouter
