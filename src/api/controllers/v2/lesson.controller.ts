@@ -45,3 +45,27 @@ export const getLessonByID = async (
     res.status(500).send(e);
   }
 };
+
+export const putLesson = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const result = await LessonDataLayer.updateById(
+      req.params.lessonId,
+      req.body
+    );
+    res.status(200).send(result);
+  } catch (e) {
+    res.status(500).send(e);
+  }
+};
+
+export const deleteLesson = async (
+  req: Request,
+  res: Response
+): Promise<Response<any, Record<string, any>>> => {
+  try {
+    const result = await LessonDataLayer.deleteById(req.params.lessonId);
+    return res.status(200).send(result);
+  } catch (e) {
+    return res.status(500).send(e);
+  }
+};

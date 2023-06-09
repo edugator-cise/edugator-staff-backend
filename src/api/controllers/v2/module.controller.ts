@@ -53,7 +53,7 @@ export const getModuleByID = async (
 export const getModuleByProblemId = async (
   req: Request,
   res: Response
-): Promise<Response<any, Record<string, any>>> => {
+): Promise<Record<string, any>> => {
   // validate problemId?
   // if (!isMongoId(req.params.problemId)) {
   //   return res.status(400).send('This route requires a valid problem ID');
@@ -84,7 +84,7 @@ export const putModule = async (req: Request, res: Response): Promise<void> => {
 export const deleteModule = async (
   req: Request,
   res: Response
-): Promise<Response<any, Record<string, any>>> => {
+): Promise<Record<string, any>> => {
   try {
     const result = await ModuleDataLayer.deleteById(req.params.moduleId);
     const problemResult = await ProblemDataLayer.deleteByModule(
@@ -102,7 +102,7 @@ export const deleteModule = async (
 export const changeProblemOrder = async (
   req: Request,
   res: Response
-): Promise<Response<any, Record<string, any>>> => {
+): Promise<Record<string, any>> => {
   try {
     const module_ = await ModuleDataLayer.getById(req.params.moduleId);
     if (!module_ || !module_['problems'])

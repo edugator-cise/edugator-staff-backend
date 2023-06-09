@@ -18,3 +18,31 @@ export const createProblem = async (
     return res.status(500).send(e);
   }
 };
+
+export const readStudentProblems = async (
+  _req: Request,
+  res: Response
+): Promise<Record<string, any>> => {
+  return res.sendStatus(200);
+};
+
+export const readAdminProblems = async (
+  _req: Request,
+  res: Response
+): Promise<Record<string, any>> => {
+  return res.sendStatus(200);
+};
+
+export const updateProblem = async (
+  _req: Request,
+  res: Response
+): Promise<Record<string, any>> => {
+  return res.sendStatus(200);
+};
+
+export const deleteProblem = async (
+  _req: Request,
+  res: Response
+): Promise<Record<string, any>> => {
+  return res.sendStatus(200);
+};

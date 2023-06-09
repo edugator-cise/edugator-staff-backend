@@ -1,13 +1,13 @@
 import * as express from 'express';
+
 import {
+  createProblem,
   readAdminProblems,
   updateProblem,
   deleteProblem,
   readStudentProblems
-} from '../../controllers/v1/problem.controller';
+} from '../../controllers/v2/problem.controller';
 
-import { createProblem } from '../../controllers/v2/problem.controller';
-import { authenticateJWT } from '../../middlewares/auth';
 const adminProblemRouter = express.Router();
 const studentProblemRouter = express.Router();
 
@@ -17,17 +17,12 @@ studentProblemRouter.route('/:problemId').get(readStudentProblems);
 studentProblemRouter.route('/findByModule/:moduleId').get(readStudentProblems);
 
 // Admin routes
-adminProblemRouter
-  .route('/')
-  .get(authenticateJWT, readAdminProblems)
-  .post(createProblem);
+adminProblemRouter.route('/').get(readAdminProblems).post(createProblem);
 adminProblemRouter
   .route('/:problemId')
-  .get(authenticateJWT, readAdminProblems)
-  .put(authenticateJWT, updateProblem)
-  .delete(authenticateJWT, deleteProblem);
-adminProblemRouter
-  .route('/findByModule/:moduleId')
-  .get(authenticateJWT, readAdminProblems);
+  .get(readAdminProblems)
+  .put(updateProblem)
+  .delete(deleteProblem);
+adminProblemRouter.route('/findByModule/:moduleId').get(readAdminProblems);
 
 export { adminProblemRouter, studentProblemRouter };
