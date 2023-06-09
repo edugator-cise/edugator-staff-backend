@@ -10,12 +10,14 @@ const moduleRouter = express.Router();
 moduleRouter.route('/?').get(modules.getModules).post(modules.postModule);
 
 // // Admin routes
-// moduleRouter
-//   .route('/changeProblemOrder')
-//   .post(authenticateJWT, modules.changeProblemOrder);
-moduleRouter.route('/:moduleId').get(modules.getModuleByID);
-//   .put(authenticateJWT, modules.putModule)
-//   .delete(authenticateJWT, modules.deleteModule);
+moduleRouter
+  .route('/:moduleId')
+  .get(modules.getModuleByID)
+  // .put(authenticateJWT, modules.putModule)
+  .delete(modules.deleteModule);
+moduleRouter
+  .route('/:moduleId/changeProblemOrder')
+  .post(modules.changeProblemOrder);
 //
 moduleRouter.route('/ByProblemId/:problemId').get(modules.getModuleByProblemId);
 

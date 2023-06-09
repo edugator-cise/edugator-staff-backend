@@ -23,6 +23,13 @@ export const deleteById = async (id: string): Promise<boolean> => {
   return !!numberOfDeletions;
 };
 
+export const deleteByModule = async (moduleId: string): Promise<boolean> => {
+  const numberOfDeletions = await Problem.destroy({
+    where: { moduleId: moduleId }
+  });
+  return !!numberOfDeletions;
+};
+
 export const updateById = async (
   id: string,
   payload: ProblemAttributesInput
