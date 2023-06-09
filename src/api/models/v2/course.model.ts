@@ -1,5 +1,5 @@
 import { DataTypes, Model, Optional } from 'sequelize';
-import { sequelize } from '../../config/databasev2';
+import { sequelize } from '../../../config/databasev2';
 
 export interface CourseAttributes {
   id: string;

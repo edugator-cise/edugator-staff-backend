@@ -5,7 +5,7 @@ import {
   updateProblem,
   deleteProblem,
   readStudentProblems
-} from '../../controllers/problem.controller';
+} from '../../controllers/v1/problem.controller';
 import { authenticateJWT } from '../../middlewares/auth';
 const adminProblemRouter = express.Router();
 const studentProblemRouter = express.Router();

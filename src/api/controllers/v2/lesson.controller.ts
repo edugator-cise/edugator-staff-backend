@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { LessonAttributesInput } from '../models/lessonv2.model';
-import * as LessonDataLayer from '../dal/lesson';
-import * as ModuleDataLayer from '../dal/module';
+import { LessonAttributesInput } from '../../models/v2/lesson.model';
+import * as LessonDataLayer from '../../dal/lesson';
+import * as ModuleDataLayer from '../../dal/module';
 import { v4 as uuidv4 } from 'uuid';
 
 export const postLesson = async (

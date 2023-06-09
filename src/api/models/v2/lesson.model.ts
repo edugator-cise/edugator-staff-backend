@@ -1,11 +1,12 @@
 import { DataTypes, Model, Optional } from 'sequelize';
-import { sequelize } from '../../config/databasev2';
-import { Module } from './modulev2.model';
+import { sequelize } from '../../../config/databasev2';
+import { Module } from './module.model';
 
 export interface LessonAttributes {
   id: string;
   title: string;
   content: string;
+  hidden: boolean;
   moduleId?: string;
   orderNumber: number;
 }
@@ -27,7 +28,11 @@ export const Lesson = sequelize.define<LessonInstance>(
       allowNull: false
     },
     content: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
+      allowNull: false
+    },
+    hidden: {
+      type: DataTypes.BOOLEAN,
       allowNull: false
     },
     orderNumber: {

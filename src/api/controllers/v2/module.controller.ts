@@ -1,14 +1,15 @@
 import { Request, Response } from 'express';
-import { ModuleAttributesInput } from '../models/modulev2.model';
-import * as ModuleDataLayer from '../dal/module';
-import * as CourseDataLayer from '../dal/course';
-import * as ProblemDataLayer from '../dal/problem';
+import { ModuleAttributesInput } from '../../models/v2/module.model';
+import * as ModuleDataLayer from '../../dal/module';
+import * as CourseDataLayer from '../../dal/course';
+import * as ProblemDataLayer from '../../dal/problem';
 import { v4 as uuidv4 } from 'uuid';
 
 export const postModule = async (
   req: Request,
   res: Response
 ): Promise<Record<string, any>> => {
+  if (!req.body.courseId) return res.status(400).send('missing course id');
   const course = CourseDataLayer.getById(req.body.courseId);
   if (!course) return res.status(400).send('invalid course id');
   try {

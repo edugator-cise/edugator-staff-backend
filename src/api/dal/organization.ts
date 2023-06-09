@@ -2,7 +2,7 @@ import {
   OrganizationAttributesInput,
   OrganizationAttributes,
   Organization
-} from '../models/organization.model';
+} from '../models/v2/organization.model';
 
 export const create = async (
   payload: OrganizationAttributesInput

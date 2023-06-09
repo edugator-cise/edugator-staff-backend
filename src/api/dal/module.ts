@@ -2,8 +2,9 @@ import {
   ModuleAttributesInput,
   ModuleAttributes,
   Module
-} from '../models/modulev2.model';
-import { Problem } from '../models/problemv2.model';
+} from '../models/v2/module.model';
+import { Problem } from '../models/v2/problem.model';
+import { Lesson } from '../models/v2/lesson.model';
 
 export const create = async (
   payload: ModuleAttributesInput
@@ -61,7 +62,11 @@ export const getAllNonHidden = async (): Promise<ModuleAttributes[]> => {
         },
         attributes: ['id', 'title']
       },
-      'lessons'
+      {
+        model: Lesson,
+        as: 'lessons',
+        attributes: ['id', 'title']
+      }
     ],
     order: [
       ['problems', 'orderNumber', 'ASC'],

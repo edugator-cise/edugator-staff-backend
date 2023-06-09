@@ -1,5 +1,5 @@
 import * as express from 'express';
-import * as modules from '../../controllers/modulev2.controller';
+import * as modules from '../../controllers/v2/module.controller';
 // import { authenticateJWT } from '../../middlewares/auth';
 const moduleRouter = express.Router();
 

@@ -4,8 +4,9 @@ import {
   deleteCourse,
   getCourseById,
   updateCourse,
-  getCourses
-} from '../../controllers/course.controller';
+  getCourses,
+  getCourseStructure
+} from '../../controllers/v2/course.controller';
 const courseRouter = Router();
 
 courseRouter.route('/').post(create).get(getCourses);
@@ -14,5 +15,6 @@ courseRouter
   .delete(deleteCourse)
   .put(updateCourse)
   .get(getCourseById);
+courseRouter.route('/:courseId/structure').get(getCourseStructure);
 
 export { courseRouter };

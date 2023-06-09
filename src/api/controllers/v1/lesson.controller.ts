@@ -4,9 +4,9 @@ import {
   Lesson,
   LessonInterface,
   LessonDocument
-} from '../models/lesson.model';
-import { Module, ModuleDocument } from '../models/module.model';
-import { isMongoId } from '../../util';
+} from '../../models/v1/lesson.model';
+import { Module, ModuleDocument } from '../../models/v1/module.model';
+import { isMongoId } from '../../../util';
 export const getLessons = async (
   _req: Request,
   res: Response

@@ -1,8 +1,11 @@
 import {
   CourseAttributesInput,
   CourseAttributes
-} from '../models/course.model';
-import { Course } from '../models/course.model';
+} from '../models/v2/course.model';
+import { Course } from '../models/v2/course.model';
+import { Module } from '../models/v2/module.model';
+import { Problem } from '../models/v2/problem.model';
+import { Lesson } from '../models/v2/lesson.model';
 
 export const create = async (
   payload: CourseAttributesInput
@@ -38,4 +41,42 @@ export const updateById = async (
 export const getAll = async (): Promise<CourseAttributes[]> => {
   const courses = await Course.findAll();
   return courses.map((value) => value.dataValues);
+};
+
+export const getStructure = async (
+  courseId: string,
+  hidden: boolean
+): Promise<CourseAttributes[]> => {
+  const module_ = await Course.findAll({
+    include: [
+      {
+        model: Module,
+        as: 'modules',
+        include: [
+          {
+            model: Problem,
+            as: 'problems',
+            required: false,
+            where: {
+              hidden: hidden
+            },
+            attributes: ['id', 'title']
+          },
+          {
+            model: Lesson,
+            as: 'lessons',
+            required: false,
+            where: {
+              hidden: hidden
+            },
+            attributes: ['id', 'title']
+          }
+        ]
+      }
+    ],
+    where: {
+      id: courseId
+    }
+  });
+  return module_.map((value) => value.dataValues);
 };

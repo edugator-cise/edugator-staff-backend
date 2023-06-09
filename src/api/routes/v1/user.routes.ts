@@ -4,7 +4,7 @@ import {
   deleteUser,
   getUsers,
   updateUser
-} from '../../controllers/user.controller';
+} from '../../controllers/v1/user.controller';
 import { authenticateJWT } from '../../middlewares/auth';
 const router = express.Router();
 

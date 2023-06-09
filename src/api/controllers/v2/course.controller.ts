@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { CourseAttributesInput } from '../models/course.model';
-import * as CourseDataLayer from '../dal/course';
+import { CourseAttributesInput } from '../../models/v2/course.model';
+import * as CourseDataLayer from '../../dal/course';
 import { v4 as uuidv4 } from 'uuid';
 
 export const create = async (req: Request, res: Response): Promise<void> => {
@@ -77,6 +77,25 @@ export const getCourses = async (
 ): Promise<void> => {
   try {
     const results = await CourseDataLayer.getAll();
+    if (!results) {
+      res.status(404).send();
+    }
+    res.status(200).send(results);
+  } catch (e) {
+    res.status(500).send(e);
+  }
+};
+
+export const getCourseStructure = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const hidden = req.query.hidden ? req.query.hidden === 'true' : false;
+  try {
+    const results = await CourseDataLayer.getStructure(
+      req.params.courseId,
+      hidden
+    );
     if (!results) {
       res.status(404).send();
     }

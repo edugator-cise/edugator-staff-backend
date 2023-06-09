@@ -4,7 +4,7 @@ import {
   getCode,
   submitCode,
   deleteCode
-} from '../../controllers/code.controller';
+} from '../../controllers/v1/code.controller';
 const router = express.Router();
 
 router.route('/').post(runCode);

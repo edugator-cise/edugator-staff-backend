@@ -1,10 +1,11 @@
 import { DataTypes, Model, Optional } from 'sequelize';
-import { sequelize } from '../../config/databasev2';
+import { sequelize } from '../../../config/databasev2';
 import { Course } from './course.model';
 
 export interface ModuleAttributes {
   id: string;
   moduleName: string;
+  orderNumber: number;
   courseId?: string;
 }
 
@@ -22,6 +23,10 @@ export const Module = sequelize.define<ModuleInstance>(
     },
     moduleName: {
       type: DataTypes.STRING,
+      allowNull: false
+    },
+    orderNumber: {
+      type: DataTypes.TINYINT,
       allowNull: false
     }
   },

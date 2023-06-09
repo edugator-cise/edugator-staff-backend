@@ -2,7 +2,7 @@ import {
   ProblemAttributesInput,
   ProblemAttributes,
   Problem
-} from '../models/problemv2.model';
+} from '../models/v2/problem.model';
 
 export const create = async (
   payload: ProblemAttributesInput

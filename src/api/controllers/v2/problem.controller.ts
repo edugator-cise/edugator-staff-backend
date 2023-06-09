@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { ProblemAttributesInput } from '../models/problemv2.model';
-import * as ProblemDataLayer from '../dal/problem';
-import * as ModuleDataLayer from '../dal/module';
+import { ProblemAttributesInput } from '../../models/v2/problem.model';
+import * as ProblemDataLayer from '../../dal/problem';
+import * as ModuleDataLayer from '../../dal/module';
 import { v4 as uuidv4 } from 'uuid';
 
 export const createProblem = async (

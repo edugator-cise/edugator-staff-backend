@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { UserModel, IUser } from '../models/user.model';
+import { UserModel, IUser } from '../../models/v1/user.model';
 import * as bcrypt from 'bcrypt';
-import userValidation from '../validation/user.validation';
-import { isMongoId } from '../../util';
+import userValidation from '../../validation/user.validation';
+import { isMongoId } from '../../../util';
 const getUsers = async (_req: Request, res: Response): Promise<void> => {
   if (res.locals.role !== 'Professor') {
     res

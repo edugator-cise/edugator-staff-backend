@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { OrganizationAttributesInput } from '../models/organization.model';
-import * as OrganizationDataLayer from '../dal/organization';
+import { OrganizationAttributesInput } from '../../models/v2/organization.model';
+import * as OrganizationDataLayer from '../../dal/organization';
 import { v4 as uuidv4 } from 'uuid';
 
 export const create = async (req: Request, res: Response): Promise<void> => {

@@ -1,6 +1,6 @@
 import { DataTypes, Model, Optional } from 'sequelize';
-import { sequelize } from '../../config/databasev2';
-import { Module } from './modulev2.model';
+import { sequelize } from '../../../config/databasev2';
+import { Module } from './module.model';
 
 export interface ProblemAttributes {
   id: string;
@@ -8,7 +8,9 @@ export interface ProblemAttributes {
   hidden: boolean;
   fileName: string;
   dueDate: string;
-  code: string;
+  header: string;
+  body: string;
+  footer: string;
   templatePackage: string;
   timeLimit: number;
   memoryLimit: number;
@@ -45,7 +47,15 @@ export const Problem = sequelize.define<ProblemInstance>(
       type: DataTypes.STRING,
       allowNull: false
     },
-    code: {
+    header: {
+      type: DataTypes.TEXT,
+      allowNull: false
+    },
+    body: {
+      type: DataTypes.TEXT,
+      allowNull: false
+    },
+    footer: {
       type: DataTypes.TEXT,
       allowNull: false
     },

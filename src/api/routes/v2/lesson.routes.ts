@@ -1,11 +1,14 @@
 import * as express from 'express';
-import { putLesson, deleteLesson } from '../../controllers/lesson.controller';
+import {
+  putLesson,
+  deleteLesson
+} from '../../controllers/v1/lesson.controller';
 
 import {
   postLesson,
   getLessons,
   getLessonByID
-} from '../../controllers/lessonv2.controller';
+} from '../../controllers/v2/lesson.controller';
 
 import { authenticateJWT } from '../../middlewares/auth';
 const studentLessonRouter = express.Router();

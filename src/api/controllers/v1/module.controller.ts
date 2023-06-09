@@ -4,11 +4,11 @@ import {
   Module,
   ModuleDocument,
   ModuleInterface
-} from '../models/module.model';
-import { Problem } from '../models/problem.model';
-import { Lesson } from '../models/lesson.model';
-import { isMongoId } from '../../util';
-import moduleValidation from '../validation/module.validation';
+} from '../../models/v1/module.model';
+import { Problem } from '../../models/v1/problem.model';
+import { Lesson } from '../../models/v1/lesson.model';
+import { isMongoId } from '../../../util';
+import moduleValidation from '../../validation/module.validation';
 
 export const getModules = async (
   _req: Request,

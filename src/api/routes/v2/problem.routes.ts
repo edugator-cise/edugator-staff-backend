@@ -4,9 +4,9 @@ import {
   updateProblem,
   deleteProblem,
   readStudentProblems
-} from '../../controllers/problem.controller';
+} from '../../controllers/v1/problem.controller';
 
-import { createProblem } from '../../controllers/problemv2.controller';
+import { createProblem } from '../../controllers/v2/problem.controller';
 import { authenticateJWT } from '../../middlewares/auth';
 const adminProblemRouter = express.Router();
 const studentProblemRouter = express.Router();

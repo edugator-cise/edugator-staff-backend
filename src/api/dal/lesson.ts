@@ -2,7 +2,7 @@ import {
   LessonAttributesInput,
   LessonAttributes,
   Lesson
-} from '../models/lessonv2.model';
+} from '../models/v2/lesson.model';
 
 export const create = async (
   payload: LessonAttributesInput

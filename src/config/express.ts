@@ -7,8 +7,12 @@ import * as passport from 'passport';
 import { jwtStrategy } from './passport';
 import * as database from './database';
 import * as databasev2 from './databasev2';
-import { Course } from '../api/models/course.model';
-import { Organization } from '../api/models/organization.model';
+import { Course } from '../api/models/v2/course.model';
+import { Organization } from '../api/models/v2/organization.model';
+import { Module } from '../api/models/v2/module.model';
+import { Problem } from '../api/models/v2/problem.model';
+import { Lesson } from '../api/models/v2/lesson.model';
+
 class Server {
   public app: express.Application;
 
@@ -48,6 +52,9 @@ class Server {
   private async syncModels(): Promise<void> {
     await Course.sync();
     await Organization.sync();
+    await Module.sync();
+    await Problem.sync();
+    await Lesson.sync();
   }
   public start(): void {
     //eslint-disable-next-line
