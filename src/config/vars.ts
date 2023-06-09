@@ -10,6 +10,11 @@ const port = process.env.PORT;
 const access_key_id = process.env.ACCESS_KEY;
 const secret_access_key = process.env.SECRET_KEY;
 
+const DATABASE_NAME = process.env.DATABASE_NAME;
+const DATABASE_USERNAME = process.env.DATABASE_USERNAME;
+const DATABASE_PASSWORD = process.env.DATABASE_PASSWORD;
+const DATABASE_HOST = process.env.DATABASE_HOST;
+
 //AWS batch variables
 const jobDefinition = process.env.JOB_DEFINITION;
 const jobQueue = process.env.JOB_QUEUE;
@@ -36,6 +41,10 @@ export {
   BUCKET_NAME,
   access_key_id,
   secret_access_key,
+  DATABASE_NAME,
+  DATABASE_USERNAME,
+  DATABASE_PASSWORD,
+  DATABASE_HOST,
   EDUGATOR_API_USER,
   EDUGATOR_API_PASS,
   jobDefinition,

@@ -1,11 +1,17 @@
 import { Sequelize } from 'sequelize';
+import {
+  DATABASE_NAME,
+  DATABASE_USERNAME,
+  DATABASE_PASSWORD,
+  DATABASE_HOST
+} from './vars';
 
 export const sequelize: Sequelize = new Sequelize(
-  process.env.DATABASE_NAME,
-  process.env.DATABASE_USERNAME,
-  process.env.DATABASE_PASSWORD,
+  DATABASE_NAME,
+  DATABASE_USERNAME,
+  DATABASE_PASSWORD,
   {
-    host: process.env.DATABASE_HOST,
+    host: DATABASE_HOST,
     dialect: 'mysql',
     dialectOptions: {
       ssl: {
