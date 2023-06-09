@@ -4,6 +4,9 @@ import {
   Module
 } from '../models/v2/module.model';
 
+import * as ProblemDataLayer from './problem';
+import * as LessonDataLayer from './lesson';
+
 export const create = async (
   payload: ModuleAttributesInput
 ): Promise<ModuleAttributes> => {
@@ -26,14 +29,30 @@ export const deleteById = async (id: string): Promise<boolean> => {
   return !!numberOfDeletions;
 };
 
+export const deleteByCourse = async (courseId: string): Promise<boolean> => {
+  const moduleRows = await Module.findAll({
+    where: { courseId: courseId },
+    attributes: ['id']
+  });
+  const modules = moduleRows.map((module_) => module_.dataValues);
+
+  const numberOfDeletions = await Module.destroy({
+    where: { courseId: courseId }
+  });
+  modules.forEach((module_) => {
+    ProblemDataLayer.deleteByModule(module_.id);
+    LessonDataLayer.deleteByModule(module_.id);
+  });
+
+  return !!numberOfDeletions;
+};
+
 export const updateById = async (
   id: string,
   payload: ModuleAttributesInput
 ): Promise<ModuleAttributes | undefined> => {
   const module_ = await Module.findByPk(id);
-  if (!module_) {
-    return undefined;
-  }
+  if (!module_) return undefined;
   const updatedModule = await module_.update(payload);
   return updatedModule.dataValues;
 };

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { CourseAttributesInput } from '../../models/v2/course.model';
 import * as CourseDataLayer from '../../dal/course';
+import * as ModuleDataLayer from '../../dal/module';
 import { v4 as uuidv4 } from 'uuid';
 
 export const create = async (req: Request, res: Response): Promise<void> => {
@@ -27,6 +28,7 @@ export const deleteCourse = async (
       res.status(404).send();
       return;
     }
+    await ModuleDataLayer.deleteByCourse(req.params['courseId']);
     res.status(200).send(result);
   } catch (e) {
     res.status(500).send(e);
