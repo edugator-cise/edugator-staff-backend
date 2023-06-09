@@ -3,12 +3,11 @@ import {
   create,
   deleteCourse,
   getCourseById,
-  updateCourse,
-  getCourses
+  updateCourse
 } from '../../controllers/course.controller';
 const courseRouter = Router();
 
-courseRouter.route('/').post(create).get(getCourses);
+courseRouter.route('/').post(create);
 courseRouter
   .route('/:courseId')
   .delete(deleteCourse)

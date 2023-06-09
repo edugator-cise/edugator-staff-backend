@@ -1,13 +1,13 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import { sequelize } from '../../config/databasev2';
-
+import { Organization } from './organization.model';
 export interface CourseAttributes {
   id: string;
   courseName: string;
   startDate: string;
   endDate: string;
   logo: string;
-  organizationId: string;
+  organizationId?: string;
 }
 
 export type CourseAttributesInput = Optional<CourseAttributes, 'id'>;
@@ -21,10 +21,6 @@ export const Course = sequelize.define<CourseInstance>(
       type: DataTypes.STRING,
       allowNull: false,
       primaryKey: true
-    },
-    organizationId: {
-      type: DataTypes.STRING,
-      allowNull: false
     },
     courseName: {
       type: DataTypes.STRING,
@@ -44,3 +40,15 @@ export const Course = sequelize.define<CourseInstance>(
     freezeTableName: true
   }
 );
+
+Course.belongsTo(Organization, {
+  constraints: false,
+  as: 'organization',
+  foreignKey: 'id'
+});
+
+Organization.hasMany(Course, {
+  constraints: false,
+  as: 'courses',
+  foreignKey: 'organizationId'
+});

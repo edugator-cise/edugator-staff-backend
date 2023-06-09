@@ -6,6 +6,7 @@ import {
   create,
   updateOrganization
 } from '../../controllers/organization.controller';
+import { getCourses } from '../../controllers/course.controller';
 
 const organizationRouter = Router();
 
@@ -15,5 +16,6 @@ organizationRouter
   .get(getOrganizationById)
   .put(updateOrganization)
   .delete(deleteOrganization);
+organizationRouter.route('/:organizationId/courses').get(getCourses);
 
 export { organizationRouter };
