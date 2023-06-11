@@ -10,7 +10,7 @@ import * as databasev2 from './databasev2';
 import { Course } from '../api/models/v2/course.model';
 import { Organization } from '../api/models/v2/organization.model';
 import { Module } from '../api/models/v2/module.model';
-import { Problem } from '../api/models/v2/problem.model';
+import { Problem, TestCase } from '../api/models/v2/problem.model';
 import { Lesson } from '../api/models/v2/lesson.model';
 
 class Server {
@@ -54,6 +54,7 @@ class Server {
     await Organization.sync();
     await Module.sync();
     await Problem.sync();
+    await TestCase.sync();
     await Lesson.sync();
   }
   public start(): void {

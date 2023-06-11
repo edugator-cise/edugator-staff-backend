@@ -69,15 +69,18 @@ export const getModuleByProblemId = async (
   }
 };
 
-export const putModule = async (req: Request, res: Response): Promise<void> => {
+export const putModule = async (
+  req: Request,
+  res: Response
+): Promise<Record<string, any>> => {
   try {
     const result = await ModuleDataLayer.updateById(
       req.params.moduleId,
       req.body
     );
-    res.status(200).send(result);
+    return res.status(200).send(result);
   } catch (e) {
-    res.status(500).send(e);
+    return res.status(500).send(e);
   }
 };
 

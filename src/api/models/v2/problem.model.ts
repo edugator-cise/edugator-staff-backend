@@ -17,11 +17,26 @@ export interface ProblemAttributes {
   buildCommand: string;
   moduleId?: string;
   orderNumber: number;
+  testCases?: TestCaseAttributesInput[];
+}
+
+export interface TestCaseAttributes {
+  id: string;
+  testType: string;
+  input: string;
+  expectedOutput: string;
+  hint: string;
+  visibility: number;
+  feedback: string;
+  orderNumber: number;
+  problemId?: string;
 }
 
 export type ProblemAttributesInput = Optional<ProblemAttributes, 'id'>;
+export type TestCaseAttributesInput = Optional<TestCaseAttributes, 'id'>;
 
 type ProblemInstance = Model<ProblemAttributes, ProblemAttributesInput>;
+type TestCaseInstance = Model<TestCaseAttributes, TestCaseAttributesInput>;
 
 export const Problem = sequelize.define<ProblemInstance>(
   'Problem',
@@ -85,6 +100,48 @@ export const Problem = sequelize.define<ProblemInstance>(
   }
 );
 
+export const TestCase = sequelize.define<TestCaseInstance>(
+  'TestCase',
+  {
+    id: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      primaryKey: true
+    },
+    testType: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    input: {
+      type: DataTypes.TEXT,
+      allowNull: false
+    },
+    expectedOutput: {
+      type: DataTypes.TEXT,
+      allowNull: false
+    },
+    hint: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    visibility: {
+      type: DataTypes.TINYINT,
+      allowNull: false
+    },
+    feedback: {
+      type: DataTypes.TEXT,
+      allowNull: false
+    },
+    orderNumber: {
+      type: DataTypes.SMALLINT,
+      allowNull: false
+    }
+  },
+  {
+    freezeTableName: true
+  }
+);
+
 Problem.belongsTo(Module, {
   constraints: false,
   as: 'module',
@@ -95,4 +152,16 @@ Module.hasMany(Problem, {
   constraints: false,
   as: 'problems',
   foreignKey: 'moduleId'
+});
+
+TestCase.belongsTo(Problem, {
+  constraints: false,
+  as: 'problem',
+  foreignKey: 'id'
+});
+
+Problem.hasMany(TestCase, {
+  constraints: false,
+  as: 'testCases',
+  foreignKey: 'problemId'
 });

@@ -13,7 +13,7 @@ moduleRouter.route('/?').get(modules.getModules).post(modules.postModule);
 moduleRouter
   .route('/:moduleId')
   .get(modules.getModuleByID)
-  // .put(authenticateJWT, modules.putModule)
+  .put(modules.putModule)
   .delete(modules.deleteModule);
 moduleRouter
   .route('/:moduleId/changeProblemOrder')

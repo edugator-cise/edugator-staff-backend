@@ -1,7 +1,10 @@
 import {
   ProblemAttributesInput,
   ProblemAttributes,
-  Problem
+  Problem,
+  TestCaseAttributesInput,
+  TestCaseAttributes,
+  TestCase
 } from '../models/v2/problem.model';
 
 export const create = async (
@@ -11,8 +14,18 @@ export const create = async (
   return problem.dataValues;
 };
 
+export const createTestCase = async (
+  payload: TestCaseAttributesInput
+): Promise<TestCaseAttributes> => {
+  const testCase = await TestCase.create(payload);
+  return testCase.dataValues;
+};
+
 export const getById = async (id: string): Promise<ProblemAttributes> => {
-  const problem = await Problem.findByPk(id);
+  const problem = await Problem.findByPk(id, {
+    include: 'testCases',
+    order: [['testCases', 'orderNumber', 'ASC']]
+  });
   return problem ? problem.dataValues : null;
 };
 
@@ -42,7 +55,19 @@ export const updateById = async (
   return updatedProblem.dataValues;
 };
 
-export const getAll = async (): Promise<ProblemAttributes[]> => {
-  const problems = await Problem.findAll();
+export const getByModule = async (
+  moduleId: string,
+  hidden: boolean
+): Promise<ProblemAttributes[]> => {
+  const constraints = {
+    moduleId: moduleId
+  };
+  if (!hidden) constraints['hidden'] = hidden;
+
+  const problems = await Problem.findAll({
+    where: constraints,
+    include: 'testCases',
+    order: [['testCases', 'orderNumber', 'ASC']]
+  });
   return problems.map((value) => value.dataValues);
 };
