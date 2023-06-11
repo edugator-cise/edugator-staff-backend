@@ -16,19 +16,24 @@ export const createProblem = async (
   try {
     const testCases: TestCaseAttributesInput[] = req.body.testCases;
     delete req.body['testCases'];
-    const payload: ProblemAttributesInput = { ...req.body, id: uuidv4() };
+    const problemId = uuidv4();
+    const payload: ProblemAttributesInput = { ...req.body, id: problemId };
     const result = await ProblemDataLayer.create(payload);
 
     const testCaseResults: TestCaseAttributesInput[] = [];
-    testCases.forEach(async (testCase) => {
-      const testCasePayload: TestCaseAttributesInput = {
-        ...testCase,
-        id: uuidv4()
-      };
-      const testCaseResult = await ProblemDataLayer.createTestCase(
-        testCasePayload
-      );
-      testCaseResults.push(testCaseResult);
+    await new Promise<void>((resolve) => {
+      testCases.forEach(async (testCase, index) => {
+        const testCasePayload: TestCaseAttributesInput = {
+          ...testCase,
+          id: uuidv4(),
+          problemId: problemId
+        };
+        const testCaseResult = await ProblemDataLayer.createTestCase(
+          testCasePayload
+        );
+        testCaseResults.push(testCaseResult);
+        if (index == testCases.length - 1) resolve();
+      });
     });
 
     result.testCases = testCaseResults;
