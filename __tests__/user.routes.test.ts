@@ -1,6 +1,6 @@
 import { expressApp } from '../src/config/express';
 import * as request from 'supertest';
-import { UserModel, IUser } from '../src/api/models/user.model';
+import { UserModel, IUser } from '../src/api/models/v1/user.model';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { jwtSecret } from '../src/config/vars';
