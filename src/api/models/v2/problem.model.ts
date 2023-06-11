@@ -5,12 +5,13 @@ import { Module } from './module.model';
 export interface ProblemAttributes {
   id: string;
   title: string;
+  statement: string;
   hidden: boolean;
   fileName: string;
   dueDate: string;
-  header: string;
-  body: string;
-  footer: string;
+  codeHeader: string;
+  codeBody: string;
+  codeFooter: string;
   templatePackage: string;
   timeLimit: number;
   memoryLimit: number;
@@ -50,6 +51,10 @@ export const Problem = sequelize.define<ProblemInstance>(
       type: DataTypes.STRING,
       allowNull: false
     },
+    statement: {
+      type: DataTypes.TEXT,
+      allowNull: false
+    },
     hidden: {
       type: DataTypes.BOOLEAN,
       allowNull: false
@@ -62,15 +67,15 @@ export const Problem = sequelize.define<ProblemInstance>(
       type: DataTypes.STRING,
       allowNull: false
     },
-    header: {
+    codeHeader: {
       type: DataTypes.TEXT,
       allowNull: false
     },
-    body: {
+    codeBody: {
       type: DataTypes.TEXT,
       allowNull: false
     },
-    footer: {
+    codeFooter: {
       type: DataTypes.TEXT,
       allowNull: false
     },
