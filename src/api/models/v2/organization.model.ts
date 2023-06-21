@@ -1,4 +1,4 @@
-import { sequelize } from '../../../config/databasev2';
+import { sequelize } from '../../../config/database_v2';
 import { DataTypes, Model, Optional } from 'sequelize';
 
 export interface OrganizationAttributes {

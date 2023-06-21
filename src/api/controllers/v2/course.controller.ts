@@ -21,7 +21,7 @@ export const deleteCourse = async (
   try {
     const payload = req.params['courseId'];
     if (payload === undefined) {
-      res.status(500).send('error course is undefined');
+      res.status(400).send('error course is undefined');
     }
     const result = await CourseDataLayer.deleteById(payload);
     if (!result) {
@@ -42,7 +42,7 @@ export const updateCourse = async (
   try {
     const id = req.params['courseId'];
     if (id === undefined) {
-      res.status(500).send('error course is undefined');
+      res.status(400).send('error course is undefined');
     }
     const result = await CourseDataLayer.updateById(id, req.body);
     if (!result) {
@@ -61,7 +61,7 @@ export const getCourseById = async (
   try {
     const id = req.params['courseId'];
     if (id === undefined) {
-      res.status(500).send('error course is undefined');
+      res.status(400).send('error course is undefined');
     }
     const result = await CourseDataLayer.getById(id);
     if (!result) {

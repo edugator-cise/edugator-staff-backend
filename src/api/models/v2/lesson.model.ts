@@ -1,5 +1,5 @@
 import { DataTypes, Model, Optional } from 'sequelize';
-import { sequelize } from '../../../config/databasev2';
+import { sequelize } from '../../../config/database_v2';
 import { Module } from './module.model';
 
 export interface LessonAttributes {

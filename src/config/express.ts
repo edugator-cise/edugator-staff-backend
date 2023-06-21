@@ -6,7 +6,7 @@ import * as cors from 'cors';
 import * as passport from 'passport';
 import { jwtStrategy } from './passport';
 import * as database from './database';
-import * as databasev2 from './databasev2';
+import * as databasev2 from './database_v2';
 import { Course } from '../api/models/v2/course.model';
 import { Organization } from '../api/models/v2/organization.model';
 import { Module } from '../api/models/v2/module.model';

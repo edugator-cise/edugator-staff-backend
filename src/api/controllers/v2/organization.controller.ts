@@ -55,7 +55,7 @@ export const updateOrganization = async (
   try {
     const id = req.params['organizationId'];
     if (id === undefined) {
-      res.status(500).send('error organization is undefined');
+      res.status(400).send('error organization is undefined');
     }
     const result = await OrganizationDataLayer.updateById(id, req.body);
     if (!result) {
