@@ -102,6 +102,7 @@ export const changeProblemOrder = async (
   req: Request,
   res: Response
 ): Promise<Record<string, any>> => {
+  let updatedProblem: ProblemAttributes;
   try {
     const module_ = await ModuleDataLayer.getById(req.params.moduleId);
     if (!module_ || !module_['problems'])
@@ -123,20 +124,44 @@ export const changeProblemOrder = async (
       if (problemIndex === 0)
         return res.status(400).send('Problem already at top of module');
 
-      const problemToSwap = module_['problems'][problemIndex - 1];
-      module_['problems'][problemIndex - 1] = req.body.problemId;
-      module_['problems'][problemIndex] = problemToSwap;
+      const problemToSwap: ProblemAttributes =
+        module_['problems'][problemIndex - 1];
+
+      // sets orderNumber of other problem to orderNumber of current problem
+      const payload: any = {
+        orderNumber: module_['problems'][problemIndex].orderNumber
+      };
+      await ProblemDataLayer.updateById(problemToSwap.id, payload);
+
+      // sets orderNumber of current problem to orderNumber of other problem
+      payload.orderNumber = problemToSwap.orderNumber;
+      updatedProblem = await ProblemDataLayer.updateById(
+        req.body.problemId,
+        payload
+      );
     } else if (req.body.direction === 'down') {
       if (problemIndex == module_['problems'].length - 1)
         return res.status(400).send('Problem already at bottom of module');
-      const problemToSwap = module_['problems'][problemIndex + 1];
-      module_['problems'][problemIndex + 1] = req.body.problemId;
-      module_['problems'][problemIndex] = problemToSwap;
+      const problemToSwap: ProblemAttributes =
+        module_['problems'][problemIndex + 1];
+
+      // sets orderNumber of other problem to orderNumber of current problem
+      const payload: any = {
+        orderNumber: module_['problems'][problemIndex].orderNumber
+      };
+      await ProblemDataLayer.updateById(problemToSwap.id, payload);
+
+      // sets orderNumber of current problem to orderNumber of other problem
+      payload.orderNumber = problemToSwap.orderNumber;
+      updatedProblem = await ProblemDataLayer.updateById(
+        req.body.problemId,
+        payload
+      );
     } else {
       return res.status(400).send('Invalid direction');
     }
   } catch (e) {
     return res.status(500).send(e);
   }
-  return res.sendStatus(200);
+  return res.status(200).send(updatedProblem);
 };

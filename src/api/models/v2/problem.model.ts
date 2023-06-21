@@ -17,7 +17,7 @@ export interface ProblemAttributes {
   memoryLimit: number;
   buildCommand: string;
   moduleId?: string;
-  orderNumber: number;
+  orderNumber: number; // order of the problem in the module
   testCases?: TestCaseAttributesInput[];
 }
 
@@ -29,7 +29,7 @@ export interface TestCaseAttributes {
   hint: string;
   visibility: number;
   feedback: string;
-  orderNumber: number;
+  orderNumber: number; // order of the test case in the problem
   problemId?: string;
 }
 

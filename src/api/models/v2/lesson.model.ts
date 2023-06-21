@@ -8,7 +8,7 @@ export interface LessonAttributes {
   content: string;
   hidden: boolean;
   moduleId?: string;
-  orderNumber: number;
+  orderNumber: number; // order of the lesson in the module
 }
 
 export type LessonAttributesInput = Optional<LessonAttributes, 'id'>;
