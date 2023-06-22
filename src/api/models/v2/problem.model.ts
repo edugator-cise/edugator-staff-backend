@@ -16,6 +16,7 @@ export interface ProblemAttributes {
   timeLimit: number;
   memoryLimit: number;
   buildCommand: string;
+  languages: string;
   moduleId?: string;
   orderNumber: number; // order of the problem in the module
   testCases?: TestCaseAttributesInput[];
@@ -92,6 +93,10 @@ export const Problem = sequelize.define<ProblemInstance>(
       allowNull: false
     },
     buildCommand: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    languages: {
       type: DataTypes.STRING,
       allowNull: false
     },
