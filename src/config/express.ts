@@ -50,13 +50,14 @@ class Server {
   }
 
   private async syncModels(): Promise<void> {
-    await Course.sync();
-    await Organization.sync();
-    await Module.sync();
-    await Problem.sync();
-    await TestCase.sync();
-    await Lesson.sync();
+    await Course.sync({ alter: true });
+    await Organization.sync({ alter: true });
+    await Module.sync({ alter: true });
+    await Problem.sync({ alter: true });
+    await TestCase.sync({ alter: true });
+    await Lesson.sync({ alter: true });
   }
+
   public start(): void {
     //eslint-disable-next-line
     this.app.listen(8080, () => console.log(`server started on port 8080`));
