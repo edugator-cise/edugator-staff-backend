@@ -7,7 +7,7 @@ import {
 } from '../models/module.model';
 import { Problem } from '../models/problem.model';
 import { Lesson } from '../models/lesson.model';
-import * as validator from 'validator';
+import * as validator from '../../util';
 import moduleValidation from '../validation/module.validation';
 
 export const getModules = async (

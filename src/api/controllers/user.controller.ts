@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { UserModel, IUser } from '../models/user.model';
 import * as bcrypt from 'bcrypt';
-import * as validator from 'validator';
+import * as validator from '../../util';
 import userValidation from '../validation/user.validation';
 
 const getUsers = async (_req: Request, res: Response): Promise<void> => {

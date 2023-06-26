@@ -5,7 +5,7 @@ import {
   LessonInterface,
   LessonDocument
 } from '../models/lesson.model';
-import * as validator from 'validator';
+import * as validator from '../../util';
 import { Module, ModuleDocument } from '../models/module.model';
 
 export const getLessons = async (

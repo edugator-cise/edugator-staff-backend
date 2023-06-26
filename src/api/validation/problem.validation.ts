@@ -30,7 +30,7 @@ const problemValidation = (data: any): ValidationResult => {
     statement: string().required(),
     title: string().required(),
     hidden: boolean().required(),
-    fileName: string().required(),
+    fileName: string(),
     language: string().required(),
     dueDate: date().iso().required(),
     code: {
