@@ -1,5 +1,4 @@
 import * as mongoose from 'mongoose';
-
 const globalAny: any = global;
 
 const connect = async () => {

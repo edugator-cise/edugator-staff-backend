@@ -5,7 +5,7 @@ import {
   deleteLesson,
   getLessons,
   getLessonByID
-} from '../../controllers/lesson.controller';
+} from '../../controllers/v1/lesson.controller';
 import { authenticateJWT } from '../../middlewares/auth';
 const studentLessonRouter = express.Router();
 const adminLessonRouter = express.Router();

@@ -1,8 +1,8 @@
 import * as httpStatus from 'http-status';
 import { Request, Response } from 'express';
 import * as jwt from 'jsonwebtoken';
-import { UserModel, IUser } from '../models/user.model';
-import { jwtSecret, jwtExpirationInterval } from '../../config/vars';
+import { UserModel, IUser } from '../../models/v1/user.model';
+import { jwtSecret, jwtExpirationInterval } from '../../../config/vars';
 import * as bcrypt from 'bcrypt';
 
 // Logs the validated user in

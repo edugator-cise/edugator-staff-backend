@@ -1,13 +1,17 @@
 import { Request, Response } from 'express';
 import { Types } from 'mongoose';
-import { Module, ModuleDocument } from '../models/module.model';
-import { Problem, ProblemDocument, TestCase } from '../models/problem.model';
+import { Module, ModuleDocument } from '../../models/v1/module.model';
+import {
+  Problem,
+  ProblemDocument,
+  TestCase
+} from '../../models/v1/problem.model';
 import {
   problemValidation,
   problemValidationWithoutModuleId,
   validateTestCases,
   TestCaseVisibility
-} from '../validation/problem.validation';
+} from '../../validation/problem.validation';
 
 const filterOpenTestCases = (testCases: TestCase[]): TestCase[] => {
   return testCases.filter(

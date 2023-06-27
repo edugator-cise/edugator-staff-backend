@@ -1,8 +1,8 @@
 import { expressApp } from '../src/config/express';
 import * as request from 'supertest';
-import { UserModel } from '../src/api/models/user.model';
-import { Module, ModuleDocument } from '../src/api/models/module.model';
-import { Problem, ProblemDocument } from '../src/api/models/problem.model';
+import { UserModel } from '../src/api/models/v1/user.model';
+import { Module, ModuleDocument } from '../src/api/models/v1/module.model';
+import { Problem, ProblemDocument } from '../src/api/models/v1/problem.model';
 import { createSampleModule } from '../mocks/module';
 import { createSampleProblem } from '../mocks/problems';
 import * as bcrypt from 'bcrypt';
