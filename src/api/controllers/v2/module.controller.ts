@@ -100,6 +100,7 @@ export const changeContentOrder = async (
   let updatedContent: any;
   try {
     let orderNumber: number;
+    let moduleId: string;
 
     const payload: any = {
       orderNumber: req.body.newOrderNumber
@@ -110,12 +111,22 @@ export const changeContentOrder = async (
     if (req.body.contentType === 'problem') {
       const content = await ProblemDataLayer.getById(req.body.id);
       orderNumber = content.orderNumber;
+      moduleId = content.moduleId;
     } else if (req.body.contentType === 'lesson') {
       const content = await LessonDataLayer.getById(req.body.id);
       orderNumber = content.orderNumber;
+      moduleId = content.moduleId;
     } else {
       return res.status(400).send('Invalid/missing content type');
     }
+
+    const maxOrderNum = await ModuleDataLayer.getNextOrder(moduleId);
+    if (
+      req.body.newOrderNumber < 1 ||
+      req.body.newOrderNumber >= maxOrderNum ||
+      req.body.newOrderNumber === orderNumber
+    )
+      return res.status(400).send('Invalid order number');
 
     // shift the problems and lessons within the range
     await ProblemDataLayer.shiftProblems(
