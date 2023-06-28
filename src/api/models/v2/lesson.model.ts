@@ -11,7 +11,10 @@ export interface LessonAttributes {
   orderNumber: number; // order of the lesson in the module
 }
 
-export type LessonAttributesInput = Optional<LessonAttributes, 'id'>;
+export type LessonAttributesInput = Optional<
+  LessonAttributes,
+  'id' | 'orderNumber'
+>;
 
 type LessonInstance = Model<LessonAttributes, LessonAttributesInput>;
 

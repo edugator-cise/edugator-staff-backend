@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { LessonAttributesInput } from '../../models/v2/lesson.model';
 import * as LessonDataLayer from '../../dal/lesson';
+import * as ProblemDataLayer from '../../dal/problem';
 import * as ModuleDataLayer from '../../dal/module';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -11,7 +12,12 @@ export const postLesson = async (
   const module_ = await ModuleDataLayer.getById(req.body.moduleId);
   if (!module_) return res.status(400).send('invalid module id');
   try {
-    const payload: LessonAttributesInput = { ...req.body, id: uuidv4() };
+    const orderNumber = await ModuleDataLayer.getNextOrder(req.body.moduleId);
+    const payload: LessonAttributesInput = {
+      ...req.body,
+      id: uuidv4(),
+      orderNumber: orderNumber
+    };
     const result = await LessonDataLayer.create(payload);
     return res.status(200).send(result);
   } catch (e) {
@@ -63,7 +69,11 @@ export const deleteLesson = async (
   res: Response
 ): Promise<Response<any, Record<string, any>>> => {
   try {
+    const lesson = await LessonDataLayer.getById(req.params.problemId);
     const result = await LessonDataLayer.deleteById(req.params.lessonId);
+
+    await ProblemDataLayer.shiftProblems(lesson.moduleId, lesson.orderNumber);
+    await LessonDataLayer.shiftLessons(lesson.moduleId, lesson.orderNumber);
     return res.status(200).send(result);
   } catch (e) {
     return res.status(500).send(e);

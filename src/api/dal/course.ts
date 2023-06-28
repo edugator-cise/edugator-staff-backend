@@ -56,10 +56,12 @@ export const getStructure = async (
   hidden: boolean
 ): Promise<CourseAttributes> => {
   const course = await Course.findByPk(courseId, {
+    attributes: ['id', 'courseName'],
     include: [
       {
         model: Module,
         as: 'modules',
+        attributes: ['id', 'moduleName'],
         include: [
           {
             model: Problem,
@@ -68,7 +70,9 @@ export const getStructure = async (
             where: {
               hidden: hidden
             },
-            attributes: ['id', 'title']
+            separate: true,
+            attributes: ['id', 'title', 'orderNumber'],
+            order: [['orderNumber', 'ASC']]
           },
           {
             model: Lesson,
@@ -77,7 +81,9 @@ export const getStructure = async (
             where: {
               hidden: hidden
             },
-            attributes: ['id', 'title']
+            separate: true,
+            attributes: ['id', 'title', 'orderNumber'],
+            order: [['orderNumber', 'ASC']]
           }
         ]
       }

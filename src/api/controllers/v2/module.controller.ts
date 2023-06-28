@@ -5,7 +5,7 @@ import * as CourseDataLayer from '../../dal/course';
 import * as ProblemDataLayer from '../../dal/problem';
 import * as LessonDataLayer from '../../dal/lesson';
 import { v4 as uuidv4 } from 'uuid';
-import { ProblemAttributes } from '../../models/v2/problem.model';
+// import { ProblemAttributes } from '../../models/v2/problem.model';
 
 export const postModule = async (
   req: Request,
@@ -40,7 +40,6 @@ export const getModuleByID = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  // add validator for moduleId?
   try {
     const module_ = await ModuleDataLayer.getById(req.params.moduleId);
     if (!module_) res.status(404).send();
@@ -54,10 +53,6 @@ export const getModuleByProblemId = async (
   req: Request,
   res: Response
 ): Promise<Record<string, any>> => {
-  // validate problemId?
-  // if (!isMongoId(req.params.problemId)) {
-  //   return res.status(400).send('This route requires a valid problem ID');
-  // }
   const problem = await ProblemDataLayer.getById(req.params.problemId);
   if (!problem) return res.status(400).send('invalid problem id');
   try {
@@ -98,70 +93,48 @@ export const deleteModule = async (
   }
 };
 
-export const changeProblemOrder = async (
+export const changeContentOrder = async (
   req: Request,
   res: Response
 ): Promise<Record<string, any>> => {
-  let updatedProblem: ProblemAttributes;
+  let updatedContent: any;
   try {
-    const module_ = await ModuleDataLayer.getById(req.params.moduleId);
-    if (!module_ || !module_['problems'])
-      return res.status(400).send('Module not found or module is empty');
-    if (module_['problems'].length == 1)
-      return res
-        .status(400)
-        .send('Cannot change order of only problem in module');
+    let orderNumber: number;
 
-    const problemIndex = module_['problems']
-      .map((problem: ProblemAttributes) => {
-        return problem.id;
-      })
-      .indexOf(req.body.problemId);
-    if (problemIndex == -1)
-      return res.status(400).send('Problem not found in module');
+    const payload: any = {
+      orderNumber: req.body.newOrderNumber
+    };
 
-    if (req.body.direction === 'up') {
-      if (problemIndex === 0)
-        return res.status(400).send('Problem already at top of module');
-
-      const problemToSwap: ProblemAttributes =
-        module_['problems'][problemIndex - 1];
-
-      // sets orderNumber of other problem to orderNumber of current problem
-      const payload: any = {
-        orderNumber: module_['problems'][problemIndex].orderNumber
-      };
-      await ProblemDataLayer.updateById(problemToSwap.id, payload);
-
-      // sets orderNumber of current problem to orderNumber of other problem
-      payload.orderNumber = problemToSwap.orderNumber;
-      updatedProblem = await ProblemDataLayer.updateById(
-        req.body.problemId,
-        payload
-      );
-    } else if (req.body.direction === 'down') {
-      if (problemIndex == module_['problems'].length - 1)
-        return res.status(400).send('Problem already at bottom of module');
-      const problemToSwap: ProblemAttributes =
-        module_['problems'][problemIndex + 1];
-
-      // sets orderNumber of other problem to orderNumber of current problem
-      const payload: any = {
-        orderNumber: module_['problems'][problemIndex].orderNumber
-      };
-      await ProblemDataLayer.updateById(problemToSwap.id, payload);
-
-      // sets orderNumber of current problem to orderNumber of other problem
-      payload.orderNumber = problemToSwap.orderNumber;
-      updatedProblem = await ProblemDataLayer.updateById(
-        req.body.problemId,
-        payload
-      );
+    // update the problem/lesson to have the new order number
+    // while storing the original order number
+    if (req.body.contentType === 'problem') {
+      const content = await ProblemDataLayer.getById(req.body.id);
+      orderNumber = content.orderNumber;
+    } else if (req.body.contentType === 'lesson') {
+      const content = await LessonDataLayer.getById(req.body.id);
+      orderNumber = content.orderNumber;
     } else {
-      return res.status(400).send('Invalid direction');
+      return res.status(400).send('Invalid/missing content type');
     }
+
+    // shift the problems and lessons within the range
+    await ProblemDataLayer.shiftProblems(
+      req.params.moduleId,
+      orderNumber,
+      req.body.newOrderNumber
+    );
+    await LessonDataLayer.shiftLessons(
+      req.params.moduleId,
+      orderNumber,
+      req.body.newOrderNumber
+    );
+
+    updatedContent =
+      req.body.contentType === 'problem'
+        ? await ProblemDataLayer.updateById(req.body.id, payload)
+        : await LessonDataLayer.updateById(req.body.id, payload);
   } catch (e) {
     return res.status(500).send(e);
   }
-  return res.status(200).send(updatedProblem);
+  return res.status(200).send(updatedContent);
 };

@@ -7,6 +7,9 @@ import {
   TestCase
 } from '../models/v2/problem.model';
 
+import { Op } from 'sequelize';
+import { sequelize } from '../../config/database_v2';
+
 export const create = async (
   payload: ProblemAttributesInput
 ): Promise<ProblemAttributes> => {
@@ -70,4 +73,41 @@ export const getByModule = async (
     order: [['testCases', 'orderNumber', 'ASC']]
   });
   return problems.map((value) => value.dataValues);
+};
+
+export const shiftProblems = async (
+  moduleId: string,
+  orderNumber: number,
+  newOrderNumber?: number
+) => {
+  if (!newOrderNumber) {
+    await Problem.update(
+      { orderNumber: sequelize.literal('orderNumber - 1') },
+      {
+        where: {
+          moduleId: moduleId,
+          orderNumber: { [Op.gt]: orderNumber }
+        }
+      }
+    );
+  } else {
+    await Problem.update(
+      {
+        orderNumber: sequelize.literal(
+          orderNumber < newOrderNumber ? 'orderNumber - 1' : 'orderNumber + 1'
+        )
+      },
+      {
+        where: {
+          moduleId: moduleId,
+          orderNumber: {
+            [Op.gte]:
+              orderNumber < newOrderNumber ? orderNumber : newOrderNumber,
+            [Op.lte]:
+              orderNumber < newOrderNumber ? newOrderNumber : orderNumber
+          }
+        }
+      }
+    );
+  }
 };

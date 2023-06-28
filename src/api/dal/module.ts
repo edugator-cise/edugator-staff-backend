@@ -16,8 +16,11 @@ export const create = async (
 
 export const getById = async (id: string): Promise<ModuleAttributes> => {
   const module_ = await Module.findByPk(id, {
-    include: 'problems',
-    order: [['problems', 'orderNumber', 'ASC']]
+    include: ['problems', 'lessons'],
+    order: [
+      ['problems', 'orderNumber', 'ASC'],
+      ['lessons', 'orderNumber', 'ASC']
+    ]
   });
   return module_ ? module_.dataValues : null;
 };
@@ -66,4 +69,10 @@ export const getAll = async (): Promise<ModuleAttributes[]> => {
     ]
   });
   return module_.map((value) => value.dataValues);
+};
+
+export const getNextOrder = async (id: string): Promise<number> => {
+  const module_ = await getById(id);
+  const prevMax = module_['problems'].length + module_['lessons'].length;
+  return prevMax + 1;
 };

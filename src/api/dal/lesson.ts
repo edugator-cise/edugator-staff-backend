@@ -4,6 +4,9 @@ import {
   Lesson
 } from '../models/v2/lesson.model';
 
+import { Op } from 'sequelize';
+import { sequelize } from '../../config/database_v2';
+
 export const create = async (
   payload: LessonAttributesInput
 ): Promise<LessonAttributes> => {
@@ -45,4 +48,41 @@ export const updateById = async (
 export const getAll = async (): Promise<LessonAttributes[]> => {
   const lessons = await Lesson.findAll();
   return lessons.map((value) => value.dataValues);
+};
+
+export const shiftLessons = async (
+  moduleId: string,
+  orderNumber: number,
+  newOrderNumber?: number
+) => {
+  if (!newOrderNumber) {
+    await Lesson.update(
+      { orderNumber: sequelize.literal('orderNumber - 1') },
+      {
+        where: {
+          moduleId: moduleId,
+          orderNumber: { [Op.gt]: orderNumber }
+        }
+      }
+    );
+  } else {
+    await Lesson.update(
+      {
+        orderNumber: sequelize.literal(
+          orderNumber < newOrderNumber ? 'orderNumber - 1' : 'orderNumber + 1'
+        )
+      },
+      {
+        where: {
+          moduleId: moduleId,
+          orderNumber: {
+            [Op.gte]:
+              orderNumber < newOrderNumber ? orderNumber : newOrderNumber,
+            [Op.lte]:
+              orderNumber < newOrderNumber ? newOrderNumber : orderNumber
+          }
+        }
+      }
+    );
+  }
 };
