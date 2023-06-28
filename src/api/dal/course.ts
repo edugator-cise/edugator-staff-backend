@@ -18,7 +18,7 @@ export const getById = async (
   id: string
 ): Promise<CourseAttributes | undefined> => {
   const course = await Course.findByPk(id);
-  return course ? course.dataValues : undefined;
+  return course ? course.get({ plain: true }) : undefined;
 };
 
 export const deleteById = async (id: string): Promise<boolean> => {
@@ -48,7 +48,7 @@ export const getAll = async (
       organizationId
     }
   });
-  return courses.map((value) => value.dataValues);
+  return courses.map((value) => value.get({ plain: true }));
 };
 
 export const getStructure = async (
@@ -89,5 +89,6 @@ export const getStructure = async (
       }
     ]
   });
-  return course ? course.dataValues : null;
+
+  return course ? course.get({ plain: true }) : null;
 };

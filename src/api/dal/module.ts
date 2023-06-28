@@ -11,7 +11,7 @@ export const create = async (
   payload: ModuleAttributesInput
 ): Promise<ModuleAttributes> => {
   const module_ = await Module.create(payload);
-  return module_.dataValues;
+  return module_.get({ plain: true });
 };
 
 export const getById = async (id: string): Promise<ModuleAttributes> => {
@@ -22,7 +22,7 @@ export const getById = async (id: string): Promise<ModuleAttributes> => {
       ['lessons', 'orderNumber', 'ASC']
     ]
   });
-  return module_ ? module_.dataValues : null;
+  return module_ ? module_.get({ plain: true }) : null;
 };
 
 export const deleteById = async (id: string): Promise<boolean> => {
@@ -37,7 +37,7 @@ export const deleteByCourse = async (courseId: string): Promise<boolean> => {
     where: { courseId: courseId },
     attributes: ['id']
   });
-  const modules = moduleRows.map((module_) => module_.dataValues);
+  const modules = moduleRows.map((module_) => module_.get({ plain: true }));
 
   const numberOfDeletions = await Module.destroy({
     where: { courseId: courseId }
@@ -57,7 +57,7 @@ export const updateById = async (
   const module_ = await Module.findByPk(id);
   if (!module_) return undefined;
   const updatedModule = await module_.update(payload);
-  return updatedModule.dataValues;
+  return updatedModule.get({ plain: true });
 };
 
 export const getAll = async (): Promise<ModuleAttributes[]> => {
@@ -68,7 +68,7 @@ export const getAll = async (): Promise<ModuleAttributes[]> => {
       ['lessons', 'orderNumber', 'ASC']
     ]
   });
-  return module_.map((value) => value.dataValues);
+  return module_.map((value) => value.get({ plain: true }));
 };
 
 export const getNextOrder = async (id: string): Promise<number> => {

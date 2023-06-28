@@ -94,7 +94,7 @@ export const getCourses = async (
 export const getCourseStructure = async (
   req: Request,
   res: Response
-): Promise<void> => {
+): Promise<Response<any, Record<string, any>>> => {
   const hidden = req.query.hidden ? req.query.hidden === 'true' : false;
   try {
     const results = await CourseDataLayer.getStructure(
@@ -102,10 +102,45 @@ export const getCourseStructure = async (
       hidden
     );
     if (!results) {
-      res.status(404).send();
+      return res.sendStatus(404);
     }
-    res.status(200).send(results);
+
+    for (let i = 0; i < results['modules'].length; i++) {
+      const content: any[] = [];
+      const module_ = results['modules'][i];
+      let j = 0,
+        k = 0;
+
+      while (j < module_['problems'].length && k < module_['lessons'].length) {
+        if (
+          module_['problems'][j].orderNumber <=
+          module_['lessons'][k].orderNumber
+        ) {
+          content.push({ contentType: 'problem', ...module_['problems'][j] });
+          j++;
+        } else {
+          content.push({ contentType: 'lesson', ...module_['lessons'][k] });
+          k++;
+        }
+      }
+
+      while (j < module_['problems'].length) {
+        content.push({ contentType: 'problem', ...module_['problems'][j] });
+        j++;
+      }
+
+      while (k < module_['lessons'].length) {
+        content.push({ contentType: 'lesson', ...module_['lessons'][k] });
+        k++;
+      }
+
+      results['modules'][i]['content'] = content;
+      delete results['modules'][i]['problems'];
+      delete results['modules'][i]['lessons'];
+    }
+
+    return res.status(200).send(results);
   } catch (e) {
-    res.status(500).send(e);
+    return res.status(500).send(e);
   }
 };
