@@ -13,6 +13,8 @@ import { Module } from '../api/models/v2/module.model';
 import { Problem, TestCase } from '../api/models/v2/problem.model';
 import { Lesson } from '../api/models/v2/lesson.model';
 
+import { port } from '../config/vars';
+
 class Server {
   public app: express.Application;
 
@@ -60,7 +62,7 @@ class Server {
 
   public start(): void {
     //eslint-disable-next-line
-    this.app.listen(8080, () => console.log(`server started on port 8080`));
+    this.app.listen(port, () => console.log(`server started on port {port}`));
   }
 }
 
