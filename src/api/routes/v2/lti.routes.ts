@@ -17,4 +17,4 @@ ltiRouter.use(express.json());
 ltiRouter.route('/submit').post(submitAssignment);
 ltiRouter.route('/members').get(getMembers);
 
-export default ltiRouter;
+export { ltiRouter };
