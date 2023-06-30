@@ -71,3 +71,14 @@ export const getByModule = async (
   });
   return problems.map((value) => value.dataValues);
 };
+
+export const getByLineItem = async (
+  lineItemId: string
+): Promise<ProblemAttributes> => {
+  const problems = await Problem.findOne({
+    where: {
+      ltiAssignmentLink: lineItemId
+    }
+  });
+  return problems ? problems.get({ plain: true }) : null;
+};

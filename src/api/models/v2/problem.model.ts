@@ -18,6 +18,8 @@ export interface ProblemAttributes {
   buildCommand: string;
   languages: string;
   moduleId?: string;
+  ltiAssignmentLink?: string;
+  ltiScoreMaximum?: number;
   orderNumber: number; // order of the problem in the module
   testCases?: TestCaseAttributesInput[];
 }
@@ -99,6 +101,14 @@ export const Problem = sequelize.define<ProblemInstance>(
     languages: {
       type: DataTypes.STRING,
       allowNull: false
+    },
+    ltiAssignmentLink: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    ltiScoreMaximum: {
+      type: DataTypes.FLOAT,
+      allowNull: true
     },
     orderNumber: {
       type: DataTypes.TINYINT,

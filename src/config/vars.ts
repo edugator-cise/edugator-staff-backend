@@ -32,6 +32,12 @@ const APP_PASSWORD = process.env.APP_PASSWORD;
 
 //AUTH token for EDUGATOR
 const EDUGATOR_AUTH_TOKEN = process.env.EDUGATOR_AUTH_TOKEN;
+
+// LTI information
+const LTI_SECRET_KEY = process.env.LTI_SECRET_KEY;
+const LTI_CLIENT_ID = process.env.LTI_CLIENT_ID;
+const CANVAS_HOST = process.env.CANVAS_HOST;
+
 export {
   env,
   port,
@@ -53,5 +59,8 @@ export {
   SENDER_EMAIL,
   APP_PASSWORD,
   REGION_AWS,
-  EDUGATOR_AUTH_TOKEN
+  EDUGATOR_AUTH_TOKEN,
+  LTI_SECRET_KEY,
+  LTI_CLIENT_ID,
+  CANVAS_HOST
 };

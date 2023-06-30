@@ -9,10 +9,14 @@ export interface CourseAttributes {
   startDate: string;
   endDate: string;
   logo: string;
+  ltiCourseLink?: string;
   organizationId?: string;
 }
 
-export type CourseAttributesInput = Optional<CourseAttributes, 'id'>;
+export type CourseAttributesInput = Optional<
+  CourseAttributes,
+  'id' | 'ltiCourseLink'
+>;
 
 type CourseInstance = Model<CourseAttributes, CourseAttributesInput>;
 
@@ -29,13 +33,20 @@ export const Course = sequelize.define<CourseInstance>(
       allowNull: false
     },
     startDate: {
-      type: DataTypes.DATE
+      type: DataTypes.DATE,
+      allowNull: false
     },
     endDate: {
-      type: DataTypes.DATE
+      type: DataTypes.DATE,
+      allowNull: false
     },
     logo: {
-      type: DataTypes.STRING
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    ltiCourseLink: {
+      type: DataTypes.STRING,
+      allowNull: true
     }
   },
   {
