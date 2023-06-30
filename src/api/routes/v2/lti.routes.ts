@@ -6,15 +6,15 @@ import {
   linkCourse
 } from '../../controllers/v2/lti.controller';
 import { lti } from '../../services/ltijs';
-const router = express.Router();
+const ltiRouter = express.Router();
 
 lti.app.post('/linkCourse', linkCourse);
 lti.app.post('/linkAssignment', linkAssignment);
 
-router.use('/ltijs', lti.app);
-router.use(express.json());
+ltiRouter.use('/ltijs', lti.app);
+ltiRouter.use(express.json());
 
-router.route('/submit').post(submitAssignment);
-router.route('/members').get(getMembers);
+ltiRouter.route('/submit').post(submitAssignment);
+ltiRouter.route('/members').get(getMembers);
 
-export default router;
+export default ltiRouter;

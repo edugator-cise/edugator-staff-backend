@@ -4,6 +4,7 @@ import { organizationRouter } from './organization.routes';
 import { moduleRouter } from './module.routes';
 import { studentProblemRouter, adminProblemRouter } from './problem.routes';
 import { studentLessonRouter, adminLessonRouter } from './lesson.routes';
+import { ltiRouter } from './lti.routes';
 
 const router = Router();
 
@@ -14,5 +15,6 @@ router.use('/student/problem', studentProblemRouter);
 router.use('/admin/problem', adminProblemRouter);
 router.use('/student/lesson', studentLessonRouter);
 router.use('/admin/lesson', adminLessonRouter);
+router.use('/lti', ltiRouter);
 
 export default router;

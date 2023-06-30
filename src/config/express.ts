@@ -62,7 +62,7 @@ class Server {
 
   public start(): void {
     //eslint-disable-next-line
-    this.app.listen(port, () => console.log(`server started on port {port}`));
+    this.app.listen(port, () => console.log(`server started on port ${port}`));
   }
 }
 
