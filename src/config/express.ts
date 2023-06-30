@@ -5,13 +5,17 @@ import routesV2 from '../api/routes/v2';
 import * as cors from 'cors';
 import * as passport from 'passport';
 import { jwtStrategy } from './passport';
+
 import * as database from './database';
 import * as databasev2 from './database_v2';
+
 import { Course } from '../api/models/v2/course.model';
 import { Organization } from '../api/models/v2/organization.model';
 import { Module } from '../api/models/v2/module.model';
 import { Problem, TestCase } from '../api/models/v2/problem.model';
 import { Lesson } from '../api/models/v2/lesson.model';
+
+import { setup } from '../api/services/ltijs';
 
 import { port } from '../config/vars';
 
@@ -26,6 +30,7 @@ class Server {
     }
     this.config();
     this.routes();
+    setup();
   }
   public routes(): void {
     this.app.use('/v1', routes);
@@ -52,12 +57,12 @@ class Server {
   }
 
   private async syncModels(): Promise<void> {
-    await Course.sync({ alter: true });
-    await Organization.sync({ alter: true });
-    await Module.sync({ alter: true });
-    await Problem.sync({ alter: true });
-    await TestCase.sync({ alter: true });
-    await Lesson.sync({ alter: true });
+    await Course.sync();
+    await Organization.sync();
+    await Module.sync();
+    await Problem.sync();
+    await TestCase.sync();
+    await Lesson.sync();
   }
 
   public start(): void {
