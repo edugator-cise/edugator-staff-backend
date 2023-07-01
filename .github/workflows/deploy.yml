@@ -61,10 +61,10 @@ jobs:
           SENDER_EMAIL=${{secrets.SENDER_EMAIL}}
           UPLOAD_SUBMISSIONS_BUCKET=${{secrets.UPLOAD_SUBMISSIONS_BUCKET}}
           SECRET_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          DATABASE_URL=${{ secrets.DATABASE_URL }}
           DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }}
           DATABASE_HOST=${{ secrets.DATABASE_HOST }}
           DATABASE_NAME=${{ secrets.DATABASE_NAME }}
+          DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}
           EOF
 
       - run: |
