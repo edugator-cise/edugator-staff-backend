@@ -64,6 +64,7 @@ jobs:
           DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }}
           DATABASE_HOST=${{ secrets.DATABASE_HOST }}
           DATABASE_NAME=${{ secrets.DATABASE_NAME }}
+          DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}
           EOF
 
       - run: |
