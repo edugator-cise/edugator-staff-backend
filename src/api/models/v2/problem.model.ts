@@ -34,7 +34,10 @@ export interface TestCaseAttributes {
   problemId?: string;
 }
 
-export type ProblemAttributesInput = Optional<ProblemAttributes, 'id'>;
+export type ProblemAttributesInput = Optional<
+  ProblemAttributes,
+  'id' | 'orderNumber'
+>;
 export type TestCaseAttributesInput = Optional<TestCaseAttributes, 'id'>;
 
 type ProblemInstance = Model<ProblemAttributes, ProblemAttributesInput>;

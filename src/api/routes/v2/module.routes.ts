@@ -16,8 +16,8 @@ moduleRouter
   .put(modules.putModule)
   .delete(modules.deleteModule);
 moduleRouter
-  .route('/:moduleId/changeProblemOrder')
-  .post(modules.changeProblemOrder);
+  .route('/:moduleId/changeContentOrder')
+  .post(modules.changeContentOrder);
 //
 moduleRouter.route('/ByProblemId/:problemId').get(modules.getModuleByProblemId);
 

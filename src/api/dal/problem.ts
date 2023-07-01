@@ -7,18 +7,21 @@ import {
   TestCase
 } from '../models/v2/problem.model';
 
+import { Op } from 'sequelize';
+import { sequelize } from '../../config/database_v2';
+
 export const create = async (
   payload: ProblemAttributesInput
 ): Promise<ProblemAttributes> => {
   const problem = await Problem.create(payload);
-  return problem.dataValues;
+  return problem.get({ plain: true });
 };
 
 export const createTestCase = async (
   payload: TestCaseAttributesInput
 ): Promise<TestCaseAttributes> => {
   const testCase = await TestCase.create(payload);
-  return testCase.dataValues;
+  return testCase.get({ plain: true });
 };
 
 export const getById = async (id: string): Promise<ProblemAttributes> => {
@@ -26,7 +29,7 @@ export const getById = async (id: string): Promise<ProblemAttributes> => {
     include: 'testCases',
     order: [['testCases', 'orderNumber', 'ASC']]
   });
-  return problem ? problem.dataValues : null;
+  return problem ? problem.get({ plain: true }) : null;
 };
 
 export const deleteById = async (id: string): Promise<boolean> => {
@@ -52,7 +55,7 @@ export const updateById = async (
     return undefined;
   }
   const updatedProblem = await problem.update(payload);
-  return updatedProblem.dataValues;
+  return updatedProblem.get({ plain: true });
 };
 
 export const getByModule = async (
@@ -69,5 +72,42 @@ export const getByModule = async (
     include: 'testCases',
     order: [['testCases', 'orderNumber', 'ASC']]
   });
-  return problems.map((value) => value.dataValues);
+  return problems.map((value) => value.get({ plain: true }));
+};
+
+export const shiftProblems = async (
+  moduleId: string,
+  orderNumber: number,
+  newOrderNumber?: number
+): Promise<void> => {
+  if (!newOrderNumber) {
+    await Problem.update(
+      { orderNumber: sequelize.literal('orderNumber - 1') },
+      {
+        where: {
+          moduleId: moduleId,
+          orderNumber: { [Op.gt]: orderNumber }
+        }
+      }
+    );
+  } else {
+    await Problem.update(
+      {
+        orderNumber: sequelize.literal(
+          orderNumber < newOrderNumber ? 'orderNumber - 1' : 'orderNumber + 1'
+        )
+      },
+      {
+        where: {
+          moduleId: moduleId,
+          orderNumber: {
+            [Op.gte]:
+              orderNumber < newOrderNumber ? orderNumber : newOrderNumber,
+            [Op.lte]:
+              orderNumber < newOrderNumber ? newOrderNumber : orderNumber
+          }
+        }
+      }
+    );
+  }
 };

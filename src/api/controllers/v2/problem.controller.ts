@@ -4,6 +4,7 @@ import {
   TestCaseAttributesInput
 } from '../../models/v2/problem.model';
 import * as ProblemDataLayer from '../../dal/problem';
+import * as LessonDataLayer from '../../dal/lesson';
 import * as ModuleDataLayer from '../../dal/module';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -17,7 +18,12 @@ export const createProblem = async (
     const testCases: TestCaseAttributesInput[] = req.body.testCases;
     delete req.body['testCases'];
     const problemId = uuidv4();
-    const payload: ProblemAttributesInput = { ...req.body, id: problemId };
+    const orderNumber = await ModuleDataLayer.getNextOrder(req.body.moduleId);
+    const payload: ProblemAttributesInput = {
+      ...req.body,
+      id: problemId,
+      orderNumber: orderNumber
+    };
     const result = await ProblemDataLayer.create(payload);
 
     const testCaseResults: TestCaseAttributesInput[] = [];
@@ -99,7 +105,11 @@ export const deleteProblem = async (
   res: Response
 ): Promise<Record<string, any>> => {
   try {
+    const problem = await ProblemDataLayer.getById(req.params.problemId);
     const result = await ProblemDataLayer.deleteById(req.params.problemId);
+
+    await ProblemDataLayer.shiftProblems(problem.moduleId, problem.orderNumber);
+    await LessonDataLayer.shiftLessons(problem.moduleId, problem.orderNumber);
     return res.status(200).send(result);
   } catch (e) {
     return res.status(500).send(e);

@@ -18,7 +18,7 @@ export const getById = async (
   id: string
 ): Promise<CourseAttributes | undefined> => {
   const course = await Course.findByPk(id);
-  return course ? course.dataValues : undefined;
+  return course ? course.get({ plain: true }) : undefined;
 };
 
 export const deleteById = async (id: string): Promise<boolean> => {
@@ -48,7 +48,7 @@ export const getAll = async (
       organizationId
     }
   });
-  return courses.map((value) => value.dataValues);
+  return courses.map((value) => value.get({ plain: true }));
 };
 
 export const getStructure = async (
@@ -56,10 +56,12 @@ export const getStructure = async (
   hidden: boolean
 ): Promise<CourseAttributes> => {
   const course = await Course.findByPk(courseId, {
+    attributes: ['id', 'courseName'],
     include: [
       {
         model: Module,
         as: 'modules',
+        attributes: ['id', 'moduleName'],
         include: [
           {
             model: Problem,
@@ -68,7 +70,9 @@ export const getStructure = async (
             where: {
               hidden: hidden
             },
-            attributes: ['id', 'title']
+            separate: true,
+            attributes: ['id', 'title', 'orderNumber'],
+            order: [['orderNumber', 'ASC']]
           },
           {
             model: Lesson,
@@ -77,11 +81,14 @@ export const getStructure = async (
             where: {
               hidden: hidden
             },
-            attributes: ['id', 'title']
+            separate: true,
+            attributes: ['id', 'title', 'orderNumber'],
+            order: [['orderNumber', 'ASC']]
           }
         ]
       }
     ]
   });
-  return course ? course.dataValues : null;
+
+  return course ? course.get({ plain: true }) : null;
 };
