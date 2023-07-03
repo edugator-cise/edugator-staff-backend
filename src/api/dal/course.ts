@@ -8,8 +8,6 @@ import { Problem } from '../models/v2/problem.model';
 import { Lesson } from '../models/v2/lesson.model';
 import { Sequelize } from 'sequelize';
 
-// import { Sequelize } from 'sequelize';
-
 export const create = async (
   payload: CourseAttributesInput
 ): Promise<CourseAttributes> => {
