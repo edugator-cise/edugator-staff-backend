@@ -7,6 +7,9 @@ import {
 import * as ProblemDataLayer from './problem';
 import * as LessonDataLayer from './lesson';
 
+import { Op } from 'sequelize';
+import { sequelize } from '../../config/database_v2';
+
 export const create = async (
   payload: ModuleAttributesInput
 ): Promise<ModuleAttributes> => {
@@ -75,4 +78,41 @@ export const getNextOrder = async (id: string): Promise<number> => {
   const module_ = await getById(id);
   const prevMax = module_['problems'].length + module_['lessons'].length;
   return prevMax + 1;
+};
+
+export const shiftModules = async (
+  courseId: string,
+  orderNumber: number,
+  newOrderNumber?: number
+): Promise<void> => {
+  if (!newOrderNumber) {
+    await Module.update(
+      { orderNumber: sequelize.literal('orderNumber - 1') },
+      {
+        where: {
+          courseId: courseId,
+          orderNumber: { [Op.gt]: orderNumber }
+        }
+      }
+    );
+  } else {
+    await Module.update(
+      {
+        orderNumber: sequelize.literal(
+          orderNumber < newOrderNumber ? 'orderNumber - 1' : 'orderNumber + 1'
+        )
+      },
+      {
+        where: {
+          courseId: courseId,
+          orderNumber: {
+            [Op.gte]:
+              orderNumber < newOrderNumber ? orderNumber : newOrderNumber,
+            [Op.lte]:
+              orderNumber < newOrderNumber ? newOrderNumber : orderNumber
+          }
+        }
+      }
+    );
+  }
 };

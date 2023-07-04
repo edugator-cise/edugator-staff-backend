@@ -3,6 +3,7 @@ import { CourseAttributesInput } from '../../models/v2/course.model';
 import * as CourseDataLayer from '../../dal/course';
 import * as ModuleDataLayer from '../../dal/module';
 import { v4 as uuidv4 } from 'uuid';
+import { ModuleAttributes } from '../../models/v2/module.model';
 
 export const create = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -143,4 +144,40 @@ export const getCourseStructure = async (
   } catch (e) {
     return res.status(500).send(e);
   }
+};
+
+export const changeModuleOrder = async (
+  req: Request,
+  res: Response
+): Promise<Record<string, any>> => {
+  let updatedModule: ModuleAttributes;
+  try {
+    const payload: any = {
+      orderNumber: req.body.newOrderNumber
+    };
+
+    // store the original order number and courseId
+    const module_ = await ModuleDataLayer.getById(req.body.id);
+    const orderNumber = module_.orderNumber;
+
+    const maxOrderNum = await CourseDataLayer.getNextOrder(req.params.courseId);
+    if (
+      req.body.newOrderNumber < 1 ||
+      req.body.newOrderNumber >= maxOrderNum ||
+      req.body.newOrderNumber === orderNumber
+    )
+      return res.status(400).send('Invalid order number');
+
+    // shift the problems and lessons within the range
+    await ModuleDataLayer.shiftModules(
+      req.params.courseId,
+      orderNumber,
+      req.body.newOrderNumber
+    );
+
+    updatedModule = await ModuleDataLayer.updateById(req.body.id, payload);
+  } catch (e) {
+    return res.status(500).send(e);
+  }
+  return res.status(200).send(updatedModule);
 };
