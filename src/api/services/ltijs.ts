@@ -91,7 +91,10 @@ lti.onConnect(async (_token: any, _req: Request, res: Response) => {
     if (!assignment)
       return res.status(404).send('This assignment is not linked yet');
     else
-      return lti.redirect('https://edugator.prayujt.com/code/' + assignment.id);
+      return lti.redirect(
+        res,
+        'https://edugator.prayujt.com/code/' + assignment.id
+      );
   }
 });
 
