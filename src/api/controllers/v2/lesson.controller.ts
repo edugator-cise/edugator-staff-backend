@@ -69,7 +69,7 @@ export const deleteLesson = async (
   res: Response
 ): Promise<Response<any, Record<string, any>>> => {
   try {
-    const lesson = await LessonDataLayer.getById(req.params.problemId);
+    const lesson = await LessonDataLayer.getById(req.params.lessonId);
     const result = await LessonDataLayer.deleteById(req.params.lessonId);
 
     await ProblemDataLayer.shiftProblems(lesson.moduleId, lesson.orderNumber);
