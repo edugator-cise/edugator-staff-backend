@@ -1,11 +1,12 @@
 import { Request, Response } from 'express';
+import { v4 as uuidv4 } from 'uuid';
+
 import { ModuleAttributesInput } from '../../models/v2/module.model';
+
 import * as ModuleDataLayer from '../../dal/module';
 import * as CourseDataLayer from '../../dal/course';
 import * as ProblemDataLayer from '../../dal/problem';
 import * as LessonDataLayer from '../../dal/lesson';
-import { v4 as uuidv4 } from 'uuid';
-// import { ProblemAttributes } from '../../models/v2/problem.model';
 
 export const postModule = async (
   req: Request,
@@ -15,7 +16,12 @@ export const postModule = async (
   const course = CourseDataLayer.getById(req.body.courseId);
   if (!course) return res.status(400).send('invalid course id');
   try {
-    const payload: ModuleAttributesInput = { ...req.body, id: uuidv4() };
+    const orderNumber = await CourseDataLayer.getNextOrder(req.body.courseId);
+    const payload: ModuleAttributesInput = {
+      ...req.body,
+      id: uuidv4(),
+      orderNumber: orderNumber
+    };
     const result = await ModuleDataLayer.create(payload);
     return res.status(200).send(result);
   } catch (e) {
@@ -100,7 +106,6 @@ export const changeContentOrder = async (
   let updatedContent: any;
   try {
     let orderNumber: number;
-    let moduleId: string;
 
     const payload: any = {
       orderNumber: req.body.newOrderNumber
@@ -111,16 +116,14 @@ export const changeContentOrder = async (
     if (req.body.contentType === 'problem') {
       const content = await ProblemDataLayer.getById(req.body.id);
       orderNumber = content.orderNumber;
-      moduleId = content.moduleId;
     } else if (req.body.contentType === 'lesson') {
       const content = await LessonDataLayer.getById(req.body.id);
       orderNumber = content.orderNumber;
-      moduleId = content.moduleId;
     } else {
       return res.status(400).send('Invalid/missing content type');
     }
 
-    const maxOrderNum = await ModuleDataLayer.getNextOrder(moduleId);
+    const maxOrderNum = await ModuleDataLayer.getNextOrder(req.params.moduleId);
     if (
       req.body.newOrderNumber < 1 ||
       req.body.newOrderNumber >= maxOrderNum ||

@@ -9,7 +9,10 @@ export interface ModuleAttributes {
   courseId?: string;
 }
 
-export type ModuleAttributesInput = Optional<ModuleAttributes, 'id'>;
+export type ModuleAttributesInput = Optional<
+  ModuleAttributes,
+  'id' | 'orderNumber'
+>;
 
 type ModuleInstance = Model<ModuleAttributes, ModuleAttributesInput>;
 

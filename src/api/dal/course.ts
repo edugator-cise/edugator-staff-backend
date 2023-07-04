@@ -6,12 +6,13 @@ import { Course } from '../models/v2/course.model';
 import { Module } from '../models/v2/module.model';
 import { Problem } from '../models/v2/problem.model';
 import { Lesson } from '../models/v2/lesson.model';
+import { Sequelize } from 'sequelize';
 
 export const create = async (
   payload: CourseAttributesInput
 ): Promise<CourseAttributes> => {
   const course = await Course.create(payload);
-  return course.dataValues;
+  return course.get({ plain: true });
 };
 
 export const getById = async (
@@ -37,7 +38,7 @@ export const updateById = async (
     return undefined;
   }
   const updatedCourse = await course.update(payload);
-  return updatedCourse.dataValues;
+  return updatedCourse.get({ plain: true });
 };
 
 export const getAll = async (
@@ -61,7 +62,9 @@ export const getStructure = async (
       {
         model: Module,
         as: 'modules',
-        attributes: ['id', 'moduleName'],
+        attributes: ['id', 'moduleName', 'orderNumber'],
+        separate: true,
+        order: [['orderNumber', 'ASC']],
         include: [
           {
             model: Problem,
@@ -91,4 +94,26 @@ export const getStructure = async (
   });
 
   return course ? course.get({ plain: true }) : null;
+};
+
+export const getNextOrder = async (id: string): Promise<number> => {
+  const course = await Course.findAll({
+    attributes: [
+      [Sequelize.fn('COUNT', Sequelize.col('modules.id')), 'moduleCount']
+    ],
+    include: [
+      {
+        model: Module,
+        as: 'modules',
+        required: false,
+        attributes: []
+      }
+    ],
+    group: ['Course.id'],
+    where: {
+      id: id
+    }
+  });
+  const prevMax = course[0].get({ plain: true })['moduleCount'];
+  return prevMax + 1;
 };
