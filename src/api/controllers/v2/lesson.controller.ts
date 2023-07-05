@@ -44,7 +44,7 @@ export const getLessonByID = async (
 ): Promise<void> => {
   // add validation for lessonId?
   try {
-    const lessons = await LessonDataLayer.getById(req.params.lessonid);
+    const lessons = await LessonDataLayer.getById(req.params.lessonId);
     if (!lessons) res.status(404).send();
     else res.status(200).send(lessons);
   } catch (e) {
