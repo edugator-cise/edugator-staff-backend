@@ -167,7 +167,7 @@ const runCode = async (req: Request, response: Response): Promise<Response> => {
     cpu_time_limit,
     memory_limit,
     compiler_options,
-    callback_url: 'https://edugator.prayujt.com/api/v2/code/run/complete'
+    callback_url: 'https://edugator-admin.com/api/v3/code/run/complete'
   };
 
   try {
@@ -309,7 +309,7 @@ const submitCode = async (
         memory_limit,
         compiler_options,
         callback_url:
-          'https://edugator.prayujt.com/api/v2/code/run/evaluate/complete'
+          'https://edugator-admin.com/api/v3/code/run/evaluate/complete'
       };
       try {
         const axiosResponse: AxiosResponse = await judgeEngine.createSubmission(
