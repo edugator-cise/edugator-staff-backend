@@ -158,7 +158,7 @@ export const TestCase = sequelize.define<TestCaseInstance>(
 Problem.belongsTo(Module, {
   constraints: false,
   as: 'module',
-  foreignKey: 'id'
+  foreignKey: 'moduleId'
 });
 
 Module.hasMany(Problem, {
@@ -170,7 +170,7 @@ Module.hasMany(Problem, {
 TestCase.belongsTo(Problem, {
   constraints: false,
   as: 'problem',
-  foreignKey: 'id'
+  foreignKey: 'problemId'
 });
 
 Problem.hasMany(TestCase, {

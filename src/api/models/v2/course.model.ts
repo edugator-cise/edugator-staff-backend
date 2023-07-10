@@ -46,7 +46,7 @@ export const Course = sequelize.define<CourseInstance>(
 Course.belongsTo(Organization, {
   constraints: false,
   as: 'organization',
-  foreignKey: 'id'
+  foreignKey: 'organizationId'
 });
 
 Organization.hasMany(Course, {

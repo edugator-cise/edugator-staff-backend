@@ -6,15 +6,19 @@ import {
   TestCaseAttributes,
   TestCase
 } from '../models/v2/problem.model';
+import { Module } from '../models/v2/module.model';
 
 import { Op } from 'sequelize';
 import { sequelize } from '../../config/database_v2';
 
-export const create = async (
-  payload: ProblemAttributesInput
-): Promise<ProblemAttributes> => {
+export const create = async (payload: ProblemAttributesInput): Promise<any> => {
   const problem = await Problem.create(payload);
-  return problem.get({ plain: true });
+  const cleanedProblem = problem.get({ plain: true });
+  const module_ = await Module.findByPk(cleanedProblem.moduleId);
+  return {
+    ...cleanedProblem,
+    moduleName: module_.get({ plain: true }).moduleName
+  };
 };
 
 export const createTestCase = async (
@@ -26,7 +30,17 @@ export const createTestCase = async (
 
 export const getById = async (id: string): Promise<ProblemAttributes> => {
   const problem = await Problem.findByPk(id, {
-    include: 'testCases',
+    include: [
+      'testCases',
+      {
+        model: Module,
+        as: 'module',
+        attributes: []
+      }
+    ],
+    attributes: {
+      include: [[sequelize.col('module.moduleName'), 'moduleName']]
+    },
     order: [['testCases', 'orderNumber', 'ASC']]
   });
   return problem ? problem.get({ plain: true }) : null;
