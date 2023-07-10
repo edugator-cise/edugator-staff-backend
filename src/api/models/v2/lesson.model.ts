@@ -51,7 +51,7 @@ export const Lesson = sequelize.define<LessonInstance>(
 Lesson.belongsTo(Module, {
   constraints: false,
   as: 'module',
-  foreignKey: 'id'
+  foreignKey: 'moduleId'
 });
 
 Module.hasMany(Lesson, {
