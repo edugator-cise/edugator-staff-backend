@@ -3,19 +3,34 @@ import {
   LessonAttributes,
   Lesson
 } from '../models/v2/lesson.model';
+import { Module } from '../models/v2/module.model';
 
 import { Op } from 'sequelize';
 import { sequelize } from '../../config/database_v2';
 
-export const create = async (
-  payload: LessonAttributesInput
-): Promise<LessonAttributes> => {
+export const create = async (payload: LessonAttributesInput): Promise<any> => {
   const lesson = await Lesson.create(payload);
-  return lesson.get({ plain: true });
+  const cleanedLesson = lesson.get({ plain: true });
+  const module_ = await Module.findByPk(cleanedLesson.moduleId);
+  return {
+    ...cleanedLesson,
+    moduleName: module_.get({ plain: true }).moduleName
+  };
 };
 
 export const getById = async (id: string): Promise<LessonAttributes> => {
-  const lesson = await Lesson.findByPk(id);
+  const lesson = await Lesson.findByPk(id, {
+    include: [
+      {
+        model: Module,
+        as: 'module',
+        attributes: []
+      }
+    ],
+    attributes: {
+      include: [[sequelize.col('module.moduleName'), 'moduleName']]
+    }
+  });
   return lesson ? lesson.get({ plain: true }) : null;
 };
 
