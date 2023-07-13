@@ -90,9 +90,13 @@ export const deleteModule = async (
   res: Response
 ): Promise<Record<string, any>> => {
   try {
+    const module_ = await ModuleDataLayer.getById(req.params.moduleId);
+
     const result = await ModuleDataLayer.deleteById(req.params.moduleId);
     await ProblemDataLayer.deleteByModule(req.params.moduleId);
     await LessonDataLayer.deleteByModule(req.params.moduleId);
+
+    await ModuleDataLayer.shiftModules(module_.courseId, module_.orderNumber);
     return res.status(200).send(result);
   } catch (e) {
     return res.status(500).send(e);

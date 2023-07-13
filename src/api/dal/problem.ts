@@ -25,7 +25,7 @@ export const createTestCase = async (
   payload: TestCaseAttributesInput
 ): Promise<TestCaseAttributes> => {
   const testCase = await TestCase.create(payload);
-  return testCase.get({ plain: true });
+  return testCase ? testCase.get({ plain: true }) : undefined;
 };
 
 export const getById = async (id: string): Promise<ProblemAttributes> => {
@@ -43,7 +43,7 @@ export const getById = async (id: string): Promise<ProblemAttributes> => {
     },
     order: [['testCases', 'orderNumber', 'ASC']]
   });
-  return problem ? problem.get({ plain: true }) : null;
+  return problem ? problem.get({ plain: true }) : undefined;
 };
 
 export const deleteById = async (id: string): Promise<boolean> => {
@@ -65,11 +65,10 @@ export const updateById = async (
   payload: ProblemAttributesInput
 ): Promise<ProblemAttributes | undefined> => {
   const problem = await Problem.findByPk(id);
-  if (!problem) {
-    return undefined;
-  }
+
+  if (!problem) return undefined;
   const updatedProblem = await problem.update(payload);
-  return updatedProblem.get({ plain: true });
+  return updatedProblem ? updatedProblem.get({ plain: true }) : undefined;
 };
 
 export const getByModule = async (
@@ -93,9 +92,10 @@ export const shiftProblems = async (
   moduleId: string,
   orderNumber: number,
   newOrderNumber?: number
-): Promise<void> => {
+): Promise<boolean> => {
+  let result: [affectedCount: number];
   if (!newOrderNumber) {
-    await Problem.update(
+    result = await Problem.update(
       { orderNumber: sequelize.literal('orderNumber - 1') },
       {
         where: {
@@ -105,7 +105,7 @@ export const shiftProblems = async (
       }
     );
   } else {
-    await Problem.update(
+    result = await Problem.update(
       {
         orderNumber: sequelize.literal(
           orderNumber < newOrderNumber ? 'orderNumber - 1' : 'orderNumber + 1'
@@ -124,4 +124,5 @@ export const shiftProblems = async (
       }
     );
   }
+  return !!result;
 };
