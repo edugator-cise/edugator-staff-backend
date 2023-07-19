@@ -59,7 +59,7 @@ export const getModuleByProblemId = async (
   req: Request,
   res: Response
 ): Promise<Record<string, any>> => {
-  const problem = await ProblemDataLayer.getById(req.params.problemId);
+  const problem = await ProblemDataLayer.getById(req.params.problemId, true);
   if (!problem) return res.status(400).send('invalid problem id');
   try {
     const modules = await ModuleDataLayer.getById(problem.moduleId);
@@ -114,7 +114,7 @@ export const changeContentOrder = async (
     // update the problem/lesson to have the new order number
     // while storing the original order number
     if (req.body.contentType === 'problem') {
-      const content = await ProblemDataLayer.getById(req.body.id);
+      const content = await ProblemDataLayer.getById(req.body.id, true);
       orderNumber = content.orderNumber;
     } else if (req.body.contentType === 'lesson') {
       const content = await LessonDataLayer.getById(req.body.id);

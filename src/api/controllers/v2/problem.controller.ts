@@ -54,7 +54,7 @@ export const readStudentProblems = async (
   res: Response
 ): Promise<Record<string, any>> => {
   if (req.params.problemId) {
-    const problem = await ProblemDataLayer.getById(req.params.problemId);
+    const problem = await ProblemDataLayer.getById(req.params.problemId, false);
     if (!problem || problem.hidden) return res.sendStatus(404);
     return res.status(200).send(problem);
   } else if (req.params.moduleId) {
@@ -72,7 +72,7 @@ export const readAdminProblems = async (
   res: Response
 ): Promise<Record<string, any>> => {
   if (req.params.problemId) {
-    const problem = await ProblemDataLayer.getById(req.params.problemId);
+    const problem = await ProblemDataLayer.getById(req.params.problemId, true);
     if (!problem) return res.sendStatus(404);
     return res.status(200).send(problem);
   } else if (req.params.moduleId) {
@@ -105,7 +105,7 @@ export const deleteProblem = async (
   res: Response
 ): Promise<Record<string, any>> => {
   try {
-    const problem = await ProblemDataLayer.getById(req.params.problemId);
+    const problem = await ProblemDataLayer.getById(req.params.problemId, true);
     const result = await ProblemDataLayer.deleteById(req.params.problemId);
 
     await ProblemDataLayer.shiftProblems(problem.moduleId, problem.orderNumber);

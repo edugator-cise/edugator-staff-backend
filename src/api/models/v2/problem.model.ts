@@ -12,11 +12,13 @@ export interface ProblemAttributes {
   codeHeader: string;
   codeBody: string;
   codeFooter: string;
+  codeSolution: string;
   templatePackage: string;
   timeLimit: number;
   memoryLimit: number;
   buildCommand: string;
-  languages: string;
+  difficulty: string;
+  author: string;
   moduleId?: string;
   orderNumber: number; // order of the problem in the module
   testCases?: TestCaseAttributesInput[];
@@ -83,6 +85,10 @@ export const Problem = sequelize.define<ProblemInstance>(
       type: DataTypes.TEXT,
       allowNull: false
     },
+    codeSolution: {
+      type: DataTypes.TEXT,
+      allowNull: false
+    },
     templatePackage: {
       type: DataTypes.STRING,
       allowNull: false
@@ -99,7 +105,11 @@ export const Problem = sequelize.define<ProblemInstance>(
       type: DataTypes.STRING,
       allowNull: false
     },
-    languages: {
+    author: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    difficulty: {
       type: DataTypes.STRING,
       allowNull: false
     },

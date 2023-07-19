@@ -6,6 +6,7 @@ import { Organization } from './organization.model';
 export interface CourseAttributes {
   id: string;
   courseName: string;
+  language: string;
   startDate: string;
   endDate: string;
   logo: string;
@@ -25,6 +26,10 @@ export const Course = sequelize.define<CourseInstance>(
       primaryKey: true
     },
     courseName: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    language: {
       type: DataTypes.STRING,
       allowNull: false
     },

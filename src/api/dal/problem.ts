@@ -8,8 +8,9 @@ import {
 } from '../models/v2/problem.model';
 import { Module } from '../models/v2/module.model';
 
-import { Op } from 'sequelize';
 import { sequelize } from '../../config/database_v2';
+
+import { Op } from 'sequelize';
 
 export const create = async (payload: ProblemAttributesInput): Promise<any> => {
   const problem = await Problem.create(payload);
@@ -28,10 +29,12 @@ export const createTestCase = async (
   return testCase.get({ plain: true });
 };
 
-export const getById = async (id: string): Promise<ProblemAttributes> => {
-  const problem = await Problem.findByPk(id, {
+export const getById = async (
+  id: string,
+  hidden: boolean
+): Promise<ProblemAttributes> => {
+  const args: any = {
     include: [
-      'testCases',
       {
         model: Module,
         as: 'module',
@@ -40,9 +43,15 @@ export const getById = async (id: string): Promise<ProblemAttributes> => {
     ],
     attributes: {
       include: [[sequelize.col('module.moduleName'), 'moduleName']]
-    },
-    order: [['testCases', 'orderNumber', 'ASC']]
-  });
+    }
+  };
+
+  if (hidden) {
+    args['include'].push('testCases');
+    args['order'] = [['testCases', 'orderNumber', 'ASC']];
+  } else args['attributes']['exclude'] = ['codeSolution'];
+
+  const problem = await Problem.findByPk(id, args);
   return problem ? problem.get({ plain: true }) : null;
 };
 
@@ -81,11 +90,19 @@ export const getByModule = async (
   };
   if (!hidden) constraints['hidden'] = hidden;
 
-  const problems = await Problem.findAll({
-    where: constraints,
-    include: 'testCases',
-    order: [['testCases', 'orderNumber', 'ASC']]
-  });
+  const args = {
+    where: {
+      moduleId: moduleId
+    }
+  };
+
+  if (!hidden) {
+    args['where']['hidden'] = hidden;
+    args['include'] = 'testCases';
+    args['order'] = [['testCases', 'orderNumber', 'ASC']];
+  }
+
+  const problems = await Problem.findAll(args);
   return problems.map((value) => value.get({ plain: true }));
 };
 
