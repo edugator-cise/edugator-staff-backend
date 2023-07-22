@@ -7,6 +7,8 @@ export interface LessonAttributes {
   title: string;
   content: string;
   hidden: boolean;
+  difficulty: string;
+  author: string;
   moduleId?: string;
   orderNumber: number; // order of the lesson in the module
 }
@@ -36,6 +38,14 @@ export const Lesson = sequelize.define<LessonInstance>(
     },
     hidden: {
       type: DataTypes.BOOLEAN,
+      allowNull: false
+    },
+    difficulty: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    author: {
+      type: DataTypes.STRING,
       allowNull: false
     },
     orderNumber: {

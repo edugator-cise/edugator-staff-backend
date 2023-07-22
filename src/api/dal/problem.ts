@@ -85,21 +85,20 @@ export const getByModule = async (
   moduleId: string,
   hidden: boolean
 ): Promise<ProblemAttributes[]> => {
-  const constraints = {
-    moduleId: moduleId
-  };
-  if (!hidden) constraints['hidden'] = hidden;
-
   const args = {
     where: {
       moduleId: moduleId
     }
   };
 
-  if (!hidden) {
-    args['where']['hidden'] = hidden;
-    args['include'] = 'testCases';
+  if (hidden) {
+    args['include'].push('testCases');
     args['order'] = [['testCases', 'orderNumber', 'ASC']];
+  } else {
+    args['attributes'] = {
+      exclude: ['codeSolution']
+    };
+    args['where']['hidden'] = false;
   }
 
   const problems = await Problem.findAll(args);

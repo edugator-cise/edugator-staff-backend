@@ -105,11 +105,11 @@ export const Problem = sequelize.define<ProblemInstance>(
       type: DataTypes.STRING,
       allowNull: false
     },
-    author: {
+    difficulty: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    difficulty: {
+    author: {
       type: DataTypes.STRING,
       allowNull: false
     },
