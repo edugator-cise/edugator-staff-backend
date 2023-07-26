@@ -18,74 +18,63 @@ export const create = async (req: Request, res: Response): Promise<void> => {
 export const deleteCourse = async (
   req: Request,
   res: Response
-): Promise<void> => {
+): Promise<Record<string, any>> => {
   try {
     const payload = req.params['courseId'];
-    if (payload === undefined) {
-      res.status(400).send('error course is undefined');
-    }
+    if (!payload) return res.status(400).send('error course is undefined');
+
     const result = await CourseDataLayer.deleteById(payload);
-    if (!result) {
-      res.status(404).send();
-      return;
-    }
+    if (!result) return res.status(404).send();
+
     await ModuleDataLayer.deleteByCourse(req.params['courseId']);
-    res.status(200).send(result);
+    return res.status(200).send(result);
   } catch (e) {
-    res.status(500).send(e);
+    return res.status(500).send(e);
   }
 };
 
 export const updateCourse = async (
   req: Request,
   res: Response
-): Promise<void> => {
+): Promise<Record<string, any>> => {
   try {
     const id = req.params['courseId'];
     if (id === undefined) {
       res.status(400).send('error course is undefined');
     }
     const result = await CourseDataLayer.updateById(id, req.body);
-    if (!result) {
-      res.status(404).send();
-    }
-    res.status(200).send(result);
+    if (!result) return res.status(404).send();
+    return res.status(200).send(result);
   } catch (e) {
-    res.status(500).send(e);
+    return res.status(500).send(e);
   }
 };
 
 export const getCourseById = async (
   req: Request,
   res: Response
-): Promise<void> => {
+): Promise<Record<string, any>> => {
   try {
     const id = req.params['courseId'];
-    if (id === undefined) {
-      res.status(400).send('error course is undefined');
-    }
+    if (!id) return res.status(400).send('error course is undefined');
+
     const result = await CourseDataLayer.getById(id);
-    if (!result) {
-      res.status(404).send();
-    }
-    res.status(200).send(result);
+    if (!result) return res.status(404).send();
+    return res.status(200).send(result);
   } catch (e) {
-    res.status(500).send(e);
+    return res.status(500).send(e);
   }
 };
 
 export const getCourses = async (
   req: Request,
   res: Response
-): Promise<Response<any, Record<string, any>>> => {
+): Promise<Record<string, any>> => {
   try {
-    if (!req.params.organizationId) {
+    if (!req.params.organizationId)
       return res.status(400).send('bad request organizationId not found');
-    }
     const results = await CourseDataLayer.getAll(req.params.organizationId);
-    if (!results) {
-      return res.status(404).send();
-    }
+    if (!results) return res.status(404).send();
     return res.status(200).send(results);
   } catch (e) {
     return res.status(500).send(e);
@@ -95,16 +84,14 @@ export const getCourses = async (
 export const getCourseStructure = async (
   req: Request,
   res: Response
-): Promise<Response<any, Record<string, any>>> => {
-  const hidden = req.query.hidden ? req.query.hidden === 'true' : false;
+): Promise<Record<string, any>> => {
+  const hidden = req.query.hidden ? req.query.hidden === 'true' : true;
   try {
     const results = await CourseDataLayer.getStructure(
       req.params.courseId,
       hidden
     );
-    if (!results) {
-      return res.sendStatus(404);
-    }
+    if (!results) return res.sendStatus(404);
 
     for (let i = 0; i < results['modules'].length; i++) {
       const content: any[] = [];

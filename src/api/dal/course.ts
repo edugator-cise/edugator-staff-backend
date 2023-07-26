@@ -6,13 +6,14 @@ import { Course } from '../models/v2/course.model';
 import { Module } from '../models/v2/module.model';
 import { Problem } from '../models/v2/problem.model';
 import { Lesson } from '../models/v2/lesson.model';
-import { Sequelize } from 'sequelize';
+
+import { Op, Sequelize } from 'sequelize';
 
 export const create = async (
   payload: CourseAttributesInput
 ): Promise<CourseAttributes> => {
   const course = await Course.create(payload);
-  return course.get({ plain: true });
+  return course ? course.get({ plain: true }) : undefined;
 };
 
 export const getById = async (
@@ -34,11 +35,10 @@ export const updateById = async (
   payload: CourseAttributesInput
 ): Promise<CourseAttributes | undefined> => {
   const course = await Course.findByPk(id);
-  if (!course) {
-    return undefined;
-  }
+  if (!course) return undefined;
+
   const updatedCourse = await course.update(payload);
-  return updatedCourse.get({ plain: true });
+  return updatedCourse ? updatedCourse.get({ plain: true }) : undefined;
 };
 
 export const getAll = async (
@@ -71,7 +71,7 @@ export const getStructure = async (
             as: 'problems',
             required: false,
             where: {
-              hidden: hidden
+              hidden: !hidden ? false : { [Op.or]: [false, true] }
             },
             separate: true,
             attributes: ['id', 'title', 'orderNumber'],
@@ -82,7 +82,7 @@ export const getStructure = async (
             as: 'lessons',
             required: false,
             where: {
-              hidden: hidden
+              hidden: !hidden ? false : { [Op.or]: [false, true] }
             },
             separate: true,
             attributes: ['id', 'title', 'orderNumber'],
@@ -93,7 +93,7 @@ export const getStructure = async (
     ]
   });
 
-  return course ? course.get({ plain: true }) : null;
+  return course ? course.get({ plain: true }) : undefined;
 };
 
 export const getNextOrder = async (id: string): Promise<number> => {
@@ -114,6 +114,6 @@ export const getNextOrder = async (id: string): Promise<number> => {
       id: id
     }
   });
-  const prevMax = course[0].get({ plain: true })['moduleCount'];
+  const prevMax = course[0] ? course[0].get({ plain: true })['moduleCount'] : 0;
   return prevMax + 1;
 };
