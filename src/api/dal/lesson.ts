@@ -31,7 +31,7 @@ export const getById = async (id: string): Promise<LessonAttributes> => {
       include: [[sequelize.col('module.moduleName'), 'moduleName']]
     }
   });
-  return lesson ? lesson.get({ plain: true }) : null;
+  return lesson ? lesson.get({ plain: true }) : undefined;
 };
 
 export const deleteById = async (id: string): Promise<boolean> => {
@@ -53,20 +53,20 @@ export const updateById = async (
   payload: LessonAttributesInput
 ): Promise<LessonAttributes | undefined> => {
   const lesson = await Lesson.findByPk(id);
-  if (!lesson) {
-    return undefined;
-  }
+  if (!lesson) return undefined;
+
   const updatedLesson = await lesson.update(payload);
-  return updatedLesson.get({ plain: true });
+  return updatedLesson ? updatedLesson.get({ plain: true }) : undefined;
 };
 
 export const shiftLessons = async (
   moduleId: string,
   orderNumber: number,
   newOrderNumber?: number
-): Promise<void> => {
+): Promise<boolean> => {
+  let result: [affectedCount: number];
   if (!newOrderNumber) {
-    await Lesson.update(
+    result = await Lesson.update(
       { orderNumber: sequelize.literal('orderNumber - 1') },
       {
         where: {
@@ -76,7 +76,7 @@ export const shiftLessons = async (
       }
     );
   } else {
-    await Lesson.update(
+    result = await Lesson.update(
       {
         orderNumber: sequelize.literal(
           orderNumber < newOrderNumber ? 'orderNumber - 1' : 'orderNumber + 1'
@@ -95,4 +95,5 @@ export const shiftLessons = async (
       }
     );
   }
+  return !!result;
 };
