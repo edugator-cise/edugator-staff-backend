@@ -25,19 +25,6 @@ export const postLesson = async (
   }
 };
 
-export const getLessons = async (
-  _req: Request,
-  res: Response
-): Promise<void> => {
-  try {
-    const lessons = await LessonDataLayer.getAll();
-    if (!lessons) res.status(404).send();
-    else res.status(200).send(lessons);
-  } catch (e) {
-    res.status(500).send(e);
-  }
-};
-
 export const getLessonByID = async (
   req: Request,
   res: Response

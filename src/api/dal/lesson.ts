@@ -59,11 +59,6 @@ export const updateById = async (
   return updatedLesson ? updatedLesson.get({ plain: true }) : undefined;
 };
 
-export const getAll = async (): Promise<LessonAttributes[]> => {
-  const lessons = await Lesson.findAll();
-  return lessons.map((value) => value.get({ plain: true }));
-};
-
 export const shiftLessons = async (
   moduleId: string,
   orderNumber: number,
