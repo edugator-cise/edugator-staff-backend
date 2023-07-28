@@ -7,7 +7,7 @@ import { studentLessonRouter, adminLessonRouter } from '../v2/lesson.routes';
 import { ClerkExpressRequireAuth } from '@clerk/clerk-sdk-node';
 
 const router = Router();
-router.use(ClerkExpressRequireAuth())
+router.use(ClerkExpressRequireAuth());
 router.use('/course', courseRouter);
 router.use('/organization', organizationRouter);
 router.use('/module', moduleRouter);
