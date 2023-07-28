@@ -171,7 +171,7 @@ const runCode = async (req: Request, response: Response): Promise<Response> => {
   } = req.body;
 
   // find the problem
-  const problem = await ProblemDataLayer.getById(problemId);
+  const problem = await ProblemDataLayer.getById(problemId, true);
   if (!problem) {
     return response.status(404).send();
   }
@@ -275,7 +275,7 @@ const submitCode = async (
   } = req.body;
   try {
     // find the problem
-    const problem = await ProblemDataLayer.getById(problemId);
+    const problem = await ProblemDataLayer.getById(problemId, true);
     if (!problem) {
       return response.status(404).send();
     }
