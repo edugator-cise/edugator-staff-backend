@@ -5,10 +5,12 @@ import { moduleRouter } from '../v2/module.routes';
 import { studentProblemRouter, adminProblemRouter } from '../v2/problem.routes';
 import { studentLessonRouter, adminLessonRouter } from '../v2/lesson.routes';
 import invitationRouter from '../v2/invitation.routes';
-import { ClerkExpressRequireAuth } from '@clerk/clerk-sdk-node';
+
+import { clerk } from '../../services/clerk';
 
 const router = Router();
-router.use(ClerkExpressRequireAuth());
+router.use(clerk.expressRequireAuth());
+
 router.use('/course', courseRouter);
 router.use('/organization', organizationRouter);
 router.use('/module', moduleRouter);

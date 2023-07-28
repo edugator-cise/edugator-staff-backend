@@ -5,7 +5,6 @@ export interface InvitationAttributes {
   id: string;
   courseId: string;
   role: 'teachingAssistant' | 'instructor' | 'student';
-  status: 'pending' | 'active' | 'removed';
   email: string;
 }
 
@@ -25,14 +24,10 @@ export const Invitation = sequelize.define<InvitationInstance>(
       allowNull: false
     },
     email: {
-      type: DataTypes.DATE,
-      allowNull: false
-    },
-    role: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    status: {
+    role: {
       type: DataTypes.STRING,
       allowNull: false
     }

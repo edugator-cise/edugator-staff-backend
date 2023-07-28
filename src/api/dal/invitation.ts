@@ -17,17 +17,20 @@ export const create = async (
 
 export const getById = async (id: string): Promise<InvitationAttributes> => {
   const invitation = await Invitation.findByPk(id);
-  return invitation.get({ plain: true });
+  return invitation ? invitation.get({ plain: true }) : undefined;
 };
 
-export const getByUser = async (
-  _userId: string
+export const getByEmails = async (
+  emails: string[]
 ): Promise<InvitationAttributes[]> => {
   const invitations = await Invitation.findAll({
-    // where in list of emails matching with userId
+    where: {
+      email: emails
+    }
   });
-
-  return invitations.map((invitation) => invitation.get({ plain: true }));
+  return invitations
+    ? invitations.map((invitation) => invitation.get({ plain: true }))
+    : undefined;
 };
 
 export const acceptInvitation = async (
@@ -37,27 +40,36 @@ export const acceptInvitation = async (
   const result = await sequelize.transaction(async (transaction) => {
     try {
       const numberOfDeletions = await Invitation.destroy({
-        where: { id: invitation.id }
+        where: { id: invitation.id },
+        transaction: transaction
       });
       if (numberOfDeletions === 0) throw new Error('Invitation not found');
 
-      const enrollment = await Enrollment.create({
-        userId: userId,
-        courseId: invitation.courseId,
-        email: invitation.email,
-        role: invitation.role,
-        status: 'active'
-      });
+      const enrollment = await Enrollment.create(
+        {
+          userId: userId,
+          courseId: invitation.courseId,
+          email: invitation.email,
+          role: invitation.role,
+          status: 'active'
+        },
+        { transaction: transaction }
+      );
 
       if (!enrollment) throw new Error('Enrollment not created');
-
-      transaction.commit();
       return enrollment.get({ plain: true });
     } catch (e) {
       await transaction.rollback();
-      return undefined;
+      throw new Error(e);
     }
   });
 
   return result;
+};
+
+export const deleteInvitation = async (id: string): Promise<boolean> => {
+  const numberOfDeletions = await Invitation.destroy({
+    where: { id }
+  });
+  return !!numberOfDeletions;
 };
