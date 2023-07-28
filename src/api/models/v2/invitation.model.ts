@@ -1,22 +1,23 @@
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, Model, Optional } from 'sequelize';
 import { sequelize } from '../../../config/database_v2';
 
 export interface InvitationAttributes {
-  userId: string;
+  id: string;
   courseId: string;
   role: 'teachingAssistant' | 'instructor' | 'student';
   status: 'pending' | 'active' | 'removed';
   email: string;
 }
 
+export type InvitationAttributesInput = Optional<InvitationAttributes, 'id'>;
+
 type InvitationInstance = Model<InvitationAttributes, InvitationAttributes>;
 
 export const Invitation = sequelize.define<InvitationInstance>(
   'Invitation',
   {
-    userId: {
+    id: {
       type: DataTypes.STRING,
-      allowNull: false,
       primaryKey: true
     },
     courseId: {
