@@ -33,6 +33,19 @@ export const getByEmails = async (
     : undefined;
 };
 
+export const getByCourse = async (
+  courseId: string
+): Promise<InvitationAttributes[]> => {
+  const invitations = await Invitation.findAll({
+    where: {
+      courseId
+    }
+  });
+  return invitations
+    ? invitations.map((invitation) => invitation.get({ plain: true }))
+    : undefined;
+};
+
 export const acceptInvitation = async (
   invitation: InvitationAttributes,
   userId: string

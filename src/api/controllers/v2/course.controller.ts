@@ -1,9 +1,14 @@
-import { Request, Response } from 'express';
 import { CourseAttributesInput } from '../../models/v2/course.model';
+import { InvitationAttributes } from '../../models/v2/invitation.model';
 import * as CourseDataLayer from '../../dal/course';
 import * as ModuleDataLayer from '../../dal/module';
+import * as InvitationDataLayer from '../../dal/invitation';
 import { v4 as uuidv4 } from 'uuid';
 import { ModuleAttributes } from '../../models/v2/module.model';
+// import * as clerk from '../../services/clerk';
+
+import { Request, Response } from 'express';
+import { WithAuthProp } from '@clerk/clerk-sdk-node';
 
 export const create = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -167,4 +172,51 @@ export const changeModuleOrder = async (
     return res.status(500).send(e);
   }
   return res.status(200).send(updatedModule);
+};
+
+export const getInvitations = async (
+  req: WithAuthProp<Request>,
+  res: Response
+): Promise<Record<string, any>> => {
+  try {
+    // TODO: add enrollment check to see if user has admin permissions in course
+    const invitations = await InvitationDataLayer.getByCourse(
+      req.params.courseId
+    );
+    if (!invitations) return res.sendStatus(404);
+    return res.status(200).send(invitations);
+  } catch (e) {
+    return res.status(500).send(e.message);
+  }
+};
+
+export const inviteMembers = async (
+  req: WithAuthProp<Request>,
+  res: Response
+): Promise<Record<string, any>> => {
+  try {
+    // TODO: add enrollment check to see if user has admin permissions in course
+    const payload: InvitationAttributes = { ...req.body, id: uuidv4() };
+    const result = await InvitationDataLayer.create(payload);
+    if (!result) return res.sendStatus(404);
+    return res.status(200).send(result);
+  } catch (e) {
+    return res.status(500).send(e.message);
+  }
+};
+
+export const cancelInvitations = async (
+  req: WithAuthProp<Request>,
+  res: Response
+): Promise<Record<string, any>> => {
+  try {
+    // TODO: add enrollment check to see if user has admin permissions in course
+    const deleted = await InvitationDataLayer.deleteInvitation(
+      req.params.invitationId
+    );
+    if (!deleted) return res.sendStatus(500);
+    return res.sendStatus(200);
+  } catch (e) {
+    return res.status(500).send(e.message);
+  }
 };
