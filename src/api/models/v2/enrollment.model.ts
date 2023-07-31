@@ -5,7 +5,6 @@ export interface EnrollmentAttributes {
   userId: string;
   courseId: string;
   role: 'teachingAssistant' | 'instructor' | 'student';
-  status: 'pending' | 'active' | 'removed';
   email: string;
 }
 
@@ -28,10 +27,6 @@ export const Enrollment = sequelize.define<EnrollmentInstance>(
       allowNull: false
     },
     role: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    status: {
       type: DataTypes.STRING,
       allowNull: false
     }
