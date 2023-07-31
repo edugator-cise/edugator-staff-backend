@@ -13,6 +13,8 @@ import { Organization } from '../api/models/v2/organization.model';
 import { Module } from '../api/models/v2/module.model';
 import { Problem, TestCase } from '../api/models/v2/problem.model';
 import { Lesson } from '../api/models/v2/lesson.model';
+import { Invitation } from '../api/models/v2/invitation.model';
+import { Enrollment } from '../api/models/v2/enrollment.model';
 
 class Server {
   public app: express.Application;
@@ -58,6 +60,8 @@ class Server {
     await Problem.sync();
     await TestCase.sync();
     await Lesson.sync();
+    await Invitation.sync();
+    await Enrollment.sync();
   }
 
   public start(): void {

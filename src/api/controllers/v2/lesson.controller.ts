@@ -25,26 +25,13 @@ export const postLesson = async (
   }
 };
 
-export const getLessons = async (
-  _req: Request,
-  res: Response
-): Promise<void> => {
-  try {
-    const lessons = await LessonDataLayer.getAll();
-    if (!lessons) res.status(404).send();
-    else res.status(200).send(lessons);
-  } catch (e) {
-    res.status(500).send(e);
-  }
-};
-
 export const getLessonByID = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   // add validation for lessonId?
   try {
-    const lessons = await LessonDataLayer.getById(req.params.lessonid);
+    const lessons = await LessonDataLayer.getById(req.params.lessonId);
     if (!lessons) res.status(404).send();
     else res.status(200).send(lessons);
   } catch (e) {
@@ -69,7 +56,7 @@ export const deleteLesson = async (
   res: Response
 ): Promise<Response<any, Record<string, any>>> => {
   try {
-    const lesson = await LessonDataLayer.getById(req.params.problemId);
+    const lesson = await LessonDataLayer.getById(req.params.lessonId);
     const result = await LessonDataLayer.deleteById(req.params.lessonId);
 
     await ProblemDataLayer.shiftProblems(lesson.moduleId, lesson.orderNumber);

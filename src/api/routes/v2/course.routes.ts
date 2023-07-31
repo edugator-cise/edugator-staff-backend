@@ -4,7 +4,11 @@ import {
   deleteCourse,
   getCourseById,
   updateCourse,
-  getCourseStructure
+  getCourseStructure,
+  changeModuleOrder,
+  getInvitations,
+  inviteMembers,
+  cancelInvitations
 } from '../../controllers/v2/course.controller';
 import {
   createEnrollment,
@@ -25,5 +29,14 @@ courseRouter
   .post(createEnrollment)
   .put(updateEnrollment)
   .delete(deleteEnrollmentById);
+courseRouter.route('/:courseId/changeModuleOrder').post(changeModuleOrder);
+
+courseRouter
+  .route('/:courseId/invitations')
+  .get(getInvitations)
+  .post(inviteMembers);
+courseRouter
+  .route('/:courseId/invitations/:invitationId')
+  .delete(cancelInvitations);
 
 export { courseRouter };

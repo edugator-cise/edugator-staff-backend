@@ -6,6 +6,7 @@ import { Organization } from './organization.model';
 export interface CourseAttributes {
   id: string;
   courseName: string;
+  language?: string;
   startDate: string;
   endDate: string;
   logo: string;
@@ -28,6 +29,10 @@ export const Course = sequelize.define<CourseInstance>(
       type: DataTypes.STRING,
       allowNull: false
     },
+    language: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
     startDate: {
       type: DataTypes.DATE
     },
@@ -46,7 +51,7 @@ export const Course = sequelize.define<CourseInstance>(
 Course.belongsTo(Organization, {
   constraints: false,
   as: 'organization',
-  foreignKey: 'id'
+  foreignKey: 'organizationId'
 });
 
 Organization.hasMany(Course, {

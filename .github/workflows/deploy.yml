@@ -99,8 +99,12 @@ jobs:
       - run: |
           AWS_VERSION_LABEL=${{env.APP_NAME}}-${{env.PIPELINE_ID}}
 
-          echo "Installing Elastic Beanstalk Cli"
+          echo "Installing Elastic Beanstalk CLI"
           python -m pip install --upgrade pip
+
+          echo "Install old pyaml"
+          pip install "pyyaml<5.4"
+
           pip install awsebcli --upgrade
           eb --version
 

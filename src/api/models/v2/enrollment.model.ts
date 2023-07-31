@@ -23,7 +23,7 @@ export const Enrollment = sequelize.define<EnrollmentInstance>(
       allowNull: false
     },
     email: {
-      type: DataTypes.DATE,
+      type: DataTypes.STRING,
       allowNull: false
     },
     role: {
