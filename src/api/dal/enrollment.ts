@@ -22,6 +22,22 @@ export const create = async (
   return enrollment.get({ plain: true });
 };
 
+export const findByUserAndCourse = async (
+  userId: string,
+  courseId: string
+): Promise<EnrollmentAttributes | undefined> => {
+  const enrollment = await Enrollment.findOne({
+    where: {
+      userId,
+      courseId
+    }
+  });
+  if (!enrollment) {
+    return undefined;
+  }
+  return enrollment.get({ plain: true });
+};
+
 export const updateById = async (
   userId: string,
   courseId: string,

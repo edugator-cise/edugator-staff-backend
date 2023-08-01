@@ -213,7 +213,6 @@ export const cancelInvitations = async (
   res: Response
 ): Promise<Record<string, any>> => {
   try {
-    // TODO: add enrollment check to see if user has admin permissions in course
     const deleted = await InvitationDataLayer.deleteInvitation(
       req.params.invitationId
     );

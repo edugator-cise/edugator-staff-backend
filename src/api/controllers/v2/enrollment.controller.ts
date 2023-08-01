@@ -3,7 +3,7 @@ import { EnrollmentAttributes } from '../../models/v2/enrollment.model';
 import * as EnrollmentDataLayer from '../../dal/enrollment';
 import { WithAuthProp } from '@clerk/clerk-sdk-node';
 
-export const getEnrollment = async (
+export const getRoster = async (
   req: WithAuthProp<Request>,
   res: Response
 ): Promise<Response<any, Record<string, any>>> => {
@@ -24,7 +24,8 @@ export const createEnrollment = async (
       userId: req.body.userId,
       courseId: req.body.courseId,
       role: req.body.role,
-      email: req.body.email
+      email: req.body.email,
+      status: req.body.status
     };
     const result = await EnrollmentDataLayer.create(payload);
     return res.status(200).send(result);
