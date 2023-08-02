@@ -1,14 +1,10 @@
-import { Router } from 'express';
 import {
   create,
   deleteCourse,
   getCourseById,
   updateCourse,
   getCourseStructure,
-  changeModuleOrder,
-  getInvitations,
-  inviteMembers,
-  cancelInvitations
+  changeModuleOrder
 } from '../../controllers/v2/course.controller';
 import {
   createEnrollment,
@@ -16,7 +12,15 @@ import {
   getRoster,
   updateEnrollment
 } from '../../controllers/v2/enrollment.controller';
+import {
+  getInvitations,
+  createInvitations,
+  deleteInvitations
+} from '../../controllers/v2/invitation.controller';
 import { NeedsInstructorPermissions } from '../../middlewares/permissions';
+
+import { Router } from 'express';
+
 const courseRouter = Router();
 
 courseRouter.route('/').post(create);
@@ -37,9 +41,9 @@ courseRouter.route('/:courseId/changeModuleOrder').post(changeModuleOrder);
 courseRouter
   .route('/:courseId/invitations')
   .get(NeedsInstructorPermissions, getInvitations)
-  .post(NeedsInstructorPermissions, inviteMembers);
+  .post(NeedsInstructorPermissions, createInvitations);
 courseRouter
   .route('/:courseId/invitations/:invitationId')
-  .delete(NeedsInstructorPermissions, cancelInvitations);
+  .delete(NeedsInstructorPermissions, deleteInvitations);
 
 export { courseRouter };

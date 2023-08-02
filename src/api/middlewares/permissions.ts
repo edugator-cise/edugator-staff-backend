@@ -8,20 +8,14 @@ const NeedsInstructorPermissions = async (
   next: NextFunction
 ): Promise<void> => {
   const { auth } = req;
-  if (!auth || !auth.userId) {
-    res.sendStatus(400);
-  }
+  if (!auth || !auth.userId) res.sendStatus(401);
   const courseId = req.params.courseId || req.body.courseId;
   const user = await EnrollmentDataLayer.findByUserAndCourse(
     req.auth.userId,
     courseId
   );
-  if (!user) {
-    res.status(404);
-  }
-  if (user.role !== 'instructor') {
-    res.status(401).send('User does not have sufficient permissions');
-  }
+  if (!user) res.status(404);
+  if (user && user.role !== 'instructor') res.sendStatus(403);
   next();
 };
 

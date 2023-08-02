@@ -4,7 +4,7 @@ import {
   getUserInvitations,
   acceptInvitation,
   rejectInvitation
-} from '../../controllers/v2/invitations.controller';
+} from '../../controllers/v2/invitation.controller';
 
 const router = express.Router();
 

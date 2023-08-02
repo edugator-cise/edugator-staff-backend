@@ -9,7 +9,7 @@ export const getRoster = async (
 ): Promise<Response<any, Record<string, any>>> => {
   // check is user_id has the right role
   const enrollments = await EnrollmentDataLayer.getAllCourseEnrollments(
-    req.body.courseId
+    req.params.courseId
   );
   return res.status(200).send(enrollments);
 };
@@ -22,7 +22,7 @@ export const createEnrollment = async (
     // check if user_id has the right role
     const payload: EnrollmentAttributes = {
       userId: req.body.userId,
-      courseId: req.body.courseId,
+      courseId: req.params.courseId,
       role: req.body.role,
       email: req.body.email,
       status: req.body.status
@@ -30,7 +30,7 @@ export const createEnrollment = async (
     const result = await EnrollmentDataLayer.create(payload);
     return res.status(200).send(result);
   } catch (e) {
-    return res.status(500).send(e);
+    return res.status(500).send(e.message);
   }
 };
 
@@ -40,18 +40,17 @@ export const updateEnrollment = async (
 ): Promise<Response<any, Record<string, any>>> => {
   try {
     // check if person has ability to update enrollment
-    const { userId, courseId } = req.body;
     const result = await EnrollmentDataLayer.updateById(
-      userId,
-      courseId,
+      req.body.userId,
+      req.params.courseId,
       req.body
     );
     if (!result) {
-      return res.status(400).send();
+      return res.sendStatus(400);
     }
     return res.status(200).send(result);
   } catch (e) {
-    return res.status(500).send(e);
+    return res.status(500).send(e.message);
   }
 };
 
@@ -61,18 +60,21 @@ export const deleteEnrollmentById = async (
 ): Promise<Response<any, Record<string, any>>> => {
   // check is user has permissions
   // check if person has ability to update enrollment
+  const payload: any = {
+    status: 'deleted'
+  };
+
   try {
-    const { userId, courseId } = req.body;
     const result = await EnrollmentDataLayer.updateById(
-      userId,
-      courseId,
-      req.body
+      req.body.userId,
+      req.params.courseId,
+      payload
     );
     if (!result) {
-      return res.status(404).send();
+      return res.sendStatus(400);
     }
     return res.status(200).send(result);
   } catch (e) {
-    return res.status(500).send(e);
+    return res.status(500).send(e.message);
   }
 };
