@@ -1,9 +1,9 @@
-import express from 'express';
+import * as express from 'express';
 import { Request, Response, Express } from 'express';
 import routes from '../api/routes/v1';
 import routesV2 from '../api/routes/v2';
-import cors from 'cors';
-import passport from 'passport';
+import * as cors from 'cors';
+import * as passport from 'passport';
 import { jwtStrategy } from './passport';
 import * as database from './database';
 import * as databasev2 from './database_v2';

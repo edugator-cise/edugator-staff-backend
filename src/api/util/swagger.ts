@@ -1,6 +1,6 @@
 import { Request, Response, Express } from 'express';
-import swaggerJSdoc from 'swagger-jsdoc';
-import swaggerUi from 'swagger-ui-express';
+import * as swaggerJSdoc from 'swagger-jsdoc';
+import * as swaggerUi from 'swagger-ui-express';
 import { version } from '../../../package.json';
 
 const swaggerDefinition: swaggerJSdoc.Options = {
