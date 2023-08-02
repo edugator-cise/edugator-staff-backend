@@ -3,6 +3,7 @@ import { InvitationAttributes } from '../../models/v2/invitation.model';
 import * as CourseDataLayer from '../../dal/course';
 import * as ModuleDataLayer from '../../dal/module';
 import * as InvitationDataLayer from '../../dal/invitation';
+import * as EnrollmentDataLayer from '../../dal/enrollment';
 import { v4 as uuidv4 } from 'uuid';
 import { ModuleAttributes } from '../../models/v2/module.model';
 // import * as clerk from '../../services/clerk';
@@ -182,7 +183,13 @@ export const getInvitations = async (
   res: Response
 ): Promise<Record<string, any>> => {
   try {
-    // TODO: add enrollment check to see if user has admin permissions in course
+    const user = await EnrollmentDataLayer.findByUserAndCourse(
+      req.auth.userId,
+      req.params.courseId
+    );
+    if (!user) return res.sendStatus(401);
+    if (user.role != 'instructor') return res.sendStatus(403);
+
     const invitations = await InvitationDataLayer.getByCourse(
       req.params.courseId
     );
@@ -198,10 +205,16 @@ export const inviteMembers = async (
   res: Response
 ): Promise<Record<string, any>> => {
   try {
-    // TODO: add enrollment check to see if user has admin permissions in course
+    const user = await EnrollmentDataLayer.findByUserAndCourse(
+      req.auth.userId,
+      req.params.courseId
+    );
+    if (!user) return res.sendStatus(401);
+    if (user.role != 'instructor') return res.sendStatus(403);
+
     const payload: InvitationAttributes = { ...req.body, id: uuidv4() };
     const result = await InvitationDataLayer.create(payload);
-    if (!result) return res.sendStatus(404);
+    if (!result) return res.sendStatus(500);
     return res.status(200).send(result);
   } catch (e) {
     return res.status(500).send(e.message);
@@ -213,6 +226,13 @@ export const cancelInvitations = async (
   res: Response
 ): Promise<Record<string, any>> => {
   try {
+    const user = await EnrollmentDataLayer.findByUserAndCourse(
+      req.auth.userId,
+      req.params.courseId
+    );
+    if (!user) return res.sendStatus(401);
+    if (user.role != 'instructor') return res.sendStatus(403);
+
     const deleted = await InvitationDataLayer.deleteInvitation(
       req.params.invitationId
     );
