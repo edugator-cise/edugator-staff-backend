@@ -4,10 +4,9 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
+    // "esModuleInterop": true,
     "allowJs": true,
     "jsx": "react",
-    "importHelpers": true,
     "alwaysStrict": true,
     "sourceMap": true,
     "forceConsistentCasingInFileNames": true,
@@ -22,6 +21,7 @@
   },
   "include": [
     "src/**/*",
-    "__tests__/**/*", "mocks/db.ts"
+    "__tests__/**/*",
+    "mocks/db.ts"
   ]
 }
