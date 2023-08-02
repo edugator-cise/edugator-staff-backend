@@ -30,7 +30,7 @@ class Server {
   public routes(): void {
     this.app.use('/v1', routes);
     this.app.use('/v2', routesV2);
-    swaggerDocs(this.app, this.port);  
+    swaggerDocs(this.app, this.port);
     this.app.get('/', (_req: Request, res: Response): void => {
       // use static 200 to prevent undefined message from http-status
       res.status(200).send('OK');
@@ -62,9 +62,9 @@ class Server {
   }
 
   public start(): void {
-    //eslint-disable-next-line
     this.app.listen(this.port, () => {
-      console.log(`server started on port 8080`)    
+      //eslint-disable-next-line
+      console.log(`server started on port 8080`);
     });
   }
 }
