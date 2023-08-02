@@ -30,13 +30,14 @@ courseRouter
   .put(updateCourse)
   .get(getCourseById);
 courseRouter.route('/:courseId/structure').get(getCourseStructure);
+courseRouter.route('/:courseId/changeModuleOrder').post(changeModuleOrder);
+
 courseRouter
   .route('/:courseId/enrollment')
   .get(NeedsInstructorPermissions, getRoster)
   .post(NeedsInstructorPermissions, createEnrollment)
   .put(NeedsInstructorPermissions, updateEnrollment)
   .delete(NeedsInstructorPermissions, deleteEnrollmentById);
-courseRouter.route('/:courseId/changeModuleOrder').post(changeModuleOrder);
 
 courseRouter
   .route('/:courseId/invitations')
