@@ -59,12 +59,12 @@ class Server {
   }
 
   private async syncModels(): Promise<void> {
-    await Course.sync({ alter: true });
+    await Course.sync();
     await Organization.sync();
     await Module.sync();
-    await Problem.sync({ alter: true });
+    await Problem.sync();
     await TestCase.sync();
-    await Lesson.sync({ alter: true });
+    await Lesson.sync();
     await Invitation.sync();
     await Enrollment.sync();
   }

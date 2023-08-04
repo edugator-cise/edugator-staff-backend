@@ -25,7 +25,7 @@ const swaggerDefinition: swaggerJSdoc.Options = {
       }
     ]
   },
-  apis: ['./src/api/routes/v1/health.routes.ts']
+  apis: ['./src/api/routes/*/*.ts', './src/api/models/*/*.ts']
 };
 
 const swaggerSpec = swaggerJSdoc(swaggerDefinition);
