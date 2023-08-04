@@ -49,6 +49,7 @@
     "@aws-sdk/client-batch": "^3.34.0",
     "@aws-sdk/client-s3": "^3.34.0",
     "@clerk/clerk-sdk-node": "^4.10.14",
+    "@clerk/types": "^3.49.0",
     "axios": "^0.21.4",
     "bcrypt": "^5.0.1",
     "cors": "^2.8.5",

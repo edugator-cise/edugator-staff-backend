@@ -36,7 +36,7 @@ class Server {
     this.app.use('/v2', routesV2);
     this.app.use('/v3', routesV3);
 
-    swaggerDocs(this.app, this.port);
+    swaggerDocs(this.app);
     this.app.get('/', (_req: Request, res: Response): void => {
       // use static 200 to prevent undefined message from http-status
       res.status(200).send('OK');
