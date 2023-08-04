@@ -1,24 +1,21 @@
 import * as express from 'express';
 import * as modules from '../../controllers/v2/module.controller';
-// import { authenticateJWT } from '../../middlewares/auth';
-const moduleRouter = express.Router();
+import { authenticateJWT } from '../../middlewares/auth';
+const router = express.Router();
 
-// Student routes
-// moduleRouter
-//   .route('/WithProblems')
-//   .get(authenticateJWT, modules.getModulesWithProblems);
-moduleRouter.route('/?').get(modules.getModules).post(modules.postModule);
-
-// // Admin routes
-moduleRouter
+router
+  .route('/?')
+  .get(modules.getModules)
+  .post(authenticateJWT, modules.postModule);
+router
   .route('/:moduleId')
   .get(modules.getModuleByID)
-  .put(modules.putModule)
-  .delete(modules.deleteModule);
-moduleRouter
+  .put(authenticateJWT, modules.putModule)
+  .delete(authenticateJWT, modules.deleteModule);
+router
   .route('/:moduleId/changeContentOrder')
-  .post(modules.changeContentOrder);
-//
-moduleRouter.route('/ByProblemId/:problemId').get(modules.getModuleByProblemId);
+  .post(authenticateJWT, modules.changeContentOrder);
 
-export { moduleRouter };
+router.route('/ByProblemId/:problemId').get(modules.getModuleByProblemId);
+
+export default router;

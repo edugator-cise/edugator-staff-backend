@@ -3,19 +3,23 @@ import {
   getOrganizations,
   getOrganizationById,
   deleteOrganization,
-  create,
+  createOrganization,
   updateOrganization
 } from '../../controllers/v2/organization.controller';
 import { getCourses } from '../../controllers/v2/course.controller';
+import { authenticateJWT } from '../../middlewares/auth';
 
-const organizationRouter = Router();
+const router = Router();
 
-organizationRouter.route('/').get(getOrganizations).post(create);
-organizationRouter
+router
+  .route('/')
+  .get(getOrganizations)
+  .post(authenticateJWT, createOrganization);
+router
   .route('/:organizationId')
   .get(getOrganizationById)
-  .put(updateOrganization)
-  .delete(deleteOrganization);
-organizationRouter.route('/:organizationId/courses').get(getCourses);
+  .put(authenticateJWT, updateOrganization)
+  .delete(authenticateJWT, deleteOrganization);
+router.route('/:organizationId/courses').get(getCourses);
 
-export { organizationRouter };
+export default router;

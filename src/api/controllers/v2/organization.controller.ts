@@ -3,7 +3,10 @@ import { OrganizationAttributesInput } from '../../models/v2/organization.model'
 import * as OrganizationDataLayer from '../../dal/organization';
 import { v4 as uuidv4 } from 'uuid';
 
-export const create = async (req: Request, res: Response): Promise<void> => {
+export const createOrganization = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const payload: OrganizationAttributesInput = { ...req.body, id: uuidv4() };
     const result = await OrganizationDataLayer.create(payload);

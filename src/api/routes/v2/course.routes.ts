@@ -1,21 +1,25 @@
 import { Router } from 'express';
 import {
-  create,
+  createCourse,
   deleteCourse,
   getCourseById,
   updateCourse,
   getCourseStructure,
   changeModuleOrder
 } from '../../controllers/v2/course.controller';
-const courseRouter = Router();
+import { authenticateJWT } from '../../middlewares/auth';
 
-courseRouter.route('/').post(create);
-courseRouter
+const router = Router();
+
+router.route('/').post(authenticateJWT, createCourse);
+router
   .route('/:courseId')
-  .delete(deleteCourse)
-  .put(updateCourse)
+  .delete(authenticateJWT, deleteCourse)
+  .put(authenticateJWT, updateCourse)
   .get(getCourseById);
-courseRouter.route('/:courseId/structure').get(getCourseStructure);
-courseRouter.route('/:courseId/changeModuleOrder').post(changeModuleOrder);
+router.route('/:courseId/structure').get(getCourseStructure);
+router
+  .route('/:courseId/changeModuleOrder')
+  .post(authenticateJWT, changeModuleOrder);
 
-export { courseRouter };
+export default router;

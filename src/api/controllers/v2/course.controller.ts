@@ -5,7 +5,10 @@ import * as ModuleDataLayer from '../../dal/module';
 import { v4 as uuidv4 } from 'uuid';
 import { ModuleAttributes } from '../../models/v2/module.model';
 
-export const create = async (req: Request, res: Response): Promise<void> => {
+export const createCourse = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const payload: CourseAttributesInput = { ...req.body, id: uuidv4() };
     const result = await CourseDataLayer.create(payload);
