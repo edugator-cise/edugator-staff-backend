@@ -23,15 +23,15 @@ export const sequelize: Sequelize = new Sequelize(
   }
 );
 
-export const authenticate = async () => {
+export const authenticate = async (): Promise<void> => {
   await sequelize.authenticate();
   await sequelize.sync();
 };
-export const disconnect = () => {
+export const disconnect = (): void => {
   sequelize.close();
 };
 
-export const truncate = () => {
+export const truncate = (): void => {
   sequelize.query('SET FOREIGN_KEY_CHECKS = 0', { raw: true });
   sequelize.truncate({ cascade: true });
 };

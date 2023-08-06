@@ -25,12 +25,12 @@ const swaggerDefinition: swaggerJSdoc.Options = {
       }
     ]
   },
-  apis: ['./src/api/routes/v1/health.routes.ts']
+  apis: ['./src/api/routes/*/*.ts', './src/api/models/*/*.ts']
 };
 
 const swaggerSpec = swaggerJSdoc(swaggerDefinition);
 
-export function swaggerDocs(app: Express, _port: number): void {
+export function swaggerDocs(app: Express): void {
   app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
   app.get('/docs.json', (_req: Request, res: Response) => {
     res.setHeader('Content-Type', 'application/json');
