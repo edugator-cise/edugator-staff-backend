@@ -21,6 +21,8 @@ import {
 import { NeedsInstructorPermissions } from '../../middlewares/permissions';
 import { authenticateJWT } from '../../middlewares/auth';
 
+import { Router } from 'express';
+
 const router = Router();
 
 router.route('/').post(authenticateJWT, createCourse);
