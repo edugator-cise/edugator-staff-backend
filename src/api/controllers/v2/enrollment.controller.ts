@@ -7,7 +7,6 @@ export const getRoster = async (
   req: WithAuthProp<Request>,
   res: Response
 ): Promise<Response<any, Record<string, any>>> => {
-  // check is user_id has the right role
   const enrollments = await EnrollmentDataLayer.getAllCourseEnrollments(
     req.params.courseId
   );
@@ -21,15 +20,19 @@ export const createEnrollment = async (
   try {
     // check if user_id has the right role
     const payload: EnrollmentAttributes = {
-      userId: req.body.userId,
+      userId: req.auth.userId,
       courseId: req.params.courseId,
       role: req.body.role,
       email: req.body.email,
       status: req.body.status
     };
+    //eslint-disable-next-line
+    console.log(payload);
     const result = await EnrollmentDataLayer.create(payload);
     return res.status(200).send(result);
   } catch (e) {
+    //eslint-disable-next-line
+    console.log(e);
     return res.status(500).send(e.message);
   }
 };
@@ -41,7 +44,7 @@ export const updateEnrollment = async (
   try {
     // check if person has ability to update enrollment
     const result = await EnrollmentDataLayer.updateById(
-      req.body.userId,
+      req.auth.userId,
       req.params.courseId,
       req.body
     );
@@ -58,17 +61,10 @@ export const deleteEnrollmentById = async (
   req: WithAuthProp<Request>,
   res: Response
 ): Promise<Response<any, Record<string, any>>> => {
-  // check is user has permissions
-  // check if person has ability to update enrollment
-  const payload: any = {
-    status: 'deleted'
-  };
-
   try {
-    const result = await EnrollmentDataLayer.updateById(
-      req.body.userId,
-      req.params.courseId,
-      payload
+    const result = await EnrollmentDataLayer.deleteById(
+      req.auth.userId,
+      req.params.courseId
     );
     if (!result) {
       return res.sendStatus(400);
