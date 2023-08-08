@@ -2,7 +2,7 @@ import * as mongoose from 'mongoose';
 const globalAny: any = global;
 
 const connect = async () => {
-  if (mongoose.connection.readyState === 0) {
+  if (mongoose && mongoose.connection && mongoose.connection.readyState === 0) {
     await mongoose.connect(
       process.env.NODE_ENV === 'test'
         ? globalAny.__DB_URL__

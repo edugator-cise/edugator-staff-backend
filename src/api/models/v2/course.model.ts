@@ -3,6 +3,40 @@ import { sequelize } from '../../../config/database_v2';
 
 import { Organization } from './organization.model';
 
+/**
+ * @openapi
+ * components:
+ *  schemas:
+ *   CourseAttributesInput:
+ *    type: object
+ *    required:
+ *      - courseName
+ *      - startDate
+ *      - endDate
+ *      - logo
+ *      - language
+ *      - organizationId
+ *    properties:
+ *      courseName:
+ *        type: string
+ *      startDate:
+ *        type: string
+ *      endDate:
+ *        type: string
+ *      logo:
+ *        type: string
+ *      language:
+ *        type: string
+ *      organizationId:
+ *        type: string
+ *   Course:
+ *    allOf:
+ *      - $ref: '#/components/schemas/CourseAttributesInput'
+ *      - type: object
+ *        properties:
+ *          id:
+ *            type: string
+ */
 export interface CourseAttributes {
   id: string;
   courseName: string;

@@ -1,7 +1,8 @@
 import * as express from 'express';
-import { Request, Response } from 'express';
+import { Request, Response, Express } from 'express';
 import routes from '../api/routes/v1';
 import routesV2 from '../api/routes/v2';
+import routesV3 from '../api/routes/v3';
 import * as cors from 'cors';
 import * as passport from 'passport';
 import { jwtStrategy } from './passport';
@@ -12,11 +13,16 @@ import { Organization } from '../api/models/v2/organization.model';
 import { Module } from '../api/models/v2/module.model';
 import { Problem, TestCase } from '../api/models/v2/problem.model';
 import { Lesson } from '../api/models/v2/lesson.model';
+import { Invitation } from '../api/models/v2/invitation.model';
+import { Enrollment } from '../api/models/v2/enrollment.model';
+
+import { swaggerDocs } from '../api/util/swagger';
 
 class Server {
-  public app: express.Application;
-
+  public app: Express;
+  public port: number;
   constructor() {
+    this.port = 8080;
     this.app = express();
     this.connectDatabase();
     if (process.env.NODE_ENV !== 'test') {
@@ -28,6 +34,9 @@ class Server {
   public routes(): void {
     this.app.use('/v1', routes);
     this.app.use('/v2', routesV2);
+    this.app.use('/v3', routesV3);
+
+    swaggerDocs(this.app);
     this.app.get('/', (_req: Request, res: Response): void => {
       // use static 200 to prevent undefined message from http-status
       res.status(200).send('OK');
@@ -56,11 +65,15 @@ class Server {
     await Problem.sync();
     await TestCase.sync();
     await Lesson.sync();
+    await Invitation.sync();
+    await Enrollment.sync();
   }
 
   public start(): void {
-    //eslint-disable-next-line
-    this.app.listen(8080, () => console.log(`server started on port 8080`));
+    this.app.listen(this.port, () => {
+      //eslint-disable-next-line
+      console.log(`server started on port 8080`);
+    });
   }
 }
 
