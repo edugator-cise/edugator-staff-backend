@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { EnrollmentAttributes } from '../../models/v2/enrollment.model';
 import * as EnrollmentDataLayer from '../../dal/enrollment';
 import { WithAuthProp } from '@clerk/clerk-sdk-node';
+import { logger } from '../../services/winston';
 
 export const getRoster = async (
   req: WithAuthProp<Request>,
@@ -26,9 +27,8 @@ export const createEnrollment = async (
       email: req.body.email,
       status: req.body.status
     };
-    //eslint-disable-next-line
-    console.log(payload);
     const result = await EnrollmentDataLayer.create(payload);
+    logger.info('POST Create Enrollment: Succes');
     return res.status(200).send(result);
   } catch (e) {
     //eslint-disable-next-line
