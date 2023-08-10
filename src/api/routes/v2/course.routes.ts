@@ -6,19 +6,7 @@ import {
   getCourseStructure,
   changeModuleOrder
 } from '../../controllers/v2/course.controller';
-import {
-  createEnrollment,
-  deleteEnrollmentById,
-  getRoster,
-  updateEnrollment
-} from '../../controllers/v2/enrollment.controller';
-import {
-  getInvitations,
-  createInvitations,
-  deleteInvitations
-} from '../../controllers/v2/invitation.controller';
 
-import { NeedsInstructorPermissions } from '../../middlewares/permissions';
 import { authenticateJWT } from '../../middlewares/auth';
 
 import { Router } from 'express';
@@ -35,20 +23,5 @@ router.route('/:courseId/structure').get(getCourseStructure);
 router
   .route('/:courseId/changeModuleOrder')
   .post(authenticateJWT, changeModuleOrder);
-
-router
-  .route('/:courseId/enrollment')
-  .get(NeedsInstructorPermissions, getRoster)
-  .post(NeedsInstructorPermissions, createEnrollment)
-  .put(NeedsInstructorPermissions, updateEnrollment)
-  .delete(NeedsInstructorPermissions, deleteEnrollmentById);
-
-router
-  .route('/:courseId/invitations')
-  .get(NeedsInstructorPermissions, getInvitations)
-  .post(NeedsInstructorPermissions, createInvitations);
-router
-  .route('/:courseId/invitations/:invitationId')
-  .delete(NeedsInstructorPermissions, deleteInvitations);
 
 export default router;

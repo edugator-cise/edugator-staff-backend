@@ -14,7 +14,7 @@ const NeedsInstructorPermissions = async (
     req.auth.userId,
     courseId
   );
-  if (!user) res.status(401);
+  if (!user) res.status(404);
   if (user && user.role !== 'instructor') res.sendStatus(403);
   next();
 };
