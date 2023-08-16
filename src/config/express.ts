@@ -1,10 +1,13 @@
 import * as express from 'express';
 import { Request, Response, Express } from 'express';
+import * as cors from 'cors';
+import * as passport from 'passport';
+import * as ws from 'ws';
+import { IncomingMessage } from 'http';
+
 import routes from '../api/routes/v1';
 import routesV2 from '../api/routes/v2';
 import routesV3 from '../api/routes/v3';
-import * as cors from 'cors';
-import * as passport from 'passport';
 import { jwtStrategy } from './passport';
 import * as database from './database';
 import * as databasev2 from './database_v2';
@@ -21,9 +24,13 @@ import { swaggerDocs } from '../api/util/swagger';
 class Server {
   public app: Express;
   public port: number;
+  public wsServer: ws.Server;
+  public openSockets: Map<string, ws.WebSocket>;
+
   constructor() {
     this.port = 8080;
     this.app = express();
+    this.wsServer = new ws.Server({ noServer: true });
     this.connectDatabase();
     if (process.env.NODE_ENV !== 'test') {
       this.connectDatabaseV2();
@@ -70,15 +77,25 @@ class Server {
   }
 
   public start(): void {
-    this.app.listen(this.port, () => {
-      //eslint-disable-next-line
-      console.log(`server started on port 8080`);
+    const server = this.app.listen(this.port);
+    //eslint-disable-next-line
+    console.log(`Server listening on port ${this.port}`);
+
+    this.wsServer.on('connection', (socket, request) => {
+      const params = new URLSearchParams(request.url.split('?')[1]);
+      this.openSockets.set(params.get('token'), socket);
+    });
+
+    server.on('upgrade', (request: IncomingMessage, socket, head: Buffer) => {
+      this.wsServer.handleUpgrade(request, socket, head, (socket) => {
+        this.wsServer.emit('connection', socket, request);
+      });
     });
   }
 }
 
 const server = new Server();
 const expressApp = server.app;
+const openSockets = server.openSockets;
 
-// export server
-export { server, expressApp };
+export { server, expressApp, openSockets };

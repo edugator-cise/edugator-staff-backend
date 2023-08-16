@@ -8,6 +8,7 @@ interface SubmissionPayload {
   cpu_time_limit: number; // seconds
   memory_limit: number;
   compiler_options: string;
+  callback_url?: string;
 }
 class JudgeServer {
   url: string;

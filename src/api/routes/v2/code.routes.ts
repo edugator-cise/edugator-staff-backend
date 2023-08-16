@@ -9,8 +9,7 @@ import {
 const codeRouter = express.Router();
 
 codeRouter.route('/').post(runCode);
-codeRouter.route('/submission').post(getCode);
+codeRouter.route('/submission').post(getCode).delete(deleteCode);
 codeRouter.route('/evaluate').post(submitCode);
-codeRouter.route('/submission').delete(deleteCode);
 
 export { codeRouter };
