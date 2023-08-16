@@ -72,8 +72,8 @@ class Server {
     await Problem.sync();
     await TestCase.sync();
     await Lesson.sync();
-    await Invitation.sync();
-    await Enrollment.sync();
+    await Invitation.sync({ alter: true });
+    await Enrollment.sync({ alter: true });
   }
 
   public start(): void {

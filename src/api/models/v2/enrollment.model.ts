@@ -1,6 +1,8 @@
 import { DataTypes, Model } from 'sequelize';
 import { sequelize } from '../../../config/database_v2';
 
+import { Course } from './course.model';
+
 export interface EnrollmentAttributes {
   userId: string;
   courseId: string;
@@ -41,3 +43,15 @@ export const Enrollment = sequelize.define<EnrollmentInstance>(
     freezeTableName: true
   }
 );
+
+Enrollment.belongsTo(Course, {
+  constraints: false,
+  as: 'course',
+  foreignKey: 'courseId'
+});
+
+Course.hasMany(Enrollment, {
+  constraints: false,
+  as: 'enrollments',
+  foreignKey: 'courseId'
+});

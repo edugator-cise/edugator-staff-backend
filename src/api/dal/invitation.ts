@@ -5,6 +5,7 @@ import {
   InvitationAttributesInput
 } from '../models/v2/invitation.model';
 import { Enrollment } from '../models/v2/enrollment.model';
+import { Course } from '../models/v2/course.model';
 
 import { sequelize } from '../../config/database_v2';
 
@@ -24,6 +25,16 @@ export const getByEmails = async (
   emails: string[]
 ): Promise<InvitationAttributes[]> => {
   const invitations = await Invitation.findAll({
+    include: [
+      {
+        model: Course,
+        as: 'course',
+        attributes: []
+      }
+    ],
+    attributes: {
+      include: [[sequelize.col('course.courseName'), 'courseName']]
+    },
     where: {
       email: emails
     }
