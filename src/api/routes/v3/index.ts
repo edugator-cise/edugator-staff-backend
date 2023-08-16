@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { NextFunction, Request, Response, Router } from 'express';
 import courseRouter from './course.routes';
 import organizationRouter from './organization.routes';
 import moduleRouter from './module.routes';
@@ -9,8 +9,16 @@ import codeRouter from './code.routes';
 
 import { clerk } from '../../services/clerk';
 
+import { WithAuthProp } from '@clerk/clerk-sdk-node';
+
 const router = Router();
-router.use(clerk.expressRequireAuth());
+router.use(clerk.expressWithAuth());
+router.use(
+  (req: WithAuthProp<Request>, res: Response, next: NextFunction): any => {
+    if (!req.auth.userId) return res.sendStatus(401);
+    else return next();
+  }
+);
 
 router.use('/course', courseRouter);
 router.use('/organization', organizationRouter);
