@@ -9,6 +9,8 @@ import { Course } from '../models/v2/course.model';
 
 import { sequelize } from '../../config/database_v2';
 
+import * as clerk from '../services/clerk';
+
 export const create = async (
   payload: InvitationAttributesInput
 ): Promise<InvitationAttributes> => {
@@ -24,7 +26,7 @@ export const getById = async (id: string): Promise<InvitationAttributes> => {
 export const getByEmails = async (
   emails: string[]
 ): Promise<InvitationAttributes[]> => {
-  const invitations = await Invitation.findAll({
+  const result = await Invitation.findAll({
     include: [
       {
         model: Course,
@@ -33,15 +35,37 @@ export const getByEmails = async (
       }
     ],
     attributes: {
-      include: [[sequelize.col('course.courseName'), 'courseName']]
+      include: [
+        [sequelize.col('course.courseName'), 'courseName'],
+        [
+          sequelize.literal(
+            `(SELECT GROUP_CONCAT(userId) FROM Enrollment WHERE courseId=course.id AND role='instructor')`
+          ),
+          'instructors'
+        ]
+      ]
     },
     where: {
       email: emails
     }
   });
-  return invitations
-    ? invitations.map((invitation) => invitation.get({ plain: true }))
-    : undefined;
+  const invitations: any = result.map((value) => value.get({ plain: true }));
+  await Promise.all(
+    invitations.map(async (invitation: any) => {
+      const ids = invitation.instructors.split(',');
+      const names = await clerk.getUsers(ids).then((users) => {
+        return users.map((user) =>
+          !user.firstName || !user.lastName
+            ? ''
+            : user.firstName + ' ' + user.lastName
+        );
+      });
+      invitation.instructors = names;
+      return invitation;
+    })
+  );
+
+  return invitations;
 };
 
 export const getByCourse = async (

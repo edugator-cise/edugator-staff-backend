@@ -4,12 +4,14 @@ import {
 } from '../models/v2/enrollment.model';
 import { Course } from '../models/v2/course.model';
 
+import * as clerk from '../services/clerk';
+
 import { sequelize } from '../../config/database_v2';
 
 export const getByUser = async (
   userId: string
 ): Promise<EnrollmentAttributes[]> => {
-  const enrollment = await Enrollment.findAll({
+  const result = await Enrollment.findAll({
     include: [
       {
         model: Course,
@@ -18,26 +20,71 @@ export const getByUser = async (
       }
     ],
     attributes: {
-      include: [[sequelize.col('course.courseName'), 'courseName']]
+      include: [
+        [sequelize.col('course.courseName'), 'courseName'],
+        [
+          sequelize.literal(
+            `(SELECT GROUP_CONCAT(userId) FROM Enrollment WHERE courseId=course.id AND role='instructor')`
+          ),
+          'instructors'
+        ]
+      ]
     },
     where: {
       userId
     },
     order: [['courseName', 'ASC']]
   });
-  return enrollment.map((value) => value.get({ plain: true }));
+
+  const enrollments: any = result.map((value) => value.get({ plain: true }));
+  await Promise.all(
+    enrollments.map(async (enrollment: any) => {
+      const ids = enrollment.instructors.split(',');
+      const names = await clerk.getUsers(ids).then((users) => {
+        return users.map((user) =>
+          !user.firstName || !user.lastName
+            ? ''
+            : user.firstName + ' ' + user.lastName
+        );
+      });
+      enrollment.instructors = names;
+      return enrollment;
+    })
+  );
+
+  return enrollments;
 };
 
 export const getAllCourseEnrollments = async (
   courseId: string
 ): Promise<EnrollmentAttributes[]> => {
-  const enrollment = await Enrollment.findAll({
+  const result = await Enrollment.findAll({
     where: {
       courseId
     },
     order: [['email', 'ASC']]
   });
-  return enrollment.map((value) => value.get({ plain: true }));
+  let enrollments: any = result.map((value) => value.get({ plain: true }));
+
+  const userIds = enrollments.map((value) => value.userId);
+  const users = await clerk.getUsers(userIds);
+
+  const names = new Map<string, string>();
+  users.forEach((user) => {
+    names.set(
+      user.id,
+      !user.firstName || !user.lastName
+        ? ''
+        : user.firstName + ' ' + user.lastName
+    );
+  });
+
+  enrollments = enrollments.map((value) => {
+    value['name'] = names.get(value.userId);
+    return value;
+  });
+
+  return enrollments;
 };
 
 export const create = async (
