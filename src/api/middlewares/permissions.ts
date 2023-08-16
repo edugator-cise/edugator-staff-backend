@@ -22,7 +22,7 @@ const NeedsInstructorPermissions = async (
     courseId
   );
   if (!user) {
-    res.status(404);
+    res.status(401);
     return;
   }
   if (user && user.role !== 'instructor') {
