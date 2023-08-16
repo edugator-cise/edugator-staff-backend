@@ -6,7 +6,7 @@ import { ModuleAttributes } from '../../models/v2/module.model';
 
 import { Request, Response } from 'express';
 
-export const create = async (
+export const createCourse = async (
   req: Request,
   res: Response
 ): Promise<Response<any, Record<string, any>>> => {

@@ -6,10 +6,10 @@ import {
   deleteCode
 } from '../../controllers/v2/code.controller';
 
-const codeRouter = express.Router();
+const router = express.Router();
 
-codeRouter.route('/').post(runCode);
-codeRouter.route('/submission').post(getCode).delete(deleteCode);
-codeRouter.route('/evaluate').post(submitCode);
+router.route('/').post(runCode);
+router.route('/submission').post(getCode);
+router.route('/evaluate').post(submitCode).delete(deleteCode);
 
-export { codeRouter };
+export default router;

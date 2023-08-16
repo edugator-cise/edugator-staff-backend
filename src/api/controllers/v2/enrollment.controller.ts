@@ -40,7 +40,7 @@ export const updateEnrollment = async (
   try {
     // check if person has ability to update enrollment
     const result = await EnrollmentDataLayer.updateById(
-      req.auth.userId,
+      req.body.userId,
       req.params.courseId,
       req.body
     );
@@ -59,7 +59,7 @@ export const deleteEnrollmentById = async (
 ): Promise<Response<any, Record<string, any>>> => {
   try {
     const result = await EnrollmentDataLayer.updateById(
-      req.auth.userId,
+      req.body.userId,
       req.params.courseId,
       {
         status: 'removed'

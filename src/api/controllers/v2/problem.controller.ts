@@ -49,40 +49,30 @@ export const createProblem = async (
   }
 };
 
-export const readStudentProblems = async (
+export const getStudentProblem = async (
   req: Request,
   res: Response
 ): Promise<Record<string, any>> => {
-  if (req.params.problemId) {
+  try {
     const problem = await ProblemDataLayer.getById(req.params.problemId, false);
     if (!problem || problem.hidden) return res.sendStatus(404);
     return res.status(200).send(problem);
-  } else if (req.params.moduleId) {
-    const problems = await ProblemDataLayer.getByModule(
-      req.params.problemId,
-      false
-    );
-    return res.status(200).send(problems);
+  } catch (e) {
+    return res.status(500).send(e);
   }
-  return res.sendStatus(500);
 };
 
-export const readAdminProblems = async (
+export const getAdminProblem = async (
   req: Request,
   res: Response
 ): Promise<Record<string, any>> => {
-  if (req.params.problemId) {
+  try {
     const problem = await ProblemDataLayer.getById(req.params.problemId, true);
     if (!problem) return res.sendStatus(404);
     return res.status(200).send(problem);
-  } else if (req.params.moduleId) {
-    const problems = await ProblemDataLayer.getByModule(
-      req.params.problemId,
-      true
-    );
-    return res.status(200).send(problems);
+  } catch (e) {
+    return res.status(500).send(e);
   }
-  return res.sendStatus(500);
 };
 
 export const updateProblem = async (

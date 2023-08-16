@@ -1,16 +1,24 @@
-import { Router } from 'express';
-import { courseRouter } from '../v2/course.routes';
-import { organizationRouter } from '../v2/organization.routes';
-import { moduleRouter } from '../v2/module.routes';
-import { studentProblemRouter, adminProblemRouter } from '../v2/problem.routes';
-import { studentLessonRouter, adminLessonRouter } from '../v2/lesson.routes';
-import invitationRouter from '../v2/invitation.routes';
+import { NextFunction, Request, Response, Router } from 'express';
+import courseRouter from './course.routes';
+import organizationRouter from './organization.routes';
+import moduleRouter from './module.routes';
+import { studentProblemRouter, adminProblemRouter } from './problem.routes';
+import { studentLessonRouter, adminLessonRouter } from './lesson.routes';
+import invitationRouter from './invitation.routes';
 import codeRouter from './code.routes';
 
 import { clerk } from '../../services/clerk';
 
+import { WithAuthProp } from '@clerk/clerk-sdk-node';
+
 const router = Router();
-router.use(clerk.expressRequireAuth());
+router.use(clerk.expressWithAuth());
+router.use(
+  (req: WithAuthProp<Request>, res: Response, next: NextFunction): any => {
+    if (!req.auth.userId) return res.sendStatus(401);
+    else return next();
+  }
+);
 
 router.use('/course', courseRouter);
 router.use('/organization', organizationRouter);
