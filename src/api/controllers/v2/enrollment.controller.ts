@@ -58,9 +58,12 @@ export const deleteEnrollmentById = async (
   res: Response
 ): Promise<Response<any, Record<string, any>>> => {
   try {
-    const result = await EnrollmentDataLayer.deleteById(
+    const result = await EnrollmentDataLayer.updateById(
       req.auth.userId,
-      req.params.courseId
+      req.params.courseId,
+      {
+        status: 'removed'
+      }
     );
     if (!result) {
       return res.sendStatus(400);
