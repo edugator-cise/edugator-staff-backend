@@ -2,6 +2,31 @@ import {
   Enrollment,
   EnrollmentAttributes
 } from '../models/v2/enrollment.model';
+import { Course } from '../models/v2/course.model';
+
+import { sequelize } from '../../config/database_v2';
+
+export const getByUser = async (
+  userId: string
+): Promise<EnrollmentAttributes[]> => {
+  const enrollment = await Enrollment.findAll({
+    include: [
+      {
+        model: Course,
+        as: 'course',
+        attributes: []
+      }
+    ],
+    attributes: {
+      include: [[sequelize.col('course.courseName'), 'courseName']]
+    },
+    where: {
+      userId
+    },
+    order: [['courseName', 'ASC']]
+  });
+  return enrollment.map((value) => value.get({ plain: true }));
+};
 
 export const getAllCourseEnrollments = async (
   courseId: string
