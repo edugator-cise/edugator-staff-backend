@@ -41,7 +41,7 @@ export const findByUserAndCourse = async (
 export const updateById = async (
   userId: string,
   courseId: string,
-  payload: EnrollmentAttributes
+  payload: Partial<EnrollmentAttributes>
 ): Promise<EnrollmentAttributes | undefined> => {
   const enrollment = await Enrollment.findOne({
     where: {

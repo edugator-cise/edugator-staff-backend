@@ -87,3 +87,5 @@ CREATE TABLE IF NOT EXISTS `Lesson` (
   `moduleId` VARCHAR(255),
   PRIMARY KEY (`id`)
 );
+
+CREATE TABLE IF NOT EXISTS `Enrollment` (`userId` VARCHAR(255) NOT NULL , `courseId` VARCHAR(255) NOT NULL , `email` VARCHAR(255) NOT NULL, `role` VARCHAR(255) NOT NULL, `status` VARCHAR(255) NOT NULL, `createdAt` DATETIME NOT NULL, `updatedAt` DATETIME NOT NULL, PRIMARY KEY (`userId`, `courseId`));
