@@ -4,7 +4,6 @@ name: Continuous Integration
 env:
   APP_PASSWORD: ${{secrets.APP_PASSWORD}}
   ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  BETA_JUDGE_URI: ${{secrets.BETA_JUDGE_URI}}
   DB_URI: ${{secrets.DB_URI}}
   EDUGATOR_API_PASS: ${{secrets.EDUGATOR_API_PASS}}
   EDUGATOR_API_URL: ${{secrets.EDUGATOR_API_URL}}
@@ -19,6 +18,7 @@ env:
   SENDER_EMAIL: ${{secrets.SENDER_EMAIL}}
   UPLOAD_SUBMISSIONS_BUCKET: ${{secrets.UPLOAD_SUBMISSIONS_BUCKET}}
   SECRET_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
 
 # This action works with pull requests and pushes
 on:

@@ -7,7 +7,6 @@ export const getRoster = async (
   req: WithAuthProp<Request>,
   res: Response
 ): Promise<Response<any, Record<string, any>>> => {
-  // check is user_id has the right role
   const enrollments = await EnrollmentDataLayer.getAllCourseEnrollments(
     req.params.courseId
   );
@@ -41,7 +40,7 @@ export const updateEnrollment = async (
   try {
     // check if person has ability to update enrollment
     const result = await EnrollmentDataLayer.updateById(
-      req.body.userId,
+      req.auth.userId,
       req.params.courseId,
       req.body
     );
@@ -58,17 +57,13 @@ export const deleteEnrollmentById = async (
   req: WithAuthProp<Request>,
   res: Response
 ): Promise<Response<any, Record<string, any>>> => {
-  // check is user has permissions
-  // check if person has ability to update enrollment
-  const payload: any = {
-    status: 'deleted'
-  };
-
   try {
     const result = await EnrollmentDataLayer.updateById(
-      req.body.userId,
+      req.auth.userId,
       req.params.courseId,
-      payload
+      {
+        status: 'removed'
+      }
     );
     if (!result) {
       return res.sendStatus(400);

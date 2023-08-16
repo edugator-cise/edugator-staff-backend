@@ -5,6 +5,7 @@ import moduleRouter from './module.routes';
 import { studentProblemRouter, adminProblemRouter } from './problem.routes';
 import { studentLessonRouter, adminLessonRouter } from './lesson.routes';
 import invitationRouter from './invitation.routes';
+import codeRouter from './code.routes';
 
 import { clerk } from '../../services/clerk';
 
@@ -14,6 +15,7 @@ router.use(clerk.expressRequireAuth());
 router.use('/course', courseRouter);
 router.use('/organization', organizationRouter);
 router.use('/module', moduleRouter);
+router.use('/code/run', codeRouter);
 router.use('/student/problem', studentProblemRouter);
 router.use('/admin/problem', adminProblemRouter);
 router.use('/student/lesson', studentLessonRouter);

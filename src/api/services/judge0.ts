@@ -8,6 +8,7 @@ interface SubmissionPayload {
   cpu_time_limit: number; // seconds
   memory_limit: number;
   compiler_options: string;
+  callback_url?: string;
 }
 class JudgeServer {
   url: string;
@@ -55,7 +56,13 @@ class JudgeServer {
     );
   }
   // Used for polling function to define payload as one argument instead of a variable amount
-  getSubmissionVariant({ token, base64 }): Promise<AxiosResponse> {
+  getSubmissionVariant({
+    token,
+    base64
+  }: {
+    token: string;
+    base64: boolean;
+  }): Promise<AxiosResponse> {
     return this.axiosInstance.get(
       `/submissions/${token}?base64_encoded=${base64}`
     );

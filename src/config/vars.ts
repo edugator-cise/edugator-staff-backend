@@ -1,8 +1,5 @@
 // back end environment variables
-export const judgeURI =
-  process.env.NODE_ENV === 'production'
-    ? process.env.PROD_JUDGE_URI
-    : process.env.BETA_JUDGE_URI;
+export const judgeURI = process.env.PROD_JUDGE_URI;
 export const env = process.env.NODE_ENV;
 export const jwtExpirationInterval = 86400; // 1 day in seconds
 export const jwtSecret = process.env.JWT_SECRET;
