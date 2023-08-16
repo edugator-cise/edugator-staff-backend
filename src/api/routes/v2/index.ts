@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { courseRouter } from './course.routes';
-import { organizationRouter } from './organization.routes';
-import { moduleRouter } from './module.routes';
-import { codeRouter } from './code.routes';
+import courseRouter from './course.routes';
+import organizationRouter from './organization.routes';
+import moduleRouter from './module.routes';
+import codeRouter from './code.routes';
 import { studentProblemRouter, adminProblemRouter } from './problem.routes';
 import { studentLessonRouter, adminLessonRouter } from './lesson.routes';
 

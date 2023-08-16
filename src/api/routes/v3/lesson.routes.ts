@@ -6,18 +6,17 @@ import {
   putLesson,
   deleteLesson
 } from '../../controllers/v2/lesson.controller';
-import { authenticateJWT } from '../../middlewares/auth';
 
 const studentLessonRouter = express.Router();
 const adminLessonRouter = express.Router();
 
 studentLessonRouter.route('/:lessonId').get(getLessonByID);
 
-adminLessonRouter.route('/').post(authenticateJWT, postLesson);
+adminLessonRouter.route('/').post(postLesson);
 adminLessonRouter
   .route('/:lessonId')
-  .get(authenticateJWT, getLessonByID)
-  .put(authenticateJWT, putLesson)
-  .delete(authenticateJWT, deleteLesson);
+  .get(getLessonByID)
+  .put(putLesson)
+  .delete(deleteLesson);
 
 export { studentLessonRouter, adminLessonRouter };
