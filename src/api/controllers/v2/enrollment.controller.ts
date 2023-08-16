@@ -26,13 +26,9 @@ export const createEnrollment = async (
       email: req.body.email,
       status: req.body.status
     };
-    //eslint-disable-next-line
-    console.log(payload);
     const result = await EnrollmentDataLayer.create(payload);
     return res.status(200).send(result);
   } catch (e) {
-    //eslint-disable-next-line
-    console.log(e);
     return res.status(500).send(e.message);
   }
 };
