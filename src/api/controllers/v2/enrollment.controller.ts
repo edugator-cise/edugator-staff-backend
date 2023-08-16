@@ -20,7 +20,7 @@ export const createEnrollment = async (
   try {
     // check if user_id has the right role
     const payload: EnrollmentAttributes = {
-      userId: req.auth.userId,
+      userId: req.body.userId,
       courseId: req.params.courseId,
       role: req.body.role,
       email: req.body.email,
