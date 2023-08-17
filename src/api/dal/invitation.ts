@@ -23,6 +23,17 @@ export const getById = async (id: string): Promise<InvitationAttributes> => {
   return invitation ? invitation.get({ plain: true }) : undefined;
 };
 
+export const updateById = async (
+  id: string,
+  payload: InvitationAttributesInput
+): Promise<InvitationAttributes | undefined> => {
+  const invitation = await Invitation.findByPk(id);
+
+  if (!invitation) return undefined;
+  const updatedInvitation = await invitation.update(payload);
+  return updatedInvitation ? updatedInvitation.get({ plain: true }) : undefined;
+};
+
 export const getByEmails = async (
   emails: string[]
 ): Promise<InvitationAttributes[]> => {

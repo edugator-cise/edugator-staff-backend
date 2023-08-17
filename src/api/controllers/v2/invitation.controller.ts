@@ -99,6 +99,24 @@ export const createInvitations = async (
   }
 };
 
+export const updateInvitation = async (
+  req: WithAuthProp<Request>,
+  res: Response
+): Promise<Record<string, any>> => {
+  try {
+    const result = await InvitationDataLayer.updateById(
+      req.params.invitationId,
+      req.body
+    );
+    if (!result) {
+      return res.sendStatus(400);
+    }
+    return res.status(200).send(result);
+  } catch (e) {
+    return res.status(500).send(e.message);
+  }
+};
+
 export const deleteInvitations = async (
   req: WithAuthProp<Request>,
   res: Response
