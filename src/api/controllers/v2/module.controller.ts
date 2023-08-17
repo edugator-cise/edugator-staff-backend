@@ -25,7 +25,7 @@ export const postModule = async (
     const result = await ModuleDataLayer.create(payload);
     return res.status(200).send(result);
   } catch (e) {
-    return res.status(500).send(e);
+    return res.status(500).send(e.message);
   }
 };
 
@@ -38,7 +38,7 @@ export const getModules = async (
     if (!modules) res.status(404).send();
     else res.status(200).send(modules);
   } catch (e) {
-    res.status(500).send(e);
+    res.status(500).send(e.message);
   }
 };
 
@@ -51,7 +51,7 @@ export const getModuleByID = async (
     if (!module_) res.status(404).send();
     else res.status(200).send(module_);
   } catch (e) {
-    res.status(500).send(e);
+    res.status(500).send(e.message);
   }
 };
 
@@ -66,7 +66,7 @@ export const getModuleByProblemId = async (
     if (!modules) return res.status(404).send();
     return res.status(200).send(modules);
   } catch (e) {
-    return res.status(500).send(e);
+    return res.status(500).send(e.message);
   }
 };
 
@@ -81,7 +81,7 @@ export const putModule = async (
     );
     return res.status(200).send(result);
   } catch (e) {
-    return res.status(500).send(e);
+    return res.status(500).send(e.message);
   }
 };
 
@@ -99,7 +99,7 @@ export const deleteModule = async (
     await ModuleDataLayer.shiftModules(module_.courseId, module_.orderNumber);
     return res.status(200).send(result);
   } catch (e) {
-    return res.status(500).send(e);
+    return res.status(500).send(e.message);
   }
 };
 
@@ -152,7 +152,7 @@ export const changeContentOrder = async (
         ? await ProblemDataLayer.updateById(req.body.id, payload)
         : await LessonDataLayer.updateById(req.body.id, payload);
   } catch (e) {
-    return res.status(500).send(e);
+    return res.status(500).send(e.message);
   }
   return res.status(200).send(updatedContent);
 };

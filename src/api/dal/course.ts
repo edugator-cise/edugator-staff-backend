@@ -7,6 +7,10 @@ import { Module } from '../models/v2/module.model';
 import { Problem } from '../models/v2/problem.model';
 import { Lesson } from '../models/v2/lesson.model';
 
+import { sequelize } from '../../config/database_v2';
+
+import * as clerk from '../services/clerk';
+
 import { Op, Sequelize } from 'sequelize';
 
 export const create = async (
@@ -19,8 +23,35 @@ export const create = async (
 export const getById = async (
   id: string
 ): Promise<CourseAttributes | undefined> => {
-  const course = await Course.findByPk(id);
-  return course ? course.get({ plain: true }) : undefined;
+  const result: any = await Course.findByPk(id, {
+    attributes: {
+      include: [
+        [
+          sequelize.literal(
+            `(SELECT GROUP_CONCAT(userId) FROM Enrollment WHERE courseId=id AND role='instructor')`
+          ),
+          'instructors'
+        ]
+      ]
+    }
+  });
+
+  const course = result.get({ plain: true });
+  const ids = course.instructors.split(',');
+  const instructors = await clerk.getUsers(ids).then((users) => {
+    return users.map((user) => {
+      return {
+        name:
+          !user.firstName || !user.lastName
+            ? ''
+            : user.firstName + ' ' + user.lastName,
+        image: user.imageUrl
+      };
+    });
+  });
+  course.instructors = instructors;
+
+  return course;
 };
 
 export const deleteById = async (id: string): Promise<boolean> => {

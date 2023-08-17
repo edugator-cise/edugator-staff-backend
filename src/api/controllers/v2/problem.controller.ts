@@ -45,7 +45,7 @@ export const createProblem = async (
     result.testCases = testCaseResults;
     return res.status(200).send(result);
   } catch (e) {
-    return res.status(500).send(e);
+    return res.status(500).send(e.message);
   }
 };
 
@@ -58,7 +58,7 @@ export const getStudentProblem = async (
     if (!problem || problem.hidden) return res.sendStatus(404);
     return res.status(200).send(problem);
   } catch (e) {
-    return res.status(500).send(e);
+    return res.status(500).send(e.message);
   }
 };
 
@@ -71,7 +71,7 @@ export const getAdminProblem = async (
     if (!problem) return res.sendStatus(404);
     return res.status(200).send(problem);
   } catch (e) {
-    return res.status(500).send(e);
+    return res.status(500).send(e.message);
   }
 };
 
@@ -86,7 +86,7 @@ export const updateProblem = async (
     );
     return res.status(200).send(result);
   } catch (e) {
-    return res.status(500).send(e);
+    return res.status(500).send(e.message);
   }
 };
 
@@ -102,6 +102,6 @@ export const deleteProblem = async (
     await LessonDataLayer.shiftLessons(problem.moduleId, problem.orderNumber);
     return res.status(200).send(result);
   } catch (e) {
-    return res.status(500).send(e);
+    return res.status(500).send(e.message);
   }
 };

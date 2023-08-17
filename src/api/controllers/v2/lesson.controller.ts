@@ -21,7 +21,7 @@ export const postLesson = async (
     const result = await LessonDataLayer.create(payload);
     return res.status(200).send(result);
   } catch (e) {
-    return res.status(500).send(e);
+    return res.status(500).send(e.message);
   }
 };
 
@@ -35,7 +35,7 @@ export const getLessonByID = async (
     if (!lessons) res.status(404).send();
     else res.status(200).send(lessons);
   } catch (e) {
-    res.status(500).send(e);
+    res.status(500).send(e.message);
   }
 };
 
@@ -47,7 +47,7 @@ export const putLesson = async (req: Request, res: Response): Promise<void> => {
     );
     res.status(200).send(result);
   } catch (e) {
-    res.status(500).send(e);
+    res.status(500).send(e.message);
   }
 };
 
@@ -63,6 +63,6 @@ export const deleteLesson = async (
     await LessonDataLayer.shiftLessons(lesson.moduleId, lesson.orderNumber);
     return res.status(200).send(result);
   } catch (e) {
-    return res.status(500).send(e);
+    return res.status(500).send(e.message);
   }
 };
