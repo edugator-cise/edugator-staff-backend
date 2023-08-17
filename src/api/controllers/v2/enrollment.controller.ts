@@ -3,6 +3,19 @@ import { EnrollmentAttributes } from '../../models/v2/enrollment.model';
 import * as EnrollmentDataLayer from '../../dal/enrollment';
 import { WithAuthProp } from '@clerk/clerk-sdk-node';
 
+export const getUserEnrollments = async (
+  req: WithAuthProp<Request>,
+  res: Response
+): Promise<Response<any, Record<string, any>>> => {
+  try {
+    const enrollments = await EnrollmentDataLayer.getByUser(req.auth.userId);
+    if (!enrollments) return res.status(404).send();
+    else return res.status(200).send(enrollments);
+  } catch (e) {
+    return res.status(500).send(e.message);
+  }
+};
+
 export const getRoster = async (
   req: WithAuthProp<Request>,
   res: Response

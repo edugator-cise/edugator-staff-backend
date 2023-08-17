@@ -8,7 +8,6 @@ import {
 
 const router = express.Router();
 
-// TODO: add course invitation routes to ./course.routes.ts
 router.route('/').get(getUserInvitations);
 router.route('/:invitationId/accept').post(acceptInvitation);
 router.route('/:invitationId/reject').post(rejectInvitation);

@@ -8,3 +8,8 @@ export const getUser = async (userId: string): Promise<User> => {
   const user = await clerk.users.getUser(userId);
   return user;
 };
+
+export const getUsers = async (userIds: string[]): Promise<User[]> => {
+  const users = await clerk.users.getUserList({ userId: userIds });
+  return users;
+};

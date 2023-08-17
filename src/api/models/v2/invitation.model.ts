@@ -1,9 +1,11 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import { sequelize } from '../../../config/database_v2';
 
+import { Course } from './course.model';
+
 export interface InvitationAttributes {
   id: string;
-  courseId: string;
+  courseId?: string;
   role: 'teachingAssistant' | 'instructor' | 'student';
   email: string;
 }
@@ -19,10 +21,6 @@ export const Invitation = sequelize.define<InvitationInstance>(
       type: DataTypes.STRING,
       primaryKey: true
     },
-    courseId: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
     email: {
       type: DataTypes.STRING,
       allowNull: false
@@ -36,3 +34,15 @@ export const Invitation = sequelize.define<InvitationInstance>(
     freezeTableName: true
   }
 );
+
+Invitation.belongsTo(Course, {
+  constraints: false,
+  as: 'course',
+  foreignKey: 'courseId'
+});
+
+Course.hasMany(Invitation, {
+  constraints: false,
+  as: 'invitations',
+  foreignKey: 'courseId'
+});
