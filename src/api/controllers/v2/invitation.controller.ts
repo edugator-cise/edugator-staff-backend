@@ -1,5 +1,6 @@
 import { InvitationAttributes } from '../../models/v2/invitation.model';
 import * as InvitationDataLayer from '../../dal/invitation';
+import * as EnrollmentDataLayer from '../../dal/enrollment';
 import * as clerk from '../../services/clerk';
 
 import { Request, Response } from 'express';
@@ -86,6 +87,13 @@ export const createInvitations = async (
   res: Response
 ): Promise<Record<string, any>> => {
   try {
+    const enrollment = await EnrollmentDataLayer.findByUserAndCourse(
+      req.params.courseId,
+      req.auth.userId
+    );
+    if (enrollment)
+      return res.status(400).send('Trying to invite an enrolled user');
+
     const payload: InvitationAttributes = {
       ...req.body,
       courseId: req.params.courseId,

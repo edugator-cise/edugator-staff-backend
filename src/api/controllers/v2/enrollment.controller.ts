@@ -31,7 +31,6 @@ export const createEnrollment = async (
   res: Response
 ): Promise<Response<any, Record<string, any>>> => {
   try {
-    // check if user_id has the right role
     const payload: EnrollmentAttributes = {
       userId: req.body.userId,
       courseId: req.params.courseId,
@@ -51,7 +50,6 @@ export const updateEnrollment = async (
   res: Response
 ): Promise<Response<any, Record<string, any>>> => {
   try {
-    // check if person has ability to update enrollment
     const result = await EnrollmentDataLayer.updateById(
       req.body.userId,
       req.params.courseId,
@@ -71,6 +69,9 @@ export const deleteEnrollmentById = async (
   res: Response
 ): Promise<Response<any, Record<string, any>>> => {
   try {
+    if (req.body.userId == req.auth.userId)
+      return res.status(400).send('You cannot delete yourself from the course');
+
     const result = await EnrollmentDataLayer.updateById(
       req.body.userId,
       req.params.courseId,
