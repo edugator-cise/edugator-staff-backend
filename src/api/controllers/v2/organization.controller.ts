@@ -12,7 +12,7 @@ export const createOrganization = async (
     const result = await OrganizationDataLayer.create(payload);
     res.status(200).send(result);
   } catch (e) {
-    res.status(500).send(e);
+    res.status(500).send(e.message);
   }
 };
 
@@ -27,7 +27,7 @@ export const getOrganizations = async (
     }
     res.status(200).send(results);
   } catch (e) {
-    res.status(500).send(e);
+    res.status(500).send(e.message);
   }
 };
 
@@ -47,7 +47,7 @@ export const getOrganizationById = async (
     }
     res.status(200).send(result);
   } catch (e) {
-    res.status(500).send(e);
+    res.status(500).send(e.message);
   }
 };
 
@@ -66,7 +66,7 @@ export const updateOrganization = async (
     }
     res.status(200).send(result);
   } catch (e) {
-    res.status(500).send(e);
+    res.status(500).send(e.message);
   }
 };
 
@@ -86,6 +86,6 @@ export const deleteOrganization = async (
     }
     res.status(200).send(result);
   } catch (e) {
-    res.status(500).send(e);
+    res.status(500).send(e.message);
   }
 };
