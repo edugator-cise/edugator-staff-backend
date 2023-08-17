@@ -22,6 +22,8 @@ export const getByUser = async (
     attributes: {
       include: [
         [sequelize.col('course.courseName'), 'courseName'],
+        [sequelize.col('course.logo'), 'courseLogo'],
+        [sequelize.col('course.description'), 'courseDescription'],
         [
           sequelize.literal(
             `(SELECT GROUP_CONCAT(userId) FROM Enrollment WHERE courseId=course.id AND role='instructor')`
@@ -40,14 +42,18 @@ export const getByUser = async (
   await Promise.all(
     enrollments.map(async (enrollment: any) => {
       const ids = enrollment.instructors.split(',');
-      const names = await clerk.getUsers(ids).then((users) => {
-        return users.map((user) =>
-          !user.firstName || !user.lastName
-            ? ''
-            : user.firstName + ' ' + user.lastName
-        );
+      const instructors = await clerk.getUsers(ids).then((users) => {
+        return users.map((user) => {
+          return {
+            name:
+              !user.firstName || !user.lastName
+                ? ''
+                : user.firstName + ' ' + user.lastName,
+            image: user.imageUrl
+          };
+        });
       });
-      enrollment.instructors = names;
+      enrollment.instructors = instructors;
       return enrollment;
     })
   );
