@@ -44,6 +44,7 @@ export interface CourseAttributes {
   startDate: string;
   endDate: string;
   logo: string;
+  description: string;
   organizationId?: string;
 }
 
@@ -74,6 +75,9 @@ export const Course = sequelize.define<CourseInstance>(
       type: DataTypes.DATE
     },
     logo: {
+      type: DataTypes.STRING
+    },
+    description: {
       type: DataTypes.STRING
     }
   },
