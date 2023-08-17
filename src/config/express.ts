@@ -20,6 +20,8 @@ import { Invitation } from '../api/models/v2/invitation.model';
 import { Enrollment } from '../api/models/v2/enrollment.model';
 
 import { swaggerDocs } from '../api/util/swagger';
+import { logger } from '../api/services/winston';
+import { morganMiddleware } from '../api/middlewares/morgan';
 
 class Server {
   public app: Express;
@@ -45,6 +47,7 @@ class Server {
 
     swaggerDocs(this.app);
     this.app.get('/', (_req: Request, res: Response): void => {
+      logger.info('Accessed at /');
       // use static 200 to prevent undefined message from http-status
       res.status(200).send('OK');
     });
@@ -54,6 +57,7 @@ class Server {
     this.app.use(cors());
     this.app.use(passport.initialize());
     passport.use('jwt', jwtStrategy);
+    this.app.use(morganMiddleware);
   }
 
   private connectDatabase(): void {
@@ -78,8 +82,7 @@ class Server {
 
   public start(): void {
     const server = this.app.listen(this.port);
-    //eslint-disable-next-line
-    console.log(`Server listening on port ${this.port}`);
+    logger.info(`Server listening on port ${this.port}`);
 
     this.wsServer.on('connection', (socket, request) => {
       const params = new URLSearchParams(request.url.split('?')[1]);

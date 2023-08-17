@@ -5,6 +5,7 @@ import {
   DATABASE_PASSWORD,
   DATABASE_HOST
 } from './vars';
+import { logger } from '../api/services/winston';
 
 export const sequelize: Sequelize = new Sequelize(
   DATABASE_NAME,
@@ -18,8 +19,9 @@ export const sequelize: Sequelize = new Sequelize(
         rejectUnauthorized: true
       }
     },
-    //eslint-disable-next-line
-    logging: console.log
+    logging: (sql: string) => {
+      logger.info(`${sql}`);
+    }
   }
 );
 
