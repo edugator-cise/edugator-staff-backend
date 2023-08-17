@@ -34,6 +34,19 @@ export const updateById = async (
   return updatedInvitation ? updatedInvitation.get({ plain: true }) : undefined;
 };
 
+export const findByEmailAndCourseId = async (
+  email: string,
+  courseId: string
+): Promise<InvitationAttributes | undefined> => {
+  const invitation = await Invitation.findOne({
+    where: {
+      email,
+      courseId
+    }
+  });
+  return invitation ? invitation.get({ plain: true }) : undefined;
+};
+
 export const getByEmails = async (
   emails: string[]
 ): Promise<InvitationAttributes[]> => {
@@ -100,7 +113,8 @@ export const getByCourse = async (
 
 export const acceptInvitation = async (
   invitation: InvitationAttributes,
-  userId: string
+  userId: string,
+  removed: boolean
 ): Promise<EnrollmentAttributes> => {
   const result = await sequelize.transaction(async (transaction) => {
     try {
@@ -110,22 +124,42 @@ export const acceptInvitation = async (
       });
       if (numberOfDeletions === 0) throw new Error('Invitation not found');
 
-      const enrollment = await Enrollment.create(
-        {
-          userId: userId,
-          courseId: invitation.courseId,
-          email: invitation.email,
-          role: invitation.role,
-          status: 'active'
-        },
-        { transaction: transaction }
-      );
+      let enrollment: any;
+      if (removed) {
+        const result = await Enrollment.findOne({
+          where: {
+            userId,
+            courseId: invitation.courseId
+          }
+        });
+
+        enrollment = await result.update(
+          {
+            status: 'active',
+            role: invitation.role
+          },
+          {
+            transaction: transaction
+          }
+        );
+      } else {
+        enrollment = await Enrollment.create(
+          {
+            userId: userId,
+            courseId: invitation.courseId,
+            email: invitation.email,
+            role: invitation.role,
+            status: 'active'
+          },
+          { transaction: transaction }
+        );
+      }
 
       if (!enrollment) throw new Error('Enrollment not created');
       return enrollment.get({ plain: true });
     } catch (e) {
       await transaction.rollback();
-      throw new Error(e);
+      throw new Error(e.message);
     }
   });
 

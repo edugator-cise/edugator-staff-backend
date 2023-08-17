@@ -35,9 +35,18 @@ export const acceptInvitation = async (
     if (!result) return res.sendStatus(404);
     if (!emails.includes(result.email)) return res.sendStatus(403);
 
+    const enrollment = await EnrollmentDataLayer.findByUserAndCourse(
+      req.auth.userId,
+      result.courseId
+    );
+    if (enrollment && enrollment.status === 'active') {
+      return res.status(400).send('You are already enrolled in this course');
+    }
+
     const accepted = await InvitationDataLayer.acceptInvitation(
       result,
-      req.auth.userId
+      req.auth.userId,
+      enrollment && enrollment.status === 'removed'
     );
     return res.status(200).send(accepted);
   } catch (e) {
@@ -87,12 +96,22 @@ export const createInvitations = async (
   res: Response
 ): Promise<Record<string, any>> => {
   try {
-    const enrollment = await EnrollmentDataLayer.findByUserAndCourse(
-      req.params.courseId,
-      req.auth.userId
+    const user = await clerk.getUserByEmail(req.body.email);
+    if (user) {
+      const enrollment = await EnrollmentDataLayer.findByUserAndCourse(
+        user.id,
+        req.params.courseId
+      );
+      if (enrollment && enrollment.status === 'active')
+        return res.status(400).send('Trying to invite an enrolled user');
+    }
+
+    const invitation = await InvitationDataLayer.findByEmailAndCourseId(
+      req.body.email,
+      req.params.courseId
     );
-    if (enrollment)
-      return res.status(400).send('Trying to invite an enrolled user');
+    if (invitation)
+      return res.status(400).send('Invitation already exists for this user');
 
     const payload: InvitationAttributes = {
       ...req.body,
