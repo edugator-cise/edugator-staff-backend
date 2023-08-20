@@ -1,0 +1,1148 @@
+openapi: 3.0.1
+info:
+  title: Edugator Back End API
+  description: This is backend api for edugator https://github.com/edugator-cise/edugator-staff-backend
+  contact:
+    email: marcgabe15@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+- url: https://edugator-admin.com/v2
+- url: https://edugator-admin.com/v2
+tags:
+- name: submission
+  description: submission events
+- name: enrollment
+  description: ways to enroll to an org or class
+- name: course
+  description: Course related info
+- name: organization
+  description: Organizations
+- name: user
+  description: Operations about user
+- name: module
+  description: Everything about modules
+- name: problem
+  description: Everything about problems
+paths:
+  /submissions/{id}:
+    get:
+      tags:
+      - submission
+      summary: gets a specific submission
+      parameters:
+        - name: id
+          in: path
+          description: id of submission
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  exp:
+                    type: string
+                  id:
+                    type: string
+  /submissions/user/{userId}:
+    get:
+      tags:
+      - submission
+      summary: gets submissions for a specific user
+      parameters:
+        - name: userId
+          in: path
+          description: id of user
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: 'array'
+                items:
+                  allOf:
+                    - $ref: '#/components/schemas/SubmissionEvent'
+                    - type: object
+                      properties:
+                        id:
+                          type: string
+  /submissions/user/{courseId}:
+    get:
+      tags:
+      - submission
+      summary: gets submissions for a specific course
+      parameters:
+        - name: courseId
+          in: path
+          description: id of user
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: 'array'
+                items:
+                  allOf:
+                    - $ref: '#/components/schemas/SubmissionEvent'
+                    - type: object
+                      properties:
+                        id:
+                          type: string
+        
+                    
+              
+  /submissions:
+    post:
+      tags:
+      - submission
+      summary: creates a submission
+      requestBody:
+        description: body of submission
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmissionEvent'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: '#/components/schemas/SubmissionEvent'
+                  - type: object
+                    properties:
+                      id: 
+                        type: string
+  
+              
+              
+  /enrollment/organization/{organizationId}:
+    put:
+      tags:
+      - enrollment
+      summary: creates a uuid that maps to an organizationId to allow apps to have custom sign up login links
+      parameters:
+        - name: organizationId
+          in: path
+          description: id of organization
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: give time for expire
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                exp:
+                  type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  exp:
+                    type: string
+                  id:
+                    type: string
+  /enrollment/courseId/{courseId}:
+    put:
+      tags:
+      - enrollment
+      summary: creates a uuid that maps to a course id to allow users to have custom sign up links for courses
+      parameters:
+        - name: courseId
+          in: path
+          description: id of course
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: give time for expire
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                exp:
+                  type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  exp:
+                    type: string
+                  id:
+                    type: string
+  /course/{courseId}/users:
+    get:
+      tags:
+      - course
+      summary: get all users from a courseId
+      parameters:
+        - name: courseId
+          in: path
+          description: id of course
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: 'array'
+                items:
+                  allOf:
+                      - type: object
+                        properties:
+                          username: 
+                            type: string
+                          role:
+                            type: string
+                          email:
+                            type: string
+                    
+  /course:
+    post:
+      tags:
+      - course
+      summary: creates a course
+      requestBody:
+        description: course object to edit
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourseWithoutId'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+                
+  /course/{courseId}:
+    get:
+      tags:
+      - course
+      summary: gets a course id
+      parameters:
+        - name: courseId
+          in: path
+          description: id of course
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+    put:
+      tags:
+      - course
+      summary: edits a course
+      parameters:
+        - name: courseId
+          in: path
+          description: id of course
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: course object to edit
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourseWithoutId'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+    delete:
+      tags:
+      - course
+      summary: removes a course
+      parameters:
+        - name: courseId
+          in: path
+          description: id of course
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+      
+      
+          
+  /user/{userId}/course:
+    get:
+      tags:
+      - user
+      summary: gets a list of all courses user has access to
+      parameters:
+        - name: userId
+          in: path
+          description: ID of user
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: 'array'
+                items:
+                  $ref: '#/components/schemas/CourseWithPrivileges'
+    post:
+      tags:
+      - user
+      summary: adds a course to a user
+      parameters:
+        - name: userId
+          in: path
+          description: ID of user
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Course object to add
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Course'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseWithPrivileges'
+  /user/{userId}/course/{courseId}:
+    delete:
+      tags:
+      - user
+      summary: removes a course from a user
+      parameters:
+        - name: userId
+          in: path
+          description: ID of user
+          required: true
+          schema:
+            type: string
+        - name: courseId
+          in: path
+          description: ID of course
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseWithPrivileges'
+  /organization:
+    get:
+      tags:
+      - organization
+      summary: gets list of organizations (admin level api)
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: 'array'
+                items:
+                  allOf:
+                    - $ref: '#/components/schemas/Organization'
+                    - type: object
+                      properties:
+                        id: 
+                          type: string
+    post:
+      tags:
+      - organization
+      summary: create an organization
+      requestBody:
+        description: organization object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Organization'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: 'array'
+                items:
+                  allOf:
+                    - $ref: '#/components/schemas/Organization'
+  /organization/{organizationValue}:
+    delete:
+      tags:
+      - organization
+      summary: removes organization id
+      parameters:
+        - name: organizationValue
+          in: path
+          description: ID of organization
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: 'array'
+                items:
+                  allOf:
+                    - $ref: '#/components/schemas/Organization'
+                    - type: object
+                      properties:
+                        id: 
+                          type: string
+    put:
+      tags:
+      - organization
+      summary: updates an organization
+      parameters:
+        - name: organizationValue
+          in: path
+          description: ID of organization
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: organization object
+        content:
+          application/json:
+            schema:
+              type: 'array'
+              items:
+                allOf:
+                  - $ref: '#/components/schemas/Organization'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: 'array'
+                items:
+                  allOf:
+                    - $ref: '#/components/schemas/Organization'
+                    - type: object
+                      properties:
+                        id: 
+                          type: string
+  /organization/{organizationValue}/users:
+    get:
+      tags:
+      - organization
+      summary: get all users from a courseId
+      parameters:
+        - name: organizationValue
+          in: path
+          description: ID of organization
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: 'array'
+                items:
+                  allOf:
+                      - type: object
+                        properties:
+                          username: 
+                            type: string
+                          role:
+                            type: string
+                          email:
+                            type: string
+  /health:
+    get:
+      tags:
+      - health
+      summary: checks if back end is running
+      operationId: getHealth
+      responses:
+        200:
+          description: successful operation
+          content:
+            '*/*':
+              schema:
+                type: string
+                example: it is working
+  /code:
+    post:
+      tags:
+      - code
+      summary: runs the source code and stdin for edugator
+      operationId: postRun
+      requestBody:
+        description: Run object that needs to be added to run queue
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Run'
+        required: true
+      responses:
+        201:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JudgeToken'
+        400:
+          description: Invalid input
+          content: {}
+        422:
+          description: Language Id cannot be blank
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Judge0LanguageError'
+        503:
+          description: queue is full error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Judge0QueueError'
+      x-codegen-request-body-name: body
+  /code/run/{runId}:
+    get:
+      tags:
+      - code
+      summary: gets the output of the source code run from token
+      operationId: getRun
+      parameters:
+      - name: runId
+        in: path
+        description: ID of run to return
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmissionStats'
+  /course/{courseId}/problem:
+    get:
+      tags:
+      - problem
+      summary: Gets all the problems for COP3530 course
+      operationId: getProblem
+      parameters:
+      - name: courseId
+        in: path
+        description: ID of course
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Problem'
+  /course/{courseId}/module/{moduleId}/problem/:
+    get:
+      tags:
+      - problem
+      summary: Gets all the non hidden problems for COP3530 course given module id
+      operationId: getStudentProblemsByModuleId
+      parameters:
+      - name: moduleId
+        in: path
+        description: ID of module to return
+        required: true
+        schema:
+          type: string
+      - name: courseId
+        in: path
+        description: Id of course
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Problem'
+  /problem:
+    post:
+      tags:
+      - problem
+      summary: Add a new problem for COP3530 course
+      operationId: addProblem
+      requestBody:
+        description: Problem object that needs to be added
+        content:
+          application/json:
+            schema:
+                $ref: '#/components/schemas/ProblemWithoutIdWithModuleId'
+        required: true
+      responses:
+        400:
+          description: Invalid input
+          content: {}
+      security:
+      - bearerAuth: []
+      x-codegen-request-body-name: body
+  /problem/{problemId}:
+    get:
+      tags:
+      - problem
+      summary: Find problem by ID
+      description: Returns a single problem
+      operationId: getAdminProblemById
+      parameters:
+      - name: problemId
+        in: path
+        description: ID of problem to return
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        400:
+          description: Invalid ID supplied
+          content: {}
+        404:
+          description: problem not found
+          content: {}
+      security:
+      - bearerAuth: []
+    put:
+      tags:
+      - problem
+      summary: Update an existing problem
+      operationId: updateProblem
+      parameters:
+      - name: problemId
+        in: path
+        description: problem id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Problem object that needs to be updated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemWithoutIdWithModuleId'
+        required: true
+      responses:
+        400:
+          description: bad request validation error
+          content: {}
+        404:
+          description: Problem not found
+          content: {}
+      security:
+      - bearerAuth: []
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+      - problem
+      summary: Deletes a problem and delets it from module collection
+      operationId: deleteProblem
+      parameters:
+      - name: problemId
+        in: path
+        description: problem id to delete
+        required: true
+        schema:
+          type: string
+      responses:
+        400:
+          description: Invalid ID supplied
+          content: {}
+        404:
+          description: problem not found
+          content: {}
+      security:
+      - bearerAuth: []
+                
+  /module:
+    get:
+      tags:
+      - module
+      summary: Gets all the modules for COP3530 course
+      operationId: getModule
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Module'
+    post:
+      tags:
+      - module
+      summary: Add a new module for COP3530 course
+      operationId: addModule
+      requestBody:
+        description: Module object that needs to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModuleWithoutId'
+        required: true
+      responses:
+        200:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+        400:
+          description: Bad request
+          content: {}
+      security:
+      - bearerAuth: []
+      x-codegen-request-body-name: body
+      
+  /course/{courseId}/module/problems:
+    get:
+      tags:
+      - module
+      summary: gets all modules with problems
+      operationId: getModulesWithProblems
+      parameters:
+      - name: courseId
+        in: path
+        description: Id of course
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ModuleWithProblems'
+      security:
+      - bearerAuth: []
+  /module/{moduleId}:
+    get:
+      tags:
+      - module
+      summary: Find module by ID
+      description: Returns a single module
+      operationId: getModuleById
+      parameters:
+      - name: moduleId
+        in: path
+        description: module id
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Module'
+        404:
+          description: module not found
+          content: {}
+    put:
+      tags:
+      - module
+      summary: Update an existing module
+      operationId: updateModule
+      parameters:
+      - name: moduleId
+        in: path
+        description: module id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Module object that needs to be updated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModuleWithoutId'
+        required: true
+      responses:
+        400:
+          description: Validation exception
+          content: {}
+        404:
+          description: Module not found
+          content: {}
+      security:
+      - bearerAuth: []
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+      - module
+      summary: Deletes a module and all of its problems
+      operationId: deleteModule
+      parameters:
+      - name: moduleId
+        in: path
+        description: module id to delete
+        required: true
+        schema:
+          type: string
+      responses:
+        404:
+          description: Module not found
+          content: {}
+        200:
+          description: success
+          content: {}
+        401:
+          description: Unauthorized
+      security:
+      - bearerAuth: []
+      
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Organization:
+      required:
+      - name
+      - logo
+      properties:
+        name:
+          type: string
+        logo:
+          type: string
+          example: https://some-image.png
+    CourseWithoutId:
+      required:
+      - name
+      - logo
+      - courseType
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        logo:
+          type: string
+          example: https://some-image.png
+        courseType:
+          type: string
+          enum: ['free', 'standard', 'premium']
+        startDate:
+          type: string
+          example: '2017-02-10T08:12:39.483Z'
+        endDate:
+          type: string
+          example: '2017-02-10T08:12:39.483Z'
+        lmsLinkId:
+          type: string
+          example: 'https://example.com'
+    Course:
+      allOf:
+      - $ref: '#/components/schemas/CourseWithoutId'
+      - type: object
+        properties:
+          id:
+            type: string
+    CourseWithPrivileges:
+      allOf:
+      - $ref: '#/components/schemas/Course'
+      - type: object
+        properties:
+          access:
+            type: string
+            enum: ['read', 'write']
+            example: 'read'
+    ModuleWithProblems:
+      allOf:
+      - $ref: '#/components/schemas/Module'
+      - type: object
+        properties:
+          problems:
+            type: array
+            items:
+              $ref: '#/components/schemas/Problem'
+    Module:
+      allOf:
+      - $ref: '#/components/schemas/ModuleWithoutId'
+      - type: object
+        properties:
+          id:
+            type: string
+    ModuleWithoutId:
+      required:
+      - name
+      - number
+      type: object
+      properties:
+        name:
+          type: string
+          example: Stacks/Lists/Queues
+        number:
+          type: integer
+          format: int64
+    Code:
+      type: object
+      properties:
+        header:
+          type: string
+        footer:
+          type: string
+        body:
+          type: string
+    TestCase:
+      type: object
+      properties:
+        input:
+          type: string
+        expectedOutput:
+          type: string
+        hint:
+          type: string
+        visibility:
+          type: integer
+    Problem:
+      allOf:
+      - $ref: '#/components/schemas/ProblemWithoutId'
+      - type: object
+        properties:
+          _id:
+            type: string
+    ProblemWithoutIdWithModuleId:
+      allOf:
+      - $ref: '#/components/schemas/ProblemWithoutId'
+      - type: object
+        properties:
+          moduleId:
+            type: string
+    SubmissionEvent:
+      required:
+      - userId
+      - courseId
+      - submissionId
+      - submissionType
+      - timeOfSubmission
+      - score
+      type: object
+      properties:
+        userId:
+          type: string
+        courseId:
+          type: string
+        submissionId:
+          type: string
+        submissionType:
+          type: string
+          enum: ['lesson', 'code']
+        timeOfSubmission:
+          type: string
+        score:
+          type: integer
+    ProblemWithoutId:
+      required:
+      - statement
+      - title
+      - hidden
+      - language
+      - dueDate
+      - code
+      - fileExtension
+      - testCases
+      - templatePackage
+      - timeLimit
+      - memoryLimit
+      - buildCommand
+      type: object
+      properties:
+        title:
+          type: string
+        statement:
+          type: string
+        hidden:
+          type: boolean
+        language:
+          type: string
+        templatePackage:
+          type: string
+        dueDate:
+          type: string
+          format: date
+        code:
+          $ref: '#/components/schemas/Code'
+        fileExtension:
+          type: string
+          enum:
+          - .cpp
+          - .java
+          - .h
+        testCases:
+          type: array
+          items:
+            $ref: '#/components/schemas/TestCase'
+        timeLimit:
+          type: integer
+        memoryLimit:
+          type: integer
+        buildCommand:
+          type: string
+    Run:
+      required:
+      - language_id
+      - source_code
+      - stdin
+      - problem_id
+      - cpu_time_limit
+      - memory_limit
+      type: object
+      properties:
+        source_code:
+          type: string
+        language_id:
+          type: integer
+          format: int64
+        stdin:
+          type: string
+        problem_id:
+          type: string
+        cpu_time_limit:
+          type: integer
+        memory_limit:
+          type: integer
+        compiler_options:
+          type: string
+    JudgeToken:
+      required:
+      - token
+      type: object
+      properties:
+        token:
+          type: string
+          example: 09jrfa4309jfklagj0j34go
+    SubmissionStats:
+      required:
+      - compile_output
+      - memory
+      - message
+      - status
+      - stderr
+      - stdout
+      - time
+      - token
+      type: object
+      properties:
+        stdout:
+          type: string
+        time:
+          type: string
+        memory:
+          type: integer
+          format: int64
+        stderr:
+          type: string
+        token:
+          type: string
+        compile_output:
+          type: string
+        message:
+          type: string
+        status:
+          type: object
+          properties:
+            id:
+              type: integer
+            description:
+              type: string
+    Judge0QueueError:
+      type: object
+      properties:
+        error:
+          type: string
+    
+    Judge0LanguageError:
+      type: object
+      properties:
+        language_id:
+          type: string
