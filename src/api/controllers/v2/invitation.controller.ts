@@ -1,5 +1,6 @@
 import { InvitationAttributes } from '../../models/v2/invitation.model';
 import * as InvitationDataLayer from '../../dal/invitation';
+import * as EnrollmentDataLayer from '../../dal/enrollment';
 import * as clerk from '../../services/clerk';
 
 import { Request, Response } from 'express';
@@ -34,9 +35,18 @@ export const acceptInvitation = async (
     if (!result) return res.sendStatus(404);
     if (!emails.includes(result.email)) return res.sendStatus(403);
 
+    const enrollment = await EnrollmentDataLayer.findByUserAndCourse(
+      req.auth.userId,
+      result.courseId
+    );
+    if (enrollment && enrollment.status === 'active') {
+      return res.status(400).send('You are already enrolled in this course');
+    }
+
     const accepted = await InvitationDataLayer.acceptInvitation(
       result,
-      req.auth.userId
+      req.auth.userId,
+      enrollment && enrollment.status === 'removed'
     );
     return res.status(200).send(accepted);
   } catch (e) {
@@ -86,6 +96,23 @@ export const createInvitations = async (
   res: Response
 ): Promise<Record<string, any>> => {
   try {
+    const user = await clerk.getUserByEmail(req.body.email);
+    if (user) {
+      const enrollment = await EnrollmentDataLayer.findByUserAndCourse(
+        user.id,
+        req.params.courseId
+      );
+      if (enrollment && enrollment.status === 'active')
+        return res.status(400).send('Trying to invite an enrolled user');
+    }
+
+    const invitation = await InvitationDataLayer.findByEmailAndCourseId(
+      req.body.email,
+      req.params.courseId
+    );
+    if (invitation)
+      return res.status(400).send('Invitation already exists for this user');
+
     const payload: InvitationAttributes = {
       ...req.body,
       courseId: req.params.courseId,
@@ -93,6 +120,24 @@ export const createInvitations = async (
     };
     const result = await InvitationDataLayer.create(payload);
     if (!result) return res.sendStatus(500);
+    return res.status(200).send(result);
+  } catch (e) {
+    return res.status(500).send(e.message);
+  }
+};
+
+export const updateInvitation = async (
+  req: WithAuthProp<Request>,
+  res: Response
+): Promise<Record<string, any>> => {
+  try {
+    const result = await InvitationDataLayer.updateById(
+      req.params.invitationId,
+      req.body
+    );
+    if (!result) {
+      return res.sendStatus(400);
+    }
     return res.status(200).send(result);
   } catch (e) {
     return res.status(500).send(e.message);

@@ -15,6 +15,7 @@ import {
 import {
   getInvitations,
   createInvitations,
+  updateInvitation,
   deleteInvitations
 } from '../../controllers/v2/invitation.controller';
 
@@ -48,6 +49,7 @@ router
   .post(NeedsInstructorPermissions, createInvitations);
 router
   .route('/:courseId/invitations/:invitationId')
+  .put(NeedsInstructorPermissions, updateInvitation)
   .delete(NeedsInstructorPermissions, deleteInvitations);
 
 export default router;

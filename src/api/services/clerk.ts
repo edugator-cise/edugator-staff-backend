@@ -13,3 +13,8 @@ export const getUsers = async (userIds: string[]): Promise<User[]> => {
   const users = await clerk.users.getUserList({ userId: userIds });
   return users;
 };
+
+export const getUserByEmail = async (email: string): Promise<User> => {
+  const users = await clerk.users.getUserList({ emailAddress: [email] });
+  return users[0];
+};
