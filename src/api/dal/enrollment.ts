@@ -75,18 +75,20 @@ export const getAllCourseEnrollments = async (
   const userIds = enrollments.map((value) => value.userId);
   const users = await clerk.getUsers(userIds);
 
-  const names = new Map<string, string>();
+  const info = new Map<string, [name: string, avatar: string]>();
+
   users.forEach((user) => {
-    names.set(
-      user.id,
+    info.set(user.id, [
       !user.firstName || !user.lastName
         ? ''
-        : user.firstName + ' ' + user.lastName
-    );
+        : user.firstName + ' ' + user.lastName,
+      user.imageUrl
+    ]);
   });
 
   enrollments = enrollments.map((value) => {
-    value['name'] = names.get(value.userId);
+    value['name'] = info.get(value.userId)[0];
+    value['avatar'] = info.get(value.userId)[1];
     return value;
   });
 
