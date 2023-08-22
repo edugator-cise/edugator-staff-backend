@@ -126,15 +126,20 @@ export const updateById = async (
   courseId: string,
   payload: Partial<EnrollmentAttributes>
 ): Promise<EnrollmentAttributes | undefined> => {
-  const instructorEnrollment = await Enrollment.findOne({
+  const result = await Enrollment.findOne({
     where: {
       userId,
-      courseId,
-      role: 'instructor'
+      courseId
     }
   });
   
-  if (instructorEnrollment && payload.role && payload.role !== 'instructor') {
+  if (!result) {
+    return undefined;
+  }
+
+  const enrollment = result.get({plain: true})
+
+  if (enrollment.role === 'instructor' && payload.role && payload.role !== 'instructor') {
     const otherInstructors = await Enrollment.count({
       where: {
         courseId,
@@ -149,25 +154,38 @@ export const updateById = async (
     }
   }
   
-  const enrollment = await Enrollment.findOne({
-    where: {
-      userId,
-      courseId
-    }
-  });
+
   
-  if (!enrollment) {
-    return undefined;
-  }
-  
-  await enrollment.update(payload);
-  return enrollment.get({ plain: true });
+  await result.update(payload);
+  return result.get({ plain: true });
 }
 
 export const deleteById = async (
   userId: string,
   courseId: string
 ): Promise<boolean> => {
+  const instructorEnrollment = await Enrollment.findOne({
+    where: {
+      userId,
+      courseId,
+      role: 'instructor'
+    }
+  });
+  
+  if (instructorEnrollment) {
+    const otherInstructors = await Enrollment.count({
+      where: {
+        courseId,
+        role: 'instructor',
+        userId: { [Op.ne]: userId }
+      }
+    });
+    
+    if (otherInstructors === 0) {
+      throw new Error('Cannot delete enrollment. At least one instructor must be present in the course.');
+    }
+  }
+  
   const numberOfDeletions = await Enrollment.destroy({
     where: {
       userId,
