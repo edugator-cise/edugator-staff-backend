@@ -132,33 +132,36 @@ export const updateById = async (
       courseId
     }
   });
-  
+
   if (!result) {
     return undefined;
   }
 
-  const enrollment = result.get({plain: true})
+  const enrollment = result.get({ plain: true });
 
-  if (enrollment.role === 'instructor' && payload.role && payload.role !== 'instructor') {
+  if (
+    enrollment.role === 'instructor' &&
+    payload.role &&
+    payload.role !== 'instructor'
+  ) {
     const otherInstructors = await Enrollment.count({
       where: {
         courseId,
         role: 'instructor',
         userId: { [Op.ne]: userId }
-        
       }
     });
-    
+
     if (otherInstructors === 0) {
-      throw new Error('Cannot update role. At least one instructor must be present in the course.');
+      throw new Error(
+        'Cannot update role. At least one instructor must be present in the course.'
+      );
     }
   }
-  
 
-  
   await result.update(payload);
   return result.get({ plain: true });
-}
+};
 
 export const deleteById = async (
   userId: string,
@@ -171,7 +174,7 @@ export const deleteById = async (
       role: 'instructor'
     }
   });
-  
+
   if (instructorEnrollment) {
     const otherInstructors = await Enrollment.count({
       where: {
@@ -180,12 +183,14 @@ export const deleteById = async (
         userId: { [Op.ne]: userId }
       }
     });
-    
+
     if (otherInstructors === 0) {
-      throw new Error('Cannot delete enrollment. At least one instructor must be present in the course.');
+      throw new Error(
+        'Cannot delete enrollment. At least one instructor must be present in the course.'
+      );
     }
   }
-  
+
   const numberOfDeletions = await Enrollment.destroy({
     where: {
       userId,
