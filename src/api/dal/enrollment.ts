@@ -8,6 +8,8 @@ import * as clerk from '../services/clerk';
 
 import { sequelize } from '../../config/database_v2';
 
+import { Op } from 'sequelize';
+
 export const getByUser = async (
   userId: string
 ): Promise<EnrollmentAttributes[]> => {
@@ -33,7 +35,8 @@ export const getByUser = async (
       ]
     },
     where: {
-      userId
+      userId,
+      status: 'active'
     },
     order: [['courseName', 'ASC']]
   });
@@ -123,18 +126,43 @@ export const updateById = async (
   courseId: string,
   payload: Partial<EnrollmentAttributes>
 ): Promise<EnrollmentAttributes | undefined> => {
+  const instructorEnrollment = await Enrollment.findOne({
+    where: {
+      userId,
+      courseId,
+      role: 'instructor'
+    }
+  });
+  
+  if (instructorEnrollment && payload.role && payload.role !== 'instructor') {
+    const otherInstructors = await Enrollment.count({
+      where: {
+        courseId,
+        role: 'instructor',
+        userId: { [Op.ne]: userId }
+        
+      }
+    });
+    
+    if (otherInstructors === 0) {
+      throw new Error('Cannot update role. At least one instructor must be present in the course.');
+    }
+  }
+  
   const enrollment = await Enrollment.findOne({
     where: {
       userId,
       courseId
     }
   });
+  
   if (!enrollment) {
     return undefined;
   }
+  
   await enrollment.update(payload);
   return enrollment.get({ plain: true });
-};
+}
 
 export const deleteById = async (
   userId: string,
