@@ -33,25 +33,29 @@ export const getById = async (
   id: string,
   hidden: boolean
 ): Promise<ProblemAttributes> => {
-  const args: any = {
+  const problem = await Problem.findByPk(id, {
     include: [
       {
         model: Module,
         as: 'module',
         attributes: []
+      },
+      {
+        model: TestCase,
+        as: 'testCases',
+        required: true,
+        order: [['orderNumber', 'ASC']],
+        where: {
+          ...(hidden ? {} : { visibility: 2 })
+        }
       }
     ],
     attributes: {
-      include: [[sequelize.col('module.moduleName'), 'moduleName']]
+      include: [[sequelize.col('module.moduleName'), 'moduleName']],
+      exclude: hidden ? [] : ['codeSolution']
     }
-  };
+  });
 
-  if (hidden) {
-    args['include'].push('testCases');
-    args['order'] = [['testCases', 'orderNumber', 'ASC']];
-  } else args['attributes']['exclude'] = ['codeSolution'];
-
-  const problem = await Problem.findByPk(id, args);
   return problem ? problem.get({ plain: true }) : null;
 };
 
