@@ -2,11 +2,9 @@ name: Continuous Integration
 
 # this env sets all the needed environment variables for the back end
 env:
-  APP_PASSWORD: ${{secrets.APP_PASSWORD}}
   ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
   DB_URI: ${{secrets.DB_URI}}
   EDUGATOR_API_PASS: ${{secrets.EDUGATOR_API_PASS}}
-  EDUGATOR_API_URL: ${{secrets.EDUGATOR_API_URL}}
   EDUGATOR_API_USER: ${{secrets.EDUGATOR_API_USER}}
   EDUGATOR_AUTH_TOKEN: ${{secrets.EDUGATOR_AUTH_TOKEN}}
   JUDGE_URL: ${{secrets.JUDGE_URL}}
