@@ -1,6 +1,6 @@
 # Edugator Backend
 
-![License: MIT](https://img.shields.io/badge/License-GPLv3-blue.svg)
+![License: GPLv3](https://img.shields.io/badge/License-GPLv3-blue.svg)
 
 ## Project Description
 
