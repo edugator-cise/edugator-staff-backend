@@ -4,7 +4,10 @@
 
 ## Project Description
 
-`edugator-staff-backend` serves as the backend infrastructure for Edugator, a pioneering platform designed for students enrolled in the Data Structures and Algorithms course at the University of Florida. This backend seamlessly integrates with various external services, such as Judge0 for execution of code, ltijs for connecting with LMSs such as Canvas, and Clerk for authentication.
+`edugator-staff-backend` serves as the backend infrastructure for Edugator, a pioneering platform designed for students enrolled in the Data Structures and Algorithms course at the University of Florida. This backend seamlessly integrates with various external services, such as Judge0 for execution of code, ltijs for connecting with LMSs such as Canvas, and Clerk for authentication. 
+
+This backend contains multiple versions of routes (e.g. v1, v2, ...). v1 routes are mostly deprecated, and use the old MongoDB database. v2 routes and onwards are using the NodeJS `sequelize` library as the ORM, which interfaces with a MySQL database. Some of the `v2` routes, and all of the `v3` routes are protected by Clerk authentication, meaning that they will require a valid Clerk token in the header, with the correct permissions, in order to access the routers. 
+Ensure that, when you receive the `.env` file from the administrators, it has credentials for both databases to ensure both the `v1` and `v2` routes are working.
 
 ## Documentation / Contributing
 Formal documentation and contributing for this api can be found [here](https://github.com/edugator-cise/edugator-staff-backend/wiki)
