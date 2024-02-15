@@ -68,6 +68,12 @@ npm install
 ```
 
 3. Run server
+   
+You need to source the `.env` file first before you can run the server. Assuming that you placed it in the root directory, you can run this in the project root:
+```
+source .env
+```
+
 For a development environment, you can use this command to run the server on port 8080:
 ```
 npm run dev
@@ -81,6 +87,7 @@ After it builds, you can run the server by executing the compiled JavaScript ent
 ```
 node build/src/index.js
 ```
+Make sure that the `.env` file is configured to run in production mode by setting the `NODE_ENV` variable to `production` instead of `development` which it is defaulted to. This ensures that it will make the correct database connection.
 
 ## Testing
 
